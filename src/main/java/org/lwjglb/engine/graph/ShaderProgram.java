@@ -11,7 +11,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import static org.lwjgl.opengl.GL20.*;
 import org.lwjgl.system.MemoryStack;
-import org.lwjglb.engine.graph.weather.Fog;
+//import org.lwjglb.engine.graph.weather.Fog;
 
 public class ShaderProgram {
 
@@ -83,11 +83,11 @@ public class ShaderProgram {
         createUniform(uniformName + ".reflectance");
     }
 
-    public void createFogUniform(String uniformName) throws Exception {
-        createUniform(uniformName + ".activeFog");
-        createUniform(uniformName + ".colour");
-        createUniform(uniformName + ".density");
-    }
+//    public void createFogUniform(String uniformName) throws Exception {
+//        createUniform(uniformName + ".activeFog");
+//        createUniform(uniformName + ".colour");
+//        createUniform(uniformName + ".density");
+//    }
 
     public void setUniform(String uniformName, Matrix4f value) {
         // Dump the matrix into a float buffer
@@ -177,11 +177,11 @@ public class ShaderProgram {
         setUniform(uniformName + ".reflectance", material.getReflectance());
     }
 
-    public void setUniform(String uniformName, Fog fog) {
-        setUniform(uniformName + ".activeFog", fog.isActive() ? 1 : 0);
-        setUniform(uniformName + ".colour", fog.getColour());
-        setUniform(uniformName + ".density", fog.getDensity());
-    }
+//    public void setUniform(String uniformName, Fog fog) {
+//        setUniform(uniformName + ".activeFog", fog.isActive() ? 1 : 0);
+//        setUniform(uniformName + ".colour", fog.getColour());
+//        setUniform(uniformName + ".density", fog.getDensity());
+//    }
 
     public void createVertexShader(String shaderCode) throws Exception {
         vertexShaderId = createShader(shaderCode, GL_VERTEX_SHADER);

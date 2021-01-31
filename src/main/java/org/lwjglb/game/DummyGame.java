@@ -2,27 +2,18 @@ package org.lwjglb.game;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.openal.AL11;
-import org.lwjgl.system.MemoryStack;
 import org.lwjglb.engine.*;
 import org.lwjglb.engine.graph.*;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
-import org.lwjglb.engine.graph.weather.Fog;
 import org.lwjglb.engine.items.GameItem;
-import org.lwjglb.engine.items.SkyBox;
-import org.lwjglb.engine.items.Terrain;
-import org.lwjglb.engine.loaders.obj.OBJLoader;
+import org.lwjglb.engine.loaders.newloader.StaticMeshesLoader;
 import org.lwjglb.engine.sound.SoundBuffer;
 import org.lwjglb.engine.sound.SoundListener;
 import org.lwjglb.engine.sound.SoundManager;
 import org.lwjglb.engine.sound.SoundSource;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.stb.STBImage.*;
 
 public class DummyGame implements IGameLogic {
 
@@ -42,7 +33,7 @@ public class DummyGame implements IGameLogic {
 
     private static final float CAMERA_POS_STEP = 0.10f;
 
-    private Terrain terrain;
+//    private Terrain terrain;
 
     private float angleInc;
 
@@ -95,43 +86,55 @@ public class DummyGame implements IGameLogic {
 
         float posx = startx;
         float posz = startz;
-        float incy = 0.0f;
+//        float incy = 0.0f;
 
         selectDetector = new MouseBoxSelectionDetector();
 
-        ByteBuffer buf;
-        int width;
-        int height;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer w = stack.mallocInt(1);
-            IntBuffer h = stack.mallocInt(1);
-            IntBuffer channels = stack.mallocInt(1);
+//        ByteBuffer buf;
+//        int width;
+//        int height;
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            IntBuffer w = stack.mallocInt(1);
+//            IntBuffer h = stack.mallocInt(1);
+//            IntBuffer channels = stack.mallocInt(1);
+//
+//            buf = stbi_load("textures/grassblock.png", w, h, channels, 4);
+//            if (buf == null) {
+//                throw new Exception("Image file not loaded: " + stbi_failure_reason());
+//            }
+//
+//            width = w.get();
+//            height = h.get();
+//        }
 
-            buf = stbi_load("textures/grassblock.png", w, h, channels, 4);
-            if (buf == null) {
-                throw new Exception("Image file not loaded: " + stbi_failure_reason());
-            }
+        int width = 10;
+        int height = 10;
+        int instances = 1;
+//        int instances = height * width;
 
-            width = w.get();
-            height = h.get();
-        }
 
-        int instances = height * width;
-        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj", instances);
-        Texture texture = new Texture("textures/terrain_textures.png", 2, 1);
-        Material material = new Material(texture, reflectance);
-        mesh.setMaterial(material);
+        Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube/c.obj", "models\\cube/");
+//        Mesh[] houseMesh = StaticMeshesLoader.load("/src\\main\\resources\\models\\cube/c.obj", "");
+//        Mesh[] houseMesh = StaticMeshesLoader.load("C:\\Users\\overw\\IdeaProjects\\lwjglbook\\chapter27\\c27-p1\\src\\main\\resources\\models/cube/c.obj", "");
+
+        Mesh mesh = houseMesh[0];
+//        Texture texture = new Texture("textures/terrain_textures-2.png");
+//        Material material = new Material(texture, reflectance);
+//        mesh.setMaterial(material);
         gameItems = new GameItem[instances];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
+                if (i!=j) continue;
+                if (i!=4) continue;
                 GameItem gameItem = new GameItem(mesh);
-                gameItem.setScale(blockScale);
-                int rgb = HeightMapMesh.getRGB(i, j, width, buf);
-                incy = rgb / (10 * 255 * 255);
-                gameItem.setPosition(posx, starty + incy, posz);
+                gameItem.setScale(1);
+//                int rgb = HeightMapMesh.getRGB(i, j, width, buf);
+//                incy = rgb / (10 * 255 * 255);
+                gameItem.setPosition(j, 0, i);
                 int textPos = Math.random() > 0.5f ? 0 : 1;
                 gameItem.setTextPos(textPos);
-                gameItems[i * width + j] = gameItem;
+                gameItems[0] = gameItem;
+//                gameItems[i * width + j] = gameItem;
 
                 posx += inc;
             }
@@ -166,23 +169,23 @@ public class DummyGame implements IGameLogic {
 
         // Fog
         Vector3f fogColour = new Vector3f(0.5f, 0.5f, 0.5f);
-        scene.setFog(new Fog(false, fogColour, 0.02f));
+//        scene.setFog(new Fog(false, fogColour, 0.02f));
 
         // Setup  SkyBox
-        SkyBox skyBox = new SkyBox("/models/skybox.obj", new Vector4f(0.65f, 0.65f, 0.65f, 1.0f));
-        skyBox.setScale(skyBoxScale);
-        scene.setSkyBox(skyBox);
+//        SkyBox skyBox = new SkyBox("/models/skybox.obj", new Vector4f(0.65f, 0.65f, 0.65f, 1.0f));
+//        skyBox.setScale(skyBoxScale);
+//        scene.setSkyBox(skyBox);
 
         // Setup Lights
         setupLights();
 
-        camera.getPosition().x = 0.25f;
-        camera.getPosition().y = 6.5f;
-        camera.getPosition().z = 6.5f;
-        camera.getRotation().x = 25;
-        camera.getRotation().y = -1;
+//        camera.getPosition().x = 0.25f;
+//        camera.getPosition().y = 6.5f;
+//        camera.getPosition().z = 6.5f;
+//        camera.getRotation().x = 25;
+//        camera.getRotation().y = -1;
 
-        stbi_image_free(buf);
+//        stbi_image_free(buf);
 
         // Sounds
         this.soundMgr.init();
@@ -191,11 +194,11 @@ public class DummyGame implements IGameLogic {
     }
 
     private void setupSounds() throws Exception {
-        SoundBuffer buffBack = new SoundBuffer("/sounds/background.ogg");
-        soundMgr.addSoundBuffer(buffBack);
-        SoundSource sourceBack = new SoundSource(true, true);
-        sourceBack.setBuffer(buffBack.getBufferId());
-        soundMgr.addSoundSource(Sounds.MUSIC.toString(), sourceBack);
+//        SoundBuffer buffBack = new SoundBuffer("/sounds/background.ogg");
+//        soundMgr.addSoundBuffer(buffBack);
+//        SoundSource sourceBack = new SoundSource(true, true);
+//        sourceBack.setBuffer(buffBack.getBufferId());
+//        soundMgr.addSoundSource(Sounds.MUSIC.toString(), sourceBack);
 
         SoundBuffer buffBeep = new SoundBuffer("/sounds/beep.ogg");
         soundMgr.addSoundBuffer(buffBeep);
@@ -203,8 +206,8 @@ public class DummyGame implements IGameLogic {
         sourceBeep.setBuffer(buffBeep.getBufferId());
         soundMgr.addSoundSource(Sounds.BEEP.toString(), sourceBeep);
 
-        SoundBuffer buffFire = new SoundBuffer("/sounds/fire.ogg");
-        soundMgr.addSoundBuffer(buffFire);
+//        SoundBuffer buffFire = new SoundBuffer("/sounds/fire.ogg");
+//        soundMgr.addSoundBuffer(buffFire);
 //        SoundSource sourceFire = new SoundSource(true, false);
 //        Vector3f pos = particleEmitter.getBaseParticle().getPosition();
 //        sourceFire.setPosition(pos);
@@ -214,7 +217,7 @@ public class DummyGame implements IGameLogic {
 
         soundMgr.setListener(new SoundListener(new Vector3f()));
 
-        sourceBack.play();
+//        sourceBack.play();
     }
 
     private void setupLights() {
@@ -226,7 +229,7 @@ public class DummyGame implements IGameLogic {
         sceneLight.setSkyBoxLight(new Vector3f(1.0f, 1.0f, 1.0f));
 
         // Directional Light
-        float lightIntensity = 1.0f;
+        float lightIntensity = 1.f;
         Vector3f lightDirection = new Vector3f(0, 1, 1);
         DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), lightDirection, lightIntensity);
         directionalLight.setShadowPosMult(10);
@@ -267,17 +270,18 @@ public class DummyGame implements IGameLogic {
     @Override
     public void update(float interval, MouseInput mouseInput, Window window) {
         if (mouseInput.isRightButtonPressed()) {
-            // Update camera based on mouse            
+            // Update camera based on mouse
             Vector2f rotVec = mouseInput.getDisplVec();
+//            Vector2f rotVec = new Vector2f();
             camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
         }
 
-        // Update camera position
+//         Update camera position
         Vector3f prevPos = new Vector3f(camera.getPosition());
         camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
-        // Check if there has been a collision. If true, set the y position to
-        // the maximum height
-        float height = terrain != null ? terrain.getHeight(camera.getPosition()) : -Float.MAX_VALUE;
+//         Check if there has been a collision. If true, set the y position to
+//         the maximum height
+        float height = 0;
         if (camera.getPosition().y <= height) {
             camera.setPosition(prevPos.x, prevPos.y, prevPos.z);
         }

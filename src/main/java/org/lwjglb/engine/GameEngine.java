@@ -2,6 +2,8 @@ package org.lwjglb.engine;
 
 import org.lwjglb.engine.sound.SoundManager;
 
+import static org.lwjgl.opengl.GL11.glClearColor;
+
 public class GameEngine implements Runnable {
 
     public static final int TARGET_FPS = 75;
@@ -53,6 +55,7 @@ public class GameEngine implements Runnable {
         gameLogic.init(window);
         lastFps = timer.getTime();
         fps = 0;
+        glClearColor(	1, 1, 1, 1);
     }
 
     protected void gameLoop() {

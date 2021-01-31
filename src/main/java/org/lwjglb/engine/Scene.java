@@ -1,15 +1,15 @@
 package org.lwjglb.engine;
 
-import org.lwjglb.engine.items.SkyBox;
+import org.lwjglb.engine.graph.InstancedMesh;
+import org.lwjglb.engine.graph.Mesh;
+import org.lwjglb.engine.graph.particles.IParticleEmitter;
 import org.lwjglb.engine.items.GameItem;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.lwjglb.engine.graph.InstancedMesh;
-import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.particles.IParticleEmitter;
-import org.lwjglb.engine.graph.weather.Fog;
+//import org.lwjglb.engine.graph.weather.Fog;
 
 public class Scene {
 
@@ -17,20 +17,20 @@ public class Scene {
 
     private final Map<InstancedMesh, List<GameItem>> instancedMeshMap;
 
-    private SkyBox skyBox;
+//    private SkyBox skyBox;
 
     private SceneLight sceneLight;
 
-    private Fog fog;
+//    private Fog fog;
 
     private boolean renderShadows;
-    
+
     private IParticleEmitter[] particleEmitters;
 
     public Scene() {
         meshMap = new HashMap();
         instancedMeshMap = new HashMap();
-        fog = Fog.NOFOG;
+//        fog = Fog.NOFOG;
         renderShadows = true;
     }
 
@@ -58,7 +58,7 @@ public class Scene {
                 if (list == null) {
                     list = new ArrayList<>();
                     if (instancedMesh) {
-                        instancedMeshMap.put((InstancedMesh)mesh, list);
+                        instancedMeshMap.put((InstancedMesh) mesh, list);
                     } else {
                         meshMap.put(mesh, list);
                     }
@@ -82,17 +82,17 @@ public class Scene {
         }
     }
 
-    public SkyBox getSkyBox() {
-        return skyBox;
-    }
+//    public SkyBox getSkyBox() {
+//        return skyBox;
+//    }
 
     public void setRenderShadows(boolean renderShadows) {
         this.renderShadows = renderShadows;
     }
 
-    public void setSkyBox(SkyBox skyBox) {
-        this.skyBox = skyBox;
-    }
+//    public void setSkyBox(SkyBox skyBox) {
+//        this.skyBox = skyBox;
+//    }
 
     public SceneLight getSceneLight() {
         return sceneLight;
@@ -102,19 +102,19 @@ public class Scene {
         this.sceneLight = sceneLight;
     }
 
-    /**
-     * @return the fog
-     */
-    public Fog getFog() {
-        return fog;
-    }
-
-    /**
-     * @param fog the fog to set
-     */
-    public void setFog(Fog fog) {
-        this.fog = fog;
-    }
+//    /**
+//     * @return the fog
+//     */
+//    public Fog getFog() {
+//        return fog;
+//    }
+//
+//    /**
+//     * @param fog the fog to set
+//     */
+//    public void setFog(Fog fog) {
+//        this.fog = fog;
+//    }
 
     public IParticleEmitter[] getParticleEmitters() {
         return particleEmitters;

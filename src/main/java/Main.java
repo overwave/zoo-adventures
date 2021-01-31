@@ -13,6 +13,7 @@ public class Main {
             opts.cullFace = true;
             opts.showFps = true;
             opts.compatibleProfile = true;
+//            opts.showTriangles = true;
             opts.antialiasing = true;
             GameEngine gameEng = new GameEngine("GAME", vSync, opts, gameLogic);
             gameEng.run();
