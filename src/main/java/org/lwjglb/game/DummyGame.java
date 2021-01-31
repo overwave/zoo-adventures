@@ -109,11 +109,11 @@ public class DummyGame implements IGameLogic {
 
         int width = 10;
         int height = 10;
-        int instances = 1;
+        int instances = 100;
 //        int instances = height * width;
 
 
-        Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube/c.obj", "models\\cube/");
+        Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube2/c.obj", "models\\cube2/");
 //        Mesh[] houseMesh = StaticMeshesLoader.load("/src\\main\\resources\\models\\cube/c.obj", "");
 //        Mesh[] houseMesh = StaticMeshesLoader.load("C:\\Users\\overw\\IdeaProjects\\lwjglbook\\chapter27\\c27-p1\\src\\main\\resources\\models/cube/c.obj", "");
 
@@ -124,8 +124,8 @@ public class DummyGame implements IGameLogic {
         gameItems = new GameItem[instances];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (i!=j) continue;
-                if (i!=4) continue;
+//                if (i!=j) continue;
+//                if (i!=4) continue;
                 GameItem gameItem = new GameItem(mesh);
                 gameItem.setScale(1);
 //                int rgb = HeightMapMesh.getRGB(i, j, width, buf);
@@ -133,8 +133,8 @@ public class DummyGame implements IGameLogic {
                 gameItem.setPosition(j, 0, i);
                 int textPos = Math.random() > 0.5f ? 0 : 1;
                 gameItem.setTextPos(textPos);
-                gameItems[0] = gameItem;
-//                gameItems[i * width + j] = gameItem;
+//                gameItems[0] = gameItem;
+                gameItems[i * width + j] = gameItem;
 
                 posx += inc;
             }

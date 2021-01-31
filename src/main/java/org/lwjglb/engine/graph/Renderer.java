@@ -74,7 +74,7 @@ public class Renderer {
         renderParticles(window, camera, scene);
 
 //        renderAxes(window, camera);
-//        renderCrossHair(window);
+        renderCrossHair(window);
     }
 
     private void setupParticlesShader() throws Exception {
