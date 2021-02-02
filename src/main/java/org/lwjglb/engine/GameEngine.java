@@ -110,7 +110,7 @@ public class GameEngine implements Runnable {
     protected void render() {
         if ( window.getWindowOptions().showFps && timer.getLastLoopTime() - lastFps > 1 ) {
             lastFps = timer.getLastLoopTime();
-            window.setWindowTitle(windowTitle + " - " + fps + " FPS");
+//            window.setWindowTitle(windowTitle + " - " + fps + " FPS");
             fps = 0;
         }
         fps++;

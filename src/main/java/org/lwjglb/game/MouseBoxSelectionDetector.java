@@ -4,6 +4,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.joml.primitives.Intersectionf;
+import org.joml.primitives.Planef;
+import org.joml.primitives.Rayf;
 import org.lwjglb.engine.Window;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
@@ -49,6 +52,13 @@ public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
         tmpVec.mul(invViewMatrix);
         
         mouseDir.set(tmpVec.x, tmpVec.y, tmpVec.z);
+
+        Rayf clickRay = new Rayf(camera.getPosition(), mouseDir);
+        Planef boxesSurface = new Planef(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0)); // point is at 0, 1, 0; normal is looking to camera (to +Y)
+        float length = Intersectionf.intersectRayPlane(clickRay, boxesSurface, 0.0001f); // should be 16
+        Vector3f point = new Vector3f(camera.getPosition()).add(mouseDir.mul(length));
+
+        window.setWindowTitle("[" + (int)point.x + "/" + (int)point.z + "]");
 
         return selectGameItem(gameItems, camera.getPosition(), mouseDir);
     }
