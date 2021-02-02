@@ -113,7 +113,7 @@ public class DummyGame implements IGameLogic {
 //        int instances = height * width;
 
 
-        Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube2/c3.obj", "models\\cube2/");
+        Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube2/c4.obj", "models\\cube2/");
 //        Mesh[] houseMesh = StaticMeshesLoader.load("/src\\main\\resources\\models\\cube/c.obj", "");
 //        Mesh[] houseMesh = StaticMeshesLoader.load("C:\\Users\\overw\\IdeaProjects\\lwjglbook\\chapter27\\c27-p1\\src\\main\\resources\\models/cube/c.obj", "");
 

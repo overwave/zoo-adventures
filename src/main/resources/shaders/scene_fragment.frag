@@ -47,6 +47,7 @@ struct Material
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
+    vec4 backColor;
     int hasTexture;
     int hasNormalMap;
     float reflectance;
@@ -80,6 +81,8 @@ void setupColours(Material material, vec2 textCoord)
     if (material.hasTexture == 1)
     {
         ambientC = texture(texture_sampler, textCoord);
+        ambientC.rgb = mix(material.backColor.rgb, ambientC.rgb, ambientC.a);
+        ambientC.a = material.backColor.a;
         diffuseC = ambientC;
         speculrC = ambientC;
     }

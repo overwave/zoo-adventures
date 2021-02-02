@@ -54,7 +54,8 @@ public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
         mouseDir.set(tmpVec.x, tmpVec.y, tmpVec.z);
 
         Rayf clickRay = new Rayf(camera.getPosition(), mouseDir);
-        Planef boxesSurface = new Planef(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0)); // point is at 0, 1, 0; normal is looking to camera (to +Y)
+        // point is at 0, 1, 0; normal is looking to camera (to +Y)
+        Planef boxesSurface = new Planef(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0));
         float length = Intersectionf.intersectRayPlane(clickRay, boxesSurface, 0.0001f); // should be 16
         Vector3f point = new Vector3f(camera.getPosition()).add(mouseDir.mul(length));
 
