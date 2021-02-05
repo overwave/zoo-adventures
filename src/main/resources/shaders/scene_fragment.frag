@@ -76,12 +76,20 @@ vec4 ambientC;
 vec4 diffuseC;
 vec4 speculrC;
 
+float rand(vec2 co) {
+    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 void setupColours(Material material, vec2 textCoord)
 {
     if (material.hasTexture == 1)
     {
+        float noise = 1.0 - rand(round(textCoord * 50)) / 10.0;
+
         ambientC = texture(texture_sampler, textCoord);
-        ambientC.rgb = mix(material.backColor.rgb, ambientC.rgb, ambientC.a);
+//        ambientC.rgb = ambientC.rgb;
+        ambientC.rgb = mix(noise * material.backColor.rgb, ambientC.rgb, ambientC.a);
+
         ambientC.a = material.backColor.a;
         diffuseC = ambientC;
         speculrC = ambientC;
