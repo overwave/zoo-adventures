@@ -11,6 +11,8 @@ import org.lwjglb.engine.Window;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
 
+import java.time.Instant;
+
 public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
 
     private final Matrix4f invProjectionMatrix;
@@ -52,6 +54,12 @@ public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
         tmpVec.mul(invViewMatrix);
         
         mouseDir.set(tmpVec.x, tmpVec.y, tmpVec.z);
+
+        final String SEARCH_BY_LOGIN_TIME =
+                "SELECT profile.username, profile.lastLoginAt " +
+                        "FROM accounts WHERE profile.lastLoginAt >= \"%s\" AND profile.lastLoginAt <= \"%s\"";
+
+        String query = String.format(SEARCH_BY_LOGIN_TIME, Instant.now(), Instant.now());
 
         Rayf clickRay = new Rayf(camera.getPosition(), mouseDir);
         // point is at 0, 1, 0; normal is looking to camera (to +Y)
