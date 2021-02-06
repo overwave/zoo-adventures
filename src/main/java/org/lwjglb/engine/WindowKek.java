@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Window {
+public class WindowKek {
 
     /**
      * Field of View in Radians
@@ -35,13 +35,13 @@ public class Window {
 
     private Matrix4f projectionMatrix;
 
-    public Window(String title, int width, int height, boolean vSync, WindowOptions opts) {
+    public WindowKek(String title, int width, int height) {
         this.title = title;
         this.width = width;
         this.height = height;
-        this.vSync = vSync;
+        this.vSync = true;
         this.resized = false;
-        this.opts = opts;
+        this.opts = new WindowOptions();
         projectionMatrix = new Matrix4f();
     }
 
@@ -232,14 +232,14 @@ public class Window {
     
     public static class WindowOptions {
 
-        public boolean cullFace;
+        public boolean cullFace = true;
 
-        public boolean showTriangles;
+        public boolean showTriangles = false;
 
-        public boolean showFps;
+        public boolean showFps = false;
 
-        public boolean compatibleProfile;
+        public boolean compatibleProfile = true;
 
-        public boolean antialiasing;
+        public boolean antialiasing = true;
     }
 }

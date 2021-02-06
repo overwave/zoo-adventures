@@ -6,7 +6,7 @@ import org.joml.Vector4f;
 import org.lwjglb.engine.Scene;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.Utils;
-import org.lwjglb.engine.Window;
+import org.lwjglb.engine.WindowKek;
 import org.lwjglb.engine.graph.anim.AnimGameItem;
 import org.lwjglb.engine.graph.anim.AnimatedFrame;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
@@ -49,7 +49,7 @@ public class Renderer {
         specularPower = 10f;
     }
 
-    public void init(Window window) throws Exception {
+    public void init(WindowKek windowKek) throws Exception {
         shadowMap = new ShadowMap();
 
         setupDepthShader();
@@ -58,23 +58,23 @@ public class Renderer {
         setupParticlesShader();
     }
 
-    public void render(Window window, Camera camera, Scene scene) {
+    public void render(WindowKek windowKek, Camera camera, Scene scene) {
         clear();
 
         // Render depth map before view ports has been set up
-        renderDepthMap(window, camera, scene);
+        renderDepthMap(windowKek, camera, scene);
 
-        glViewport(0, 0, window.getWidth(), window.getHeight());
+        glViewport(0, 0, windowKek.getWidth(), windowKek.getHeight());
 
         // Update projection matrix once per render cycle
-        window.updateProjectionMatrix();
+        windowKek.updateProjectionMatrix();
 
-        renderScene(window, camera, scene);
+        renderScene(windowKek, camera, scene);
 //        renderSkyBox(window, camera, scene);
-        renderParticles(window, camera, scene);
+        renderParticles(windowKek, camera, scene);
 
 //        renderAxes(window, camera);
-        renderCrossHair(window);
+        renderCrossHair(windowKek);
     }
 
     private void setupParticlesShader() throws Exception {
@@ -159,11 +159,11 @@ public class Renderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
-    private void renderParticles(Window window, Camera camera, Scene scene) {
+    private void renderParticles(WindowKek windowKek, Camera camera, Scene scene) {
         particlesShaderProgram.bind();
 
         particlesShaderProgram.setUniform("texture_sampler", 0);
-        Matrix4f projectionMatrix = window.getProjectionMatrix();
+        Matrix4f projectionMatrix = windowKek.getProjectionMatrix();
         particlesShaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
         Matrix4f viewMatrix = camera.getViewMatrix();
@@ -190,7 +190,7 @@ public class Renderer {
         particlesShaderProgram.unbind();
     }
 
-    private void renderDepthMap(Window window, Camera camera, Scene scene) {
+    private void renderDepthMap(WindowKek windowKek, Camera camera, Scene scene) {
         if (scene.isRenderShadows()) {
             // Setup view port to match the texture size
             glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
@@ -254,10 +254,10 @@ public class Renderer {
 //        }
 //    }
 
-    public void renderScene(Window window, Camera camera, Scene scene) {
+    public void renderScene(WindowKek windowKek, Camera camera, Scene scene) {
         sceneShaderProgram.bind();
 
-        Matrix4f projectionMatrix = window.getProjectionMatrix();
+        Matrix4f projectionMatrix = windowKek.getProjectionMatrix();
         sceneShaderProgram.setUniform("projectionMatrix", projectionMatrix);
         Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
         sceneShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
@@ -387,8 +387,8 @@ public class Renderer {
         sceneShaderProgram.setUniform("directionalLight", currDirLight);
     }
 
-    private void renderCrossHair(Window window) {
-        if (window.getWindowOptions().compatibleProfile) {
+    private void renderCrossHair(WindowKek windowKek) {
+        if (windowKek.getWindowOptions().compatibleProfile) {
             glPushMatrix();
             glLoadIdentity();
 
@@ -419,8 +419,8 @@ public class Renderer {
      *
      * @param camera
      */
-    private void renderAxes(Window window, Camera camera) {
-        Window.WindowOptions opts = window.getWindowOptions();
+    private void renderAxes(WindowKek windowKek, Camera camera) {
+        WindowKek.WindowOptions opts = windowKek.getWindowOptions();
         if (opts.compatibleProfile) {
             glPushMatrix();
             glLoadIdentity();

@@ -7,7 +7,7 @@ import org.joml.Vector4f;
 import org.joml.primitives.Intersectionf;
 import org.joml.primitives.Planef;
 import org.joml.primitives.Rayf;
-import org.lwjglb.engine.Window;
+import org.lwjglb.engine.WindowKek;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
 
@@ -31,16 +31,16 @@ public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
         tmpVec = new Vector4f();
     }
     
-    public boolean selectGameItem(GameItem[] gameItems, Window window, Vector2d mousePos, Camera camera) {
+    public boolean selectGameItem(GameItem[] gameItems, WindowKek windowKek, Vector2d mousePos, Camera camera) {
         // Transform mouse coordinates into normalized spaze [-1, 1]
-        int wdwWitdh = window.getWidth();
-        int wdwHeight = window.getHeight();
+        int wdwWitdh = windowKek.getWidth();
+        int wdwHeight = windowKek.getHeight();
         
         float x = (float)(2 * mousePos.x) / (float)wdwWitdh - 1.0f;
         float y = 1.0f - (float)(2 * mousePos.y) / (float)wdwHeight;
         float z = -1.0f;
 
-        invProjectionMatrix.set(window.getProjectionMatrix());
+        invProjectionMatrix.set(windowKek.getProjectionMatrix());
         invProjectionMatrix.invert();
         
         tmpVec.set(x, y, z, 1.0f);
@@ -67,7 +67,7 @@ public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
         float length = Intersectionf.intersectRayPlane(clickRay, boxesSurface, 0.0001f); // should be 16
         Vector3f point = new Vector3f(camera.getPosition()).add(mouseDir.mul(length));
 
-        window.setWindowTitle("[" + (int)point.x + "/" + (int)point.z + "]");
+        windowKek.setWindowTitle("[" + (int)point.x + "/" + (int)point.z + "]");
 
         return selectGameItem(gameItems, camera.getPosition(), mouseDir);
     }

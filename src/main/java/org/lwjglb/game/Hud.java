@@ -9,11 +9,11 @@ import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import org.lwjgl.nanovg.NVGColor;
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
-import static org.lwjgl.opengl.GL11.*;
+
 import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import org.lwjglb.engine.Utils;
-import org.lwjglb.engine.Window;
+import org.lwjglb.engine.WindowKek;
 
 public class Hud {
 
@@ -33,8 +33,8 @@ public class Hud {
 
     private int counter;
 
-    public void init(Window window) throws Exception {
-        this.vg = window.getOptions().antialiasing ? nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES) : nvgCreate(NVG_STENCIL_STROKES);
+    public void init(WindowKek windowKek) throws Exception {
+        this.vg = windowKek.getOptions().antialiasing ? nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES) : nvgCreate(NVG_STENCIL_STROKES);
         if (this.vg == NULL) {
             throw new Exception("Could not init nanovg");
         }
@@ -52,24 +52,24 @@ public class Hud {
         counter = 0;
     }
 
-    public void render(Window window) {
-        nvgBeginFrame(vg, window.getWidth(), window.getHeight(), 1);
+    public void render(WindowKek windowKek) {
+        nvgBeginFrame(vg, windowKek.getWidth(), windowKek.getHeight(), 1);
 
         // Upper ribbon
         nvgBeginPath(vg);
-        nvgRect(vg, 0, window.getHeight() - 100, window.getWidth(), 50);
+        nvgRect(vg, 0, windowKek.getHeight() - 100, windowKek.getWidth(), 50);
         nvgFillColor(vg, rgba(0x23, 0xa1, 0xf1, 200, colour));
         nvgFill(vg);
 
         // Lower ribbon
         nvgBeginPath(vg);
-        nvgRect(vg, 0, window.getHeight() - 50, window.getWidth(), 10);
+        nvgRect(vg, 0, windowKek.getHeight() - 50, windowKek.getWidth(), 10);
         nvgFillColor(vg, rgba(0xc1, 0xe3, 0xf9, 200, colour));
         nvgFill(vg);
 
-        glfwGetCursorPos(window.getWindowHandle(), posx, posy);
+        glfwGetCursorPos(windowKek.getWindowHandle(), posx, posy);
         int xcenter = 50;
-        int ycenter = window.getHeight() - 75;
+        int ycenter = windowKek.getHeight() - 75;
         int radius = 20;
         int x = (int) posx.get(0);
         int y = (int) posy.get(0);
@@ -91,19 +91,19 @@ public class Hud {
             nvgFillColor(vg, rgba(0x23, 0xa1, 0xf1, 255, colour));
 
         }
-        nvgText(vg, 50, window.getHeight() - 87, String.format("%02d", counter));
+        nvgText(vg, 50, windowKek.getHeight() - 87, String.format("%02d", counter));
 
         // Render hour text
         nvgFontSize(vg, 40.0f);
         nvgFontFace(vg, FONT_NAME);
         nvgTextAlign(vg, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
         nvgFillColor(vg, rgba(0xe6, 0xea, 0xed, 255, colour));
-        nvgText(vg, window.getWidth() - 150, window.getHeight() - 95, dateFormat.format(new Date()));
+        nvgText(vg, windowKek.getWidth() - 150, windowKek.getHeight() - 95, dateFormat.format(new Date()));
 
         nvgEndFrame(vg);
 
         // Restore state
-        window.restoreState();
+        windowKek.restoreState();
     }
 
     public void incCounter() {

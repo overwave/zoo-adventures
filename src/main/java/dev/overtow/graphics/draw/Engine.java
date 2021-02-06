@@ -1,10 +1,13 @@
-package org.lwjglb.game;
+package dev.overtow.graphics.draw;
 
+import dev.overtow.service.Window;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL11;
 import org.lwjglb.engine.*;
-import org.lwjglb.engine.graph.*;
+import org.lwjglb.engine.graph.Camera;
+import org.lwjglb.engine.graph.Mesh;
+import org.lwjglb.engine.graph.Renderer;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
 import org.lwjglb.engine.items.GameItem;
 import org.lwjglb.engine.loaders.newloader.StaticMeshesLoader;
@@ -12,10 +15,14 @@ import org.lwjglb.engine.sound.SoundBuffer;
 import org.lwjglb.engine.sound.SoundListener;
 import org.lwjglb.engine.sound.SoundManager;
 import org.lwjglb.engine.sound.SoundSource;
+import org.lwjglb.game.Hud;
+import org.lwjglb.game.MouseBoxSelectionDetector;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glClearColor;
 
-public class DummyGame implements IGameLogic {
+public class Engine {
+    private final Window window;
 
     private static final float MOUSE_SENSITIVITY = 0.2f;
 
@@ -45,15 +52,27 @@ public class DummyGame implements IGameLogic {
 
     private boolean leftButtonPressed;
 
-    private enum Sounds {
-        MUSIC, BEEP, FIRE
-    }
+    public static final int TARGET_FPS = 75;
 
-    ;
+    public static final int TARGET_UPS = 30;
+
+    private final WindowKek windowKek;
+
+    private final Timer timer;
+
+    private final MouseInput mouseInput;
+
+    private double lastFps;
+
+    private int fps;
+
+    private String windowTitle;
 
     private GameItem[] gameItems;
 
-    public DummyGame() {
+    public Engine() {
+        window = Injector.getInstance(Window.class);
+
         renderer = new Renderer();
         hud = new Hud();
         soundMgr = new SoundManager();
@@ -61,12 +80,190 @@ public class DummyGame implements IGameLogic {
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
         angleInc = 0;
         lightAngle = 45;
+        new WindowKek.WindowOptions();
+        this.windowTitle = window.getTitle();
+        windowKek = new WindowKek(windowTitle, 1600, 900);
+        mouseInput = new MouseInput();
+        timer = new Timer();
     }
 
-    @Override
-    public void init(Window window) throws Exception {
-        hud.init(window);
-        renderer.init(window);
+    public void start() {
+        try {
+            init();
+            gameLoop();
+        } catch (Exception excp) {
+            excp.printStackTrace();
+        } finally {
+            cleanup();
+        }
+    }
+
+    protected void cleanup() {
+        renderer.cleanup();
+        soundMgr.cleanup();
+
+        scene.cleanup();
+        if (hud != null) {
+            hud.cleanup();
+        }
+    }
+
+    private void gameLoop() {
+
+        float elapsedTime;
+        float accumulator = 0f;
+        float interval = 1f / TARGET_UPS;
+
+        boolean running = true;
+        while (running && !windowKek.windowShouldClose()) {
+            elapsedTime = timer.getElapsedTime();
+            accumulator += elapsedTime;
+
+            input();
+
+            while (accumulator >= interval) {
+                update(interval);
+                accumulator -= interval;
+            }
+
+            render();
+
+            if (!windowKek.isvSync()) {
+                sync();
+            }
+        }
+    }
+
+    private void sync() {
+        float loopSlot = 1f / TARGET_FPS;
+        double endTime = timer.getLastLoopTime() + loopSlot;
+        while (timer.getTime() < endTime) {
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ie) {
+            }
+        }
+    }
+
+    protected void input() {
+        mouseInput.input(windowKek);
+        input2(windowKek, mouseInput);
+    }
+
+    protected void update(float interval) {
+        update2(interval, mouseInput, windowKek);
+    }
+
+
+    public void input2(WindowKek windowKek, MouseInput mouseInput) {
+        cameraInc.set(0, 0, 0);
+        if (windowKek.isKeyPressed(GLFW_KEY_W)) {
+            cameraInc.z = -1;
+        } else if (windowKek.isKeyPressed(GLFW_KEY_S)) {
+            cameraInc.z = 1;
+        }
+        if (windowKek.isKeyPressed(GLFW_KEY_A)) {
+            cameraInc.x = -1;
+        } else if (windowKek.isKeyPressed(GLFW_KEY_D)) {
+            cameraInc.x = 1;
+        }
+        if (windowKek.isKeyPressed(GLFW_KEY_Z)) {
+            cameraInc.y = -1;
+        } else if (windowKek.isKeyPressed(GLFW_KEY_X)) {
+            cameraInc.y = 1;
+        }
+        if (windowKek.isKeyPressed(GLFW_KEY_LEFT)) {
+            angleInc -= 0.05f;
+            soundMgr.playSoundSource(Sounds.BEEP.toString());
+        } else if (windowKek.isKeyPressed(GLFW_KEY_RIGHT)) {
+            angleInc += 0.05f;
+            soundMgr.playSoundSource(Sounds.BEEP.toString());
+        } else {
+            angleInc = 0;
+        }
+
+    }
+
+    public void update2(float interval, MouseInput mouseInput, WindowKek windowKek) {
+        if (mouseInput.isRightButtonPressed()) {
+            // Update camera based on mouse
+            Vector2f rotVec = mouseInput.getDisplVec();
+//            Vector2f rotVec = new Vector2f();
+            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
+        }
+
+//         Update camera position
+        Vector3f prevPos = new Vector3f(camera.getPosition());
+        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+//         Check if there has been a collision. If true, set the y position to
+//         the maximum height
+        float height = 0;
+        if (camera.getPosition().y <= height) {
+            camera.setPosition(prevPos.x, prevPos.y, prevPos.z);
+        }
+
+        lightAngle += angleInc;
+        if (lightAngle < 0) {
+            lightAngle = 0;
+        } else if (lightAngle > 180) {
+            lightAngle = 180;
+        }
+        float zValue = (float) Math.cos(Math.toRadians(lightAngle));
+        float yValue = (float) Math.sin(Math.toRadians(lightAngle));
+        Vector3f lightDirection = this.scene.getSceneLight().getDirectionalLight().getDirection();
+        lightDirection.x = 0;
+        lightDirection.y = yValue;
+        lightDirection.z = zValue;
+        lightDirection.normalize();
+
+//        particleEmitter.update((long) (interval * 1000));
+
+        // Update view matrix
+        camera.updateViewMatrix();
+
+        // Update sound listener position;
+        soundMgr.updateListenerPosition(camera);
+
+        boolean aux = mouseInput.isLeftButtonPressed();
+        if (aux && !this.leftButtonPressed && this.selectDetector.selectGameItem(gameItems, windowKek, mouseInput.getCurrentPos(), camera)) {
+            this.hud.incCounter();
+        }
+        this.leftButtonPressed = aux;
+    }
+
+    protected void render() {
+        if (windowKek.getWindowOptions().showFps && timer.getLastLoopTime() - lastFps > 1) {
+            lastFps = timer.getLastLoopTime();
+//            window.setWindowTitle(windowTitle + " - " + fps + " FPS");
+            fps = 0;
+        }
+        fps++;
+        render2(windowKek);
+        windowKek.update();
+    }
+
+    public void render2(WindowKek windowKek) {
+        renderer.render(windowKek, camera, scene);
+        hud.render(windowKek);
+    }
+
+    private void init() {
+        windowKek.init();
+        timer.init();
+        mouseInput.init(windowKek);
+        try {
+            init2(windowKek);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        lastFps = timer.getTime();
+        fps = 0;
+        glClearColor(1, 1, 1, 1);
+    }
+
+    public void init2(WindowKek windowKek) throws Exception {
+        hud.init(windowKek);
+        renderer.init(windowKek);
         soundMgr.init();
 
         leftButtonPressed = false;
@@ -193,6 +390,10 @@ public class DummyGame implements IGameLogic {
         setupSounds();
     }
 
+    private enum Sounds {
+        MUSIC, BEEP, FIRE
+    }
+
     private void setupSounds() throws Exception {
 //        SoundBuffer buffBack = new SoundBuffer("/sounds/background.ogg");
 //        soundMgr.addSoundBuffer(buffBack);
@@ -237,98 +438,4 @@ public class DummyGame implements IGameLogic {
         sceneLight.setDirectionalLight(directionalLight);
     }
 
-    @Override
-    public void input(Window window, MouseInput mouseInput) {
-        cameraInc.set(0, 0, 0);
-        if (window.isKeyPressed(GLFW_KEY_W)) {
-            cameraInc.z = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_S)) {
-            cameraInc.z = 1;
-        }
-        if (window.isKeyPressed(GLFW_KEY_A)) {
-            cameraInc.x = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_D)) {
-            cameraInc.x = 1;
-        }
-        if (window.isKeyPressed(GLFW_KEY_Z)) {
-            cameraInc.y = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_X)) {
-            cameraInc.y = 1;
-        }
-        if (window.isKeyPressed(GLFW_KEY_LEFT)) {
-            angleInc -= 0.05f;
-            soundMgr.playSoundSource(Sounds.BEEP.toString());
-        } else if (window.isKeyPressed(GLFW_KEY_RIGHT)) {
-            angleInc += 0.05f;
-            soundMgr.playSoundSource(Sounds.BEEP.toString());
-        } else {
-            angleInc = 0;
-        }
-
-    }
-
-    @Override
-    public void update(float interval, MouseInput mouseInput, Window window) {
-        if (mouseInput.isRightButtonPressed()) {
-            // Update camera based on mouse
-            Vector2f rotVec = mouseInput.getDisplVec();
-//            Vector2f rotVec = new Vector2f();
-            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
-        }
-
-//         Update camera position
-        Vector3f prevPos = new Vector3f(camera.getPosition());
-        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
-//         Check if there has been a collision. If true, set the y position to
-//         the maximum height
-        float height = 0;
-        if (camera.getPosition().y <= height) {
-            camera.setPosition(prevPos.x, prevPos.y, prevPos.z);
-        }
-
-        lightAngle += angleInc;
-        if (lightAngle < 0) {
-            lightAngle = 0;
-        } else if (lightAngle > 180) {
-            lightAngle = 180;
-        }
-        float zValue = (float) Math.cos(Math.toRadians(lightAngle));
-        float yValue = (float) Math.sin(Math.toRadians(lightAngle));
-        Vector3f lightDirection = this.scene.getSceneLight().getDirectionalLight().getDirection();
-        lightDirection.x = 0;
-        lightDirection.y = yValue;
-        lightDirection.z = zValue;
-        lightDirection.normalize();
-
-//        particleEmitter.update((long) (interval * 1000));
-
-        // Update view matrix
-        camera.updateViewMatrix();
-
-        // Update sound listener position;
-        soundMgr.updateListenerPosition(camera);
-
-        boolean aux = mouseInput.isLeftButtonPressed();
-        if (aux && !this.leftButtonPressed && this.selectDetector.selectGameItem(gameItems, window, mouseInput.getCurrentPos(), camera)) {
-            this.hud.incCounter();
-        }
-        this.leftButtonPressed = aux;
-    }
-
-    @Override
-    public void render(Window window) {
-        renderer.render(window, camera, scene);
-        hud.render(window);
-    }
-
-    @Override
-    public void cleanup() {
-        renderer.cleanup();
-        soundMgr.cleanup();
-
-        scene.cleanup();
-        if (hud != null) {
-            hud.cleanup();
-        }
-    }
 }

@@ -24,15 +24,15 @@ public class MouseInput {
         displVec = new Vector2f();
     }
 
-    public void init(Window window) {
-        glfwSetCursorPosCallback(window.getWindowHandle(), (windowHandle, xpos, ypos) -> {
+    public void init(WindowKek windowKek) {
+        glfwSetCursorPosCallback(windowKek.getWindowHandle(), (windowHandle, xpos, ypos) -> {
             currentPos.x = xpos;
             currentPos.y = ypos;
         });
-        glfwSetCursorEnterCallback(window.getWindowHandle(), (windowHandle, entered) -> {
+        glfwSetCursorEnterCallback(windowKek.getWindowHandle(), (windowHandle, entered) -> {
             inWindow = entered;
         });
-        glfwSetMouseButtonCallback(window.getWindowHandle(), (windowHandle, button, action, mode) -> {
+        glfwSetMouseButtonCallback(windowKek.getWindowHandle(), (windowHandle, button, action, mode) -> {
             leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
             rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
         });
@@ -46,7 +46,7 @@ public class MouseInput {
         return currentPos;        
     }
     
-    public void input(Window window) {
+    public void input(WindowKek windowKek) {
         displVec.x = 0;
         displVec.y = 0;
         if (previousPos.x > 0 && previousPos.y > 0 && inWindow) {
