@@ -1,13 +1,12 @@
-package dev.overtow.graphics.draw;
+package dev.overtow.service;
 
-import dev.overtow.service.Window;
+import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL11;
 import org.lwjglb.engine.*;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.Renderer;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
 import org.lwjglb.engine.items.GameItem;
 import org.lwjglb.engine.loaders.newloader.StaticMeshesLoader;
@@ -21,7 +20,8 @@ import org.lwjglb.game.MouseBoxSelectionDetector;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
-public class Engine {
+@Bind
+public class EngineImpl implements Engine {
     private final Window window;
 
     private static final float MOUSE_SENSITIVITY = 0.2f;
@@ -39,8 +39,6 @@ public class Engine {
     private Hud hud;
 
     private static final float CAMERA_POS_STEP = 0.10f;
-
-//    private Terrain terrain;
 
     private float angleInc;
 
@@ -64,16 +62,14 @@ public class Engine {
 
     private double lastFps;
 
-    private int fps;
-
-    private String windowTitle;
-
     private GameItem[] gameItems;
+    /////////////////////////////////////
+    private final long startTime;
 
-    public Engine() {
-        window = Injector.getInstance(Window.class);
+    public EngineImpl(Window window, Renderer renderer) {
+        this.window = window;
 
-        renderer = new Renderer();
+        this.renderer = renderer;
         hud = new Hud();
         soundMgr = new SoundManager();
         camera = new Camera();
@@ -81,10 +77,11 @@ public class Engine {
         angleInc = 0;
         lightAngle = 45;
         new WindowKek.WindowOptions();
-        this.windowTitle = window.getTitle();
+        String windowTitle = window.getTitle();
         windowKek = new WindowKek(windowTitle, 1600, 900);
         mouseInput = new MouseInput();
         timer = new Timer();
+        startTime = System.nanoTime();
     }
 
     public void start() {
@@ -122,7 +119,7 @@ public class Engine {
             input();
 
             while (accumulator >= interval) {
-                update(interval);
+                update();
                 accumulator -= interval;
             }
 
@@ -147,15 +144,6 @@ public class Engine {
 
     protected void input() {
         mouseInput.input(windowKek);
-        input2(windowKek, mouseInput);
-    }
-
-    protected void update(float interval) {
-        update2(interval, mouseInput, windowKek);
-    }
-
-
-    public void input2(WindowKek windowKek, MouseInput mouseInput) {
         cameraInc.set(0, 0, 0);
         if (windowKek.isKeyPressed(GLFW_KEY_W)) {
             cameraInc.z = -1;
@@ -184,7 +172,7 @@ public class Engine {
 
     }
 
-    public void update2(float interval, MouseInput mouseInput, WindowKek windowKek) {
+    protected void update() {
         if (mouseInput.isRightButtonPressed()) {
             // Update camera based on mouse
             Vector2f rotVec = mouseInput.getDisplVec();
@@ -231,20 +219,17 @@ public class Engine {
         this.leftButtonPressed = aux;
     }
 
+
     protected void render() {
         if (windowKek.getWindowOptions().showFps && timer.getLastLoopTime() - lastFps > 1) {
             lastFps = timer.getLastLoopTime();
 //            window.setWindowTitle(windowTitle + " - " + fps + " FPS");
-            fps = 0;
+//            fps = 0;
         }
-        fps++;
-        render2(windowKek);
-        windowKek.update();
-    }
-
-    public void render2(WindowKek windowKek) {
+//        fps++;
         renderer.render(windowKek, camera, scene);
         hud.render(windowKek);
+        windowKek.update();
     }
 
     private void init() {
@@ -252,40 +237,30 @@ public class Engine {
         timer.init();
         mouseInput.init(windowKek);
         try {
-            init2(windowKek);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        lastFps = timer.getTime();
-        fps = 0;
-        glClearColor(1, 1, 1, 1);
-    }
+            hud.init(windowKek);
+            renderer.init();
+            soundMgr.init();
 
-    public void init2(WindowKek windowKek) throws Exception {
-        hud.init(windowKek);
-        renderer.init(windowKek);
-        soundMgr.init();
+            leftButtonPressed = false;
 
-        leftButtonPressed = false;
+            scene = new Scene();
 
-        scene = new Scene();
+            float reflectance = 1f;
 
-        float reflectance = 1f;
+            float blockScale = 0.5f;
+            float skyBoxScale = 100.0f;
+            float extension = 2.0f;
 
-        float blockScale = 0.5f;
-        float skyBoxScale = 100.0f;
-        float extension = 2.0f;
+            float startx = extension * (-skyBoxScale + blockScale);
+            float startz = extension * (skyBoxScale - blockScale);
+            float starty = -1.0f;
+            float inc = blockScale * 2;
 
-        float startx = extension * (-skyBoxScale + blockScale);
-        float startz = extension * (skyBoxScale - blockScale);
-        float starty = -1.0f;
-        float inc = blockScale * 2;
-
-        float posx = startx;
-        float posz = startz;
+            float posx = startx;
+            float posz = startz;
 //        float incy = 0.0f;
 
-        selectDetector = new MouseBoxSelectionDetector();
+            selectDetector = new MouseBoxSelectionDetector();
 
 //        ByteBuffer buf;
 //        int width;
@@ -304,50 +279,50 @@ public class Engine {
 //            height = h.get();
 //        }
 
-        int width = 10;
-        int height = 10;
-        int instances = 100;
+            int width = 10;
+            int height = 10;
+            int instances = 100;
 //        int instances = height * width;
 
 
-        Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube2/c8.obj", "models\\cube2/");
+            Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube2/c8.obj", "models\\cube2/");
 //        Mesh[] houseMesh = StaticMeshesLoader.load("/src\\main\\resources\\models\\cube/c.obj", "");
 //        Mesh[] houseMesh = StaticMeshesLoader.load("C:\\Users\\overw\\IdeaProjects\\lwjglbook\\chapter27\\c27-p1\\src\\main\\resources\\models/cube/c.obj", "");
 
-        Mesh mesh = houseMesh[0];
+            Mesh mesh = houseMesh[0];
 //        Texture texture = new Texture("textures/terrain_textures-2.png");
 //        Material material = new Material(texture, reflectance);
 //        mesh.setMaterial(material);
-        gameItems = new GameItem[instances];
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-//                if (i!=j) continue;
-//                if (i!=4) continue;
-                GameItem gameItem = new GameItem(mesh);
-                gameItem.setScale(1);
-//                int rgb = HeightMapMesh.getRGB(i, j, width, buf);
-//                incy = rgb / (10 * 255 * 255);
-                gameItem.setPosition(j, 0, i);
-                int textPos = Math.random() > 0.5f ? 0 : 1;
-                gameItem.setTextPos(textPos);
-//                gameItems[0] = gameItem;
-                gameItems[i * width + j] = gameItem;
+            gameItems = new GameItem[instances];
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+    //                if (i!=j) continue;
+    //                if (i!=4) continue;
+                    GameItem gameItem = new GameItem(mesh);
+                    gameItem.setScale(1);
+    //                int rgb = HeightMapMesh.getRGB(i, j, width, buf);
+    //                incy = rgb / (10 * 255 * 255);
+                    gameItem.setPosition(j, 0, i);
+                    int textPos = Math.random() > 0.5f ? 0 : 1;
+                    gameItem.setTextPos(textPos);
+    //                gameItems[0] = gameItem;
+                    gameItems[i * width + j] = gameItem;
 
-                posx += inc;
+                    posx += inc;
+                }
+                posx = startx;
+                posz -= inc;
             }
-            posx = startx;
-            posz -= inc;
-        }
-        scene.setGameItems(gameItems);
+            scene.setGameItems(gameItems);
 
-        // Particles
-        int maxParticles = 200;
-        Vector3f particleSpeed = new Vector3f(0, 1, 0);
-        particleSpeed.mul(2.5f);
-        long ttl = 4000;
-        long creationPeriodMillis = 300;
-        float range = 0.2f;
-        float scale = 1.0f;
+            // Particles
+//            int maxParticles = 200;
+//            Vector3f particleSpeed = new Vector3f(0, 1, 0);
+//            particleSpeed.mul(2.5f);
+//            long ttl = 4000;
+//            long creationPeriodMillis = 300;
+//            float range = 0.2f;
+//            float scale = 1.0f;
 //        Mesh partMesh = OBJLoader.loadMesh("/models/particle.obj", maxParticles);
 //        Texture particleTexture = new Texture("textures/particle_anim.png", 4, 4);
 //        Material partMaterial = new Material(particleTexture, reflectance);
@@ -361,20 +336,20 @@ public class Engine {
 //        particleEmitter.setAnimRange(10);
 //        this.scene.setParticleEmitters(new FlowParticleEmitter[]{particleEmitter});
 
-        // Shadows
-        scene.setRenderShadows(false);
+            // Shadows
+            scene.setRenderShadows(false);
 
-        // Fog
-        Vector3f fogColour = new Vector3f(0.5f, 0.5f, 0.5f);
+            // Fog
+            Vector3f fogColour = new Vector3f(0.5f, 0.5f, 0.5f);
 //        scene.setFog(new Fog(false, fogColour, 0.02f));
 
-        // Setup  SkyBox
+            // Setup  SkyBox
 //        SkyBox skyBox = new SkyBox("/models/skybox.obj", new Vector4f(0.65f, 0.65f, 0.65f, 1.0f));
 //        skyBox.setScale(skyBoxScale);
 //        scene.setSkyBox(skyBox);
 
-        // Setup Lights
-        setupLights();
+            // Setup Lights
+            setupLights();
 
 //        camera.getPosition().x = 0.25f;
 //        camera.getPosition().y = 6.5f;
@@ -384,10 +359,16 @@ public class Engine {
 
 //        stbi_image_free(buf);
 
-        // Sounds
-        this.soundMgr.init();
-        this.soundMgr.setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
-        setupSounds();
+            // Sounds
+            this.soundMgr.init();
+            this.soundMgr.setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
+            setupSounds();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        lastFps = timer.getTime();
+//        fps = 0;
+        glClearColor(1, 1, 1, 1);
     }
 
     private enum Sounds {

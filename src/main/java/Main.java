@@ -1,12 +1,12 @@
-import dev.overtow.graphics.draw.Engine;
-import dev.overtow.graphics.draw.Injector;
+import dev.overtow.service.Engine;
+import dev.overtow.util.injection.Injector;
 
 public class Main {
 
     public static void main(String[] args) {
         Injector.init();
 
-        Engine engine = new Engine();
+        Engine engine = Injector.getInstance(Engine.class);
 
         engine.start();
     }

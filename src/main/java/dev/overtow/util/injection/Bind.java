@@ -1,4 +1,4 @@
-package dev.overtow.graphics.draw;
+package dev.overtow.util.injection;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

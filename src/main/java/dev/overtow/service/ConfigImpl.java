@@ -1,6 +1,6 @@
 package dev.overtow.service;
 
-import dev.overtow.graphics.draw.Bind;
+import dev.overtow.util.injection.Bind;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;

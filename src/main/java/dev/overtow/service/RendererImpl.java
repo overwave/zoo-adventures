@@ -1,5 +1,6 @@
-package org.lwjglb.engine.graph;
+package dev.overtow.service;
 
+import dev.overtow.util.injection.Bind;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -7,6 +8,7 @@ import org.lwjglb.engine.Scene;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.Utils;
 import org.lwjglb.engine.WindowKek;
+import org.lwjglb.engine.graph.*;
 import org.lwjglb.engine.graph.anim.AnimGameItem;
 import org.lwjglb.engine.graph.anim.AnimatedFrame;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
@@ -24,7 +26,8 @@ import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
-public class Renderer {
+@Bind
+public class RendererImpl implements Renderer {
 
     private static final int MAX_POINT_LIGHTS = 5;
 
@@ -44,12 +47,12 @@ public class Renderer {
 
     private final float specularPower;
 
-    public Renderer() {
+    public RendererImpl() {
         transformation = new Transformation();
         specularPower = 10f;
     }
 
-    public void init(WindowKek windowKek) throws Exception {
+    public void init() throws Exception {
         shadowMap = new ShadowMap();
 
         setupDepthShader();

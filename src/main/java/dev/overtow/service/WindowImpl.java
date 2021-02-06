@@ -1,6 +1,6 @@
 package dev.overtow.service;
 
-import dev.overtow.graphics.draw.Bind;
+import dev.overtow.util.injection.Bind;
 import org.lwjglb.engine.WindowKek;
 
 @Bind

@@ -1,4 +1,4 @@
-package dev.overtow.graphics.draw;
+package dev.overtow.util.injection;
 
 import org.reflections.Reflections;
 
@@ -26,7 +26,7 @@ public class Injector {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getInstance(Class<? super T> interf) {
+    public static <T> T getInstance(Class<? extends T> interf) {
         Object o = servicesMap.get(interf);
         if (o != null) {
             return (T) o;
