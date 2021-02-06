@@ -97,7 +97,7 @@ public class StaticMeshesLoader {
         Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null, null, null);
         String textPath = path.dataString();
         Texture texture = null;
-        if (textPath != null && textPath.length() > 0) {
+        if (textPath.length() > 0) {
             TextureCache textCache = TextureCache.getInstance();
             String textureFile = "";
             if (texturesDir != null && texturesDir.length() > 0) {

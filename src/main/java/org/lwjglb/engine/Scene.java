@@ -2,7 +2,6 @@ package org.lwjglb.engine;
 
 import org.lwjglb.engine.graph.InstancedMesh;
 import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.particles.IParticleEmitter;
 import org.lwjglb.engine.items.GameItem;
 
 import java.util.ArrayList;
@@ -17,20 +16,13 @@ public class Scene {
 
     private final Map<InstancedMesh, List<GameItem>> instancedMeshMap;
 
-//    private SkyBox skyBox;
-
     private SceneLight sceneLight;
-
-//    private Fog fog;
 
     private boolean renderShadows;
 
-    private IParticleEmitter[] particleEmitters;
-
     public Scene() {
-        meshMap = new HashMap();
-        instancedMeshMap = new HashMap();
-//        fog = Fog.NOFOG;
+        meshMap = new HashMap<>();
+        instancedMeshMap = new HashMap<>();
         renderShadows = true;
     }
 
@@ -75,24 +67,11 @@ public class Scene {
         for (Mesh mesh : instancedMeshMap.keySet()) {
             mesh.cleanUp();
         }
-        if (particleEmitters != null) {
-            for (IParticleEmitter particleEmitter : particleEmitters) {
-                particleEmitter.cleanup();
-            }
-        }
     }
-
-//    public SkyBox getSkyBox() {
-//        return skyBox;
-//    }
 
     public void setRenderShadows(boolean renderShadows) {
         this.renderShadows = renderShadows;
     }
-
-//    public void setSkyBox(SkyBox skyBox) {
-//        this.skyBox = skyBox;
-//    }
 
     public SceneLight getSceneLight() {
         return sceneLight;
@@ -101,27 +80,4 @@ public class Scene {
     public void setSceneLight(SceneLight sceneLight) {
         this.sceneLight = sceneLight;
     }
-
-//    /**
-//     * @return the fog
-//     */
-//    public Fog getFog() {
-//        return fog;
-//    }
-//
-//    /**
-//     * @param fog the fog to set
-//     */
-//    public void setFog(Fog fog) {
-//        this.fog = fog;
-//    }
-
-    public IParticleEmitter[] getParticleEmitters() {
-        return particleEmitters;
-    }
-
-    public void setParticleEmitters(IParticleEmitter[] particleEmitters) {
-        this.particleEmitters = particleEmitters;
-    }
-
 }

@@ -13,7 +13,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 import org.lwjgl.BufferUtils;
+
 import static org.lwjgl.BufferUtils.*;
 
 public class Utils {
@@ -39,8 +41,7 @@ public class Utils {
     }
 
     public static int[] listIntToArray(List<Integer> list) {
-        int[] result = list.stream().mapToInt((Integer v) -> v).toArray();
-        return result;
+        return list.stream().mapToInt((Integer v) -> v).toArray();
     }
 
     public static float[] listToArray(List<Float> list) {
@@ -63,16 +64,11 @@ public class Utils {
     }
 
     public static ByteBuffer ioResourceToByteBufferBetter(String resource, int bufferSize) throws IOException {
-        String current = new java.io.File( "." ).getCanonicalPath();
-        System.out.println("Current dir:"+current);
+//        String current = new java.io.File( "." ).getCanonicalPath();
+//        System.out.println("Current resource:"+resource);
 
         ByteBuffer buffer;
-//        URL url = Thread.currentThread().getContextClassLoader().getResource(resource);
-//        if (url == null)
-//            throw new IOException("Classpath resource not found: " + resource);
         File file = new File(resource);
-//        InputStream inputStream = new BufferedInputStream(new FileInputStream(resource));
-        FileInputStream fis2 = new FileInputStream(file);
         if (file.isFile()) {
             FileInputStream fis = new FileInputStream(file);
             FileChannel fc = fis.getChannel();
@@ -81,13 +77,10 @@ public class Utils {
             fis.close();
         } else {
             buffer = BufferUtils.createByteBuffer(bufferSize);
-            InputStream source = fis2;
-            if (source == null)
-                throw new FileNotFoundException(resource);
-            try {
+            try (InputStream fis2 = new FileInputStream(file)) {
                 byte[] buf = new byte[8192];
                 while (true) {
-                    int bytes = source.read(buf, 0, buf.length);
+                    int bytes = fis2.read(buf, 0, buf.length);
                     if (bytes == -1)
                         break;
                     if (buffer.remaining() < bytes)
@@ -95,12 +88,11 @@ public class Utils {
                     buffer.put(buf, 0, bytes);
                 }
                 buffer.flip();
-            } finally {
-                source.close();
             }
         }
         return buffer;
     }
+
     public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
 
@@ -111,9 +103,8 @@ public class Utils {
                 while (fc.read(buffer) != -1) ;
             }
         } else {
-            try (
-                    InputStream source = Utils.class.getResourceAsStream(resource);
-                    ReadableByteChannel rbc = Channels.newChannel(source)) {
+            try (InputStream source = Utils.class.getResourceAsStream(resource);
+                 ReadableByteChannel rbc = Channels.newChannel(source)) {
                 buffer = createByteBuffer(bufferSize);
 
                 while (true) {

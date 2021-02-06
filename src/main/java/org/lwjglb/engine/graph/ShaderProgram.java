@@ -21,8 +21,6 @@ public class ShaderProgram {
 
     private int fragmentShaderId;
 
-    private int geometryShaderId;
-
     private final Map<String, Integer> uniforms;
 
     public ShaderProgram() throws Exception {
@@ -219,9 +217,6 @@ public class ShaderProgram {
 
         if (vertexShaderId != 0) {
             glDetachShader(programId, vertexShaderId);
-        }
-        if (geometryShaderId != 0) {
-            glDetachShader(programId, geometryShaderId);
         }
         if (fragmentShaderId != 0) {
             glDetachShader(programId, fragmentShaderId);

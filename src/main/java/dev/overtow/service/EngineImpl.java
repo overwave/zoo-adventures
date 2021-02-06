@@ -4,7 +4,10 @@ import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL11;
-import org.lwjglb.engine.*;
+import org.lwjglb.engine.MouseInput;
+import org.lwjglb.engine.Scene;
+import org.lwjglb.engine.SceneLight;
+import org.lwjglb.engine.Timer;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.graph.Mesh;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
@@ -18,7 +21,6 @@ import org.lwjglb.game.Hud;
 import org.lwjglb.game.MouseBoxSelectionDetector;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.glClearColor;
 
 @Bind
 public class EngineImpl implements Engine {
@@ -44,21 +46,15 @@ public class EngineImpl implements Engine {
 
     private float lightAngle;
 
-//    private FlowParticleEmitter particleEmitter;
-
     private MouseBoxSelectionDetector selectDetector;
 
     private boolean leftButtonPressed;
-
-    public static final int TARGET_FPS = 75;
 
     public static final int TARGET_UPS = 30;
 
     private final Timer timer;
 
     private final MouseInput mouseInput;
-
-    private double lastFps;
 
     private GameItem[] gameItems;
     /////////////////////////////////////
@@ -89,130 +85,36 @@ public class EngineImpl implements Engine {
 
             scene = new Scene();
 
-            float reflectance = 1f;
-
-            float blockScale = 0.5f;
-            float skyBoxScale = 100.0f;
-            float extension = 2.0f;
-
-            float startx = extension * (-skyBoxScale + blockScale);
-            float startz = extension * (skyBoxScale - blockScale);
-            float starty = -1.0f;
-            float inc = blockScale * 2;
-
-            float posx = startx;
-            float posz = startz;
-//        float incy = 0.0f;
-
             selectDetector = new MouseBoxSelectionDetector();
-
-//        ByteBuffer buf;
-//        int width;
-//        int height;
-//        try (MemoryStack stack = MemoryStack.stackPush()) {
-//            IntBuffer w = stack.mallocInt(1);
-//            IntBuffer h = stack.mallocInt(1);
-//            IntBuffer channels = stack.mallocInt(1);
-//
-//            buf = stbi_load("textures/grassblock.png", w, h, channels, 4);
-//            if (buf == null) {
-//                throw new Exception("Image file not loaded: " + stbi_failure_reason());
-//            }
-//
-//            width = w.get();
-//            height = h.get();
-//        }
 
             int width = 10;
             int height = 10;
             int instances = 100;
-//        int instances = height * width;
 
-
-            Mesh[] houseMesh = StaticMeshesLoader.load("models\\cube2/c8.obj", "models\\cube2/");
-//        Mesh[] houseMesh = StaticMeshesLoader.load("/src\\main\\resources\\models\\cube/c.obj", "");
-//        Mesh[] houseMesh = StaticMeshesLoader.load("C:\\Users\\overw\\IdeaProjects\\lwjglbook\\chapter27\\c27-p1\\src\\main\\resources\\models/cube/c.obj", "");
-
-            Mesh mesh = houseMesh[0];
-//        Texture texture = new Texture("textures/terrain_textures-2.png");
-//        Material material = new Material(texture, reflectance);
-//        mesh.setMaterial(material);
+            Mesh mesh = StaticMeshesLoader.load("models\\cube2/c8.obj", "models\\cube2/")[0];
             gameItems = new GameItem[instances];
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-    //                if (i!=j) continue;
-    //                if (i!=4) continue;
                     GameItem gameItem = new GameItem(mesh);
                     gameItem.setScale(1);
-    //                int rgb = HeightMapMesh.getRGB(i, j, width, buf);
-    //                incy = rgb / (10 * 255 * 255);
                     gameItem.setPosition(j, 0, i);
                     int textPos = Math.random() > 0.5f ? 0 : 1;
                     gameItem.setTextPos(textPos);
-    //                gameItems[0] = gameItem;
                     gameItems[i * width + j] = gameItem;
-
-                    posx += inc;
                 }
-                posx = startx;
-                posz -= inc;
             }
             scene.setGameItems(gameItems);
 
-            // Particles
-//            int maxParticles = 200;
-//            Vector3f particleSpeed = new Vector3f(0, 1, 0);
-//            particleSpeed.mul(2.5f);
-//            long ttl = 4000;
-//            long creationPeriodMillis = 300;
-//            float range = 0.2f;
-//            float scale = 1.0f;
-//        Mesh partMesh = OBJLoader.loadMesh("/models/particle.obj", maxParticles);
-//        Texture particleTexture = new Texture("textures/particle_anim.png", 4, 4);
-//        Material partMaterial = new Material(particleTexture, reflectance);
-//        partMesh.setMaterial(partMaterial);
-//        Particle particle = new Particle(partMesh, particleSpeed, ttl, 100);
-//        particle.setScale(scale);
-//        particleEmitter = new FlowParticleEmitter(particle, maxParticles, creationPeriodMillis);
-//        particleEmitter.setActive(true);
-//        particleEmitter.setPositionRndRange(range);
-//        particleEmitter.setSpeedRndRange(range);
-//        particleEmitter.setAnimRange(10);
-//        this.scene.setParticleEmitters(new FlowParticleEmitter[]{particleEmitter});
-
-            // Shadows
             scene.setRenderShadows(false);
 
-            // Fog
-            Vector3f fogColour = new Vector3f(0.5f, 0.5f, 0.5f);
-//        scene.setFog(new Fog(false, fogColour, 0.02f));
-
-            // Setup  SkyBox
-//        SkyBox skyBox = new SkyBox("/models/skybox.obj", new Vector4f(0.65f, 0.65f, 0.65f, 1.0f));
-//        skyBox.setScale(skyBoxScale);
-//        scene.setSkyBox(skyBox);
-
-            // Setup Lights
             setupLights();
 
-//        camera.getPosition().x = 0.25f;
-//        camera.getPosition().y = 6.5f;
-//        camera.getPosition().z = 6.5f;
-//        camera.getRotation().x = 25;
-//        camera.getRotation().y = -1;
-
-//        stbi_image_free(buf);
-
-            // Sounds
             this.soundMgr.init();
             this.soundMgr.setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
             setupSounds();
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        lastFps = timer.getTime();
-//        fps = 0;
-        glClearColor(1, 1, 1, 1);
     }
 
     public void start() {
@@ -231,12 +133,7 @@ public class EngineImpl implements Engine {
                     update();
                     accumulator -= interval;
                 }
-
                 render();
-
-//                if (!windowKek.isvSync()) {
-//                    sync();
-//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -254,17 +151,6 @@ public class EngineImpl implements Engine {
             hud.cleanup();
         }
     }
-
-//    private void sync() {
-//        float loopSlot = 1f / TARGET_FPS;
-//        double endTime = timer.getLastLoopTime() + loopSlot;
-//        while (timer.getTime() < endTime) {
-//            try {
-//                Thread.sleep(1);
-//            } catch (InterruptedException ie) {
-//            }
-//        }
-//    }
 
     private void input() {
         mouseInput.input(window);
@@ -328,8 +214,6 @@ public class EngineImpl implements Engine {
         lightDirection.z = zValue;
         lightDirection.normalize();
 
-//        particleEmitter.update((long) (interval * 1000));
-
         // Update view matrix
         camera.updateViewMatrix();
 
@@ -343,9 +227,9 @@ public class EngineImpl implements Engine {
         this.leftButtonPressed = aux;
     }
 
-
+private int fps = 0;
     private void render() {
-        //        fps++;
+                fps++;
         renderer.render(window, camera, scene);
         hud.render(window);
         window.update();
@@ -371,7 +255,6 @@ public class EngineImpl implements Engine {
 //        SoundBuffer buffFire = new SoundBuffer("/sounds/fire.ogg");
 //        soundMgr.addSoundBuffer(buffFire);
 //        SoundSource sourceFire = new SoundSource(true, false);
-//        Vector3f pos = particleEmitter.getBaseParticle().getPosition();
 //        sourceFire.setPosition(pos);
 //        sourceFire.setBuffer(buffFire.getBufferId());
 //        soundMgr.addSoundSource(Sounds.FIRE.toString(), sourceFire);
@@ -388,7 +271,6 @@ public class EngineImpl implements Engine {
 
         // Ambient Light
         sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
-        sceneLight.setSkyBoxLight(new Vector3f(1.0f, 1.0f, 1.0f));
 
         // Directional Light
         float lightIntensity = 1.f;
