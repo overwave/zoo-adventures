@@ -7,7 +7,6 @@ import org.joml.Vector4f;
 import org.lwjglb.engine.Scene;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.Utils;
-import org.lwjglb.engine.WindowKek;
 import org.lwjglb.engine.graph.*;
 import org.lwjglb.engine.graph.anim.AnimGameItem;
 import org.lwjglb.engine.graph.anim.AnimatedFrame;
@@ -61,23 +60,23 @@ public class RendererImpl implements Renderer {
         setupParticlesShader();
     }
 
-    public void render(WindowKek windowKek, Camera camera, Scene scene) {
+    public void render(Window window, Camera camera, Scene scene) {
         clear();
 
         // Render depth map before view ports has been set up
-        renderDepthMap(windowKek, camera, scene);
+        renderDepthMap(window, camera, scene);
 
-        glViewport(0, 0, windowKek.getWidth(), windowKek.getHeight());
+        glViewport(0, 0, window.getWidth(), window.getHeight());
 
         // Update projection matrix once per render cycle
-        windowKek.updateProjectionMatrix();
+        window.updateProjectionMatrix();
 
-        renderScene(windowKek, camera, scene);
+        renderScene(window, camera, scene);
 //        renderSkyBox(window, camera, scene);
-        renderParticles(windowKek, camera, scene);
+        renderParticles(window, camera, scene);
 
 //        renderAxes(window, camera);
-        renderCrossHair(windowKek);
+        renderCrossHair(window);
     }
 
     private void setupParticlesShader() throws Exception {
@@ -162,7 +161,7 @@ public class RendererImpl implements Renderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
-    private void renderParticles(WindowKek windowKek, Camera camera, Scene scene) {
+    private void renderParticles(Window windowKek, Camera camera, Scene scene) {
         particlesShaderProgram.bind();
 
         particlesShaderProgram.setUniform("texture_sampler", 0);
@@ -193,7 +192,7 @@ public class RendererImpl implements Renderer {
         particlesShaderProgram.unbind();
     }
 
-    private void renderDepthMap(WindowKek windowKek, Camera camera, Scene scene) {
+    private void renderDepthMap(Window windowKek, Camera camera, Scene scene) {
         if (scene.isRenderShadows()) {
             // Setup view port to match the texture size
             glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
@@ -257,7 +256,7 @@ public class RendererImpl implements Renderer {
 //        }
 //    }
 
-    public void renderScene(WindowKek windowKek, Camera camera, Scene scene) {
+    public void renderScene(Window windowKek, Camera camera, Scene scene) {
         sceneShaderProgram.bind();
 
         Matrix4f projectionMatrix = windowKek.getProjectionMatrix();
@@ -390,31 +389,29 @@ public class RendererImpl implements Renderer {
         sceneShaderProgram.setUniform("directionalLight", currDirLight);
     }
 
-    private void renderCrossHair(WindowKek windowKek) {
-        if (windowKek.getWindowOptions().compatibleProfile) {
-            glPushMatrix();
-            glLoadIdentity();
+    private void renderCrossHair(Window windowKek) {
+        glPushMatrix();
+        glLoadIdentity();
 
-            float inc = 0.05f;
-            glLineWidth(2.0f);
+        float inc = 0.05f;
+        glLineWidth(2.0f);
 
-            glBegin(GL_LINES);
+        glBegin(GL_LINES);
 
-            glColor3f(1.0f, 1.0f, 1.0f);
+        glColor3f(1.0f, 1.0f, 1.0f);
 
-            // Horizontal line
-            glVertex3f(-inc, 0.0f, 0.0f);
-            glVertex3f(+inc, 0.0f, 0.0f);
-            glEnd();
+        // Horizontal line
+        glVertex3f(-inc, 0.0f, 0.0f);
+        glVertex3f(+inc, 0.0f, 0.0f);
+        glEnd();
 
-            // Vertical line
-            glBegin(GL_LINES);
-            glVertex3f(0.0f, -inc, 0.0f);
-            glVertex3f(0.0f, +inc, 0.0f);
-            glEnd();
+        // Vertical line
+        glBegin(GL_LINES);
+        glVertex3f(0.0f, -inc, 0.0f);
+        glVertex3f(0.0f, +inc, 0.0f);
+        glEnd();
 
-            glPopMatrix();
-        }
+        glPopMatrix();
     }
 
     /**
@@ -422,36 +419,33 @@ public class RendererImpl implements Renderer {
      *
      * @param camera
      */
-    private void renderAxes(WindowKek windowKek, Camera camera) {
-        WindowKek.WindowOptions opts = windowKek.getWindowOptions();
-        if (opts.compatibleProfile) {
-            glPushMatrix();
-            glLoadIdentity();
-            float rotX = camera.getRotation().x;
-            float rotY = camera.getRotation().y;
-            float rotZ = 0;
-            glRotatef(rotX, 1.0f, 0.0f, 0.0f);
-            glRotatef(rotY, 0.0f, 1.0f, 0.0f);
-            glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
-            glLineWidth(2.0f);
+    private void renderAxes(Window windowKek, Camera camera) {
+        glPushMatrix();
+        glLoadIdentity();
+        float rotX = camera.getRotation().x;
+        float rotY = camera.getRotation().y;
+        float rotZ = 0;
+        glRotatef(rotX, 1.0f, 0.0f, 0.0f);
+        glRotatef(rotY, 0.0f, 1.0f, 0.0f);
+        glRotatef(rotZ, 0.0f, 0.0f, 1.0f);
+        glLineWidth(2.0f);
 
-            glBegin(GL_LINES);
-            // X Axis
-            glColor3f(1.0f, 0.0f, 0.0f);
-            glVertex3f(0.0f, 0.0f, 0.0f);
-            glVertex3f(1.0f, 0.0f, 0.0f);
-            // Y Axis
-            glColor3f(0.0f, 1.0f, 0.0f);
-            glVertex3f(0.0f, 0.0f, 0.0f);
-            glVertex3f(0.0f, 1.0f, 0.0f);
-            // Z Axis
-            glColor3f(1.0f, 1.0f, 1.0f);
-            glVertex3f(0.0f, 0.0f, 0.0f);
-            glVertex3f(0.0f, 0.0f, 1.0f);
-            glEnd();
+        glBegin(GL_LINES);
+        // X Axis
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(1.0f, 0.0f, 0.0f);
+        // Y Axis
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 1.0f, 0.0f);
+        // Z Axis
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 1.0f);
+        glEnd();
 
-            glPopMatrix();
-        }
+        glPopMatrix();
     }
 
     public void cleanup() {

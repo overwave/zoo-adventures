@@ -1,5 +1,6 @@
 package org.lwjglb.game;
 
+import dev.overtow.service.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;
@@ -7,7 +8,6 @@ import org.joml.Vector4f;
 import org.joml.primitives.Intersectionf;
 import org.joml.primitives.Planef;
 import org.joml.primitives.Rayf;
-import org.lwjglb.engine.WindowKek;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
 
@@ -31,7 +31,7 @@ public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
         tmpVec = new Vector4f();
     }
     
-    public boolean selectGameItem(GameItem[] gameItems, WindowKek windowKek, Vector2d mousePos, Camera camera) {
+    public boolean selectGameItem(GameItem[] gameItems, Window windowKek, Vector2d mousePos, Camera camera) {
         // Transform mouse coordinates into normalized spaze [-1, 1]
         int wdwWitdh = windowKek.getWidth();
         int wdwHeight = windowKek.getHeight();

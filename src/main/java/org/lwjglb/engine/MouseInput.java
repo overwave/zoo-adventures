@@ -1,5 +1,6 @@
 package org.lwjglb.engine;
 
+import dev.overtow.service.Window;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -24,7 +25,7 @@ public class MouseInput {
         displVec = new Vector2f();
     }
 
-    public void init(WindowKek windowKek) {
+    public void init(Window windowKek) {
         glfwSetCursorPosCallback(windowKek.getWindowHandle(), (windowHandle, xpos, ypos) -> {
             currentPos.x = xpos;
             currentPos.y = ypos;
@@ -46,7 +47,7 @@ public class MouseInput {
         return currentPos;        
     }
     
-    public void input(WindowKek windowKek) {
+    public void input(Window windowKek) {
         displVec.x = 0;
         displVec.y = 0;
         if (previousPos.x > 0 && previousPos.y > 0 && inWindow) {

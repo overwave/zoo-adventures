@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
+
+import dev.overtow.service.Window;
 import org.lwjgl.nanovg.NVGColor;
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
@@ -13,7 +15,6 @@ import static org.lwjgl.nanovg.NanoVGGL3.*;
 import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import org.lwjglb.engine.Utils;
-import org.lwjglb.engine.WindowKek;
 
 public class Hud {
 
@@ -33,8 +34,8 @@ public class Hud {
 
     private int counter;
 
-    public void init(WindowKek windowKek) throws Exception {
-        this.vg = windowKek.getOptions().antialiasing ? nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES) : nvgCreate(NVG_STENCIL_STROKES);
+    public void init() throws Exception {
+        this.vg = nvgCreate(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
         if (this.vg == NULL) {
             throw new Exception("Could not init nanovg");
         }
@@ -52,7 +53,7 @@ public class Hud {
         counter = 0;
     }
 
-    public void render(WindowKek windowKek) {
+    public void render(Window windowKek) {
         nvgBeginFrame(vg, windowKek.getWidth(), windowKek.getHeight(), 1);
 
         // Upper ribbon
