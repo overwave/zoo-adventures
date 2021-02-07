@@ -12,7 +12,6 @@ import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.graph.Mesh;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
 import org.lwjglb.engine.items.GameItem;
-import org.lwjglb.engine.loaders.newloader.StaticMeshesLoader;
 import org.lwjglb.engine.sound.SoundBuffer;
 import org.lwjglb.engine.sound.SoundListener;
 import org.lwjglb.engine.sound.SoundManager;
@@ -35,9 +34,11 @@ public class EngineImpl implements Engine {
 
     private final Camera camera;
 
-    private Scene scene;
 
-    private Hud hud;
+    private final Hud hud;
+    private final MeshLoader meshLoader;
+
+    private Scene scene;
 
     private static final float CAMERA_POS_STEP = 0.10f;
 
@@ -59,10 +60,11 @@ public class EngineImpl implements Engine {
     /////////////////////////////////////
     private final long startTime;
 
-    public EngineImpl(Window window, Renderer renderer, Hud hud) {
+    public EngineImpl(Window window, Renderer renderer, Hud hud, MeshLoader meshLoader) {
         this.window = window;
         this.renderer = renderer;
         this.hud = hud;
+        this.meshLoader = meshLoader;
 
         soundMgr = new SoundManager();
         camera = new Camera();
@@ -89,7 +91,7 @@ public class EngineImpl implements Engine {
             int height = 10;
             int instances = 100;
 
-            Mesh mesh = StaticMeshesLoader.load("models\\cube2/c9.obj", "models\\cube2/")[0];
+            Mesh mesh = meshLoader.load("models/cube2/c9.obj");
             gameItems = new GameItem[instances];
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
@@ -226,9 +228,10 @@ public class EngineImpl implements Engine {
         this.leftButtonPressed = aux;
     }
 
-private int fps = 0;
+    private int fps = 0;
+
     private void render() {
-                fps++;
+        fps++;
         renderer.render(window, camera, scene);
         hud.render();
         window.update();
@@ -245,7 +248,7 @@ private int fps = 0;
 //        sourceBack.setBuffer(buffBack.getBufferId());
 //        soundMgr.addSoundSource(Sounds.MUSIC.toString(), sourceBack);
 
-        SoundBuffer buffBeep = new SoundBuffer("/sounds/beep.ogg");
+        SoundBuffer buffBeep = new SoundBuffer("data/sounds/beep.ogg");
         soundMgr.addSoundBuffer(buffBeep);
         SoundSource sourceBeep = new SoundSource(false, true);
         sourceBeep.setBuffer(buffBeep.getBufferId());

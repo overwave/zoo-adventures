@@ -53,81 +53,69 @@ public class Utils {
         return floatArr;
     }
 
-    public static boolean existsResourceFile(String fileName) {
-        boolean result;
-        try (InputStream is = Utils.class.getResourceAsStream(fileName)) {
-            result = is != null;
-        } catch (Exception excp) {
-            result = false;
-        }
-        return result;
-    }
+//    public static ByteBuffer ioResourceToByteBufferBetter(String resource, int bufferSize) throws IOException {
+////        String current = new java.io.File( "." ).getCanonicalPath();
+////        System.out.println("Current resource:"+resource);
+//
+//        ByteBuffer buffer;
+//        File file = new File(resource);
+//        if (false) {
+//            FileInputStream fis = new FileInputStream(file);
+//            FileChannel fc = fis.getChannel();
+//            buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+//            fc.close();
+//            fis.close();
+//        } else {
+//            try (InputStream fis2 = new FileInputStream(file)) {
+//                byte[] buf =  fis2.readAllBytes();
+//                buffer = BufferUtils.createByteBuffer(buf.length);
+//                buffer.put(buf);
+//                buffer.flip();
+//            }
+//            buffer = BufferUtils.createByteBuffer(bufferSize);
+//            try (InputStream fis2 = new FileInputStream(file)) {
+//                byte[] buf = new byte[8192];
+//                while (true) {
+//                    int bytes = fis2.read(buf, 0, buf.length);
+//                    if (bytes == -1)
+//                        break;
+//                    if (buffer.remaining() < bytes)
+//                        buffer = resizeBuffer(buffer, Math.max(buffer.capacity() * 2, buffer.capacity() - buffer.remaining() + bytes));
+//                    buffer.put(buf, 0, bytes);
+//                }
+//                buffer.flip();
+//            }
+//        }
+//        return buffer;
+//    }
 
-    public static ByteBuffer ioResourceToByteBufferBetter(String resource, int bufferSize) throws IOException {
-//        String current = new java.io.File( "." ).getCanonicalPath();
-//        System.out.println("Current resource:"+resource);
-
-        ByteBuffer buffer;
-        File file = new File(resource);
-        if (file.isFile()) {
-            FileInputStream fis = new FileInputStream(file);
-            FileChannel fc = fis.getChannel();
-            buffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-            fc.close();
-            fis.close();
-        } else {
-            buffer = BufferUtils.createByteBuffer(bufferSize);
-            try (InputStream fis2 = new FileInputStream(file)) {
-                byte[] buf = new byte[8192];
-                while (true) {
-                    int bytes = fis2.read(buf, 0, buf.length);
-                    if (bytes == -1)
-                        break;
-                    if (buffer.remaining() < bytes)
-                        buffer = resizeBuffer(buffer, Math.max(buffer.capacity() * 2, buffer.capacity() - buffer.remaining() + bytes));
-                    buffer.put(buf, 0, bytes);
-                }
-                buffer.flip();
-            }
-        }
-        return buffer;
-    }
-
-    public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
-        ByteBuffer buffer;
-
-        Path path = Paths.get(resource);
-        if (Files.isReadable(path)) {
-            try (SeekableByteChannel fc = Files.newByteChannel(path)) {
-                buffer = BufferUtils.createByteBuffer((int) fc.size() + 1);
-                while (fc.read(buffer) != -1) ;
-            }
-        } else {
-            try (InputStream source = Utils.class.getResourceAsStream(resource);
-                 ReadableByteChannel rbc = Channels.newChannel(source)) {
-                buffer = createByteBuffer(bufferSize);
-
-                while (true) {
-                    int bytes = rbc.read(buffer);
-                    if (bytes == -1) {
-                        break;
-                    }
-                    if (buffer.remaining() == 0) {
-                        buffer = resizeBuffer(buffer, buffer.capacity() * 2);
-                    }
-                }
-            }
-        }
-
-        buffer.flip();
-        return buffer;
-    }
-
-    private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
-        ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
-        buffer.flip();
-        newBuffer.put(buffer);
-        return newBuffer;
-    }
-
+//    public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
+//        ByteBuffer buffer;
+//
+//        Path path = Paths.get(resource);
+//        if (Files.isReadable(path)) {
+//            try (SeekableByteChannel fc = Files.newByteChannel(path)) {
+//                buffer = BufferUtils.createByteBuffer((int) fc.size() + 1);
+//                while (fc.read(buffer) != -1) ;
+//            }
+//        } else {
+//            try (InputStream source = Utils.class.getResourceAsStream(resource);
+//                 ReadableByteChannel rbc = Channels.newChannel(source)) {
+//                buffer = createByteBuffer(bufferSize);
+//
+//                while (true) {
+//                    int bytes = rbc.read(buffer);
+//                    if (bytes == -1) {
+//                        break;
+//                    }
+//                    if (buffer.remaining() == 0) {
+//                        buffer = resizeBuffer(buffer, buffer.capacity() * 2);
+//                    }
+//                }
+//            }
+//        }
+//
+//        buffer.flip();
+//        return buffer;
+//    }
 }

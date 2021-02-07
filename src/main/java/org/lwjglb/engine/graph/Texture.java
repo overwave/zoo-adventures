@@ -1,5 +1,6 @@
 package org.lwjglb.engine.graph;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -41,7 +42,7 @@ public class Texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    public Texture(String fileName) throws Exception {
+    public Texture(String fileName) throws IOException {
         ByteBuffer buf;
         // Load Texture file
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -51,7 +52,7 @@ public class Texture {
 
             buf = stbi_load(fileName, w, h, channels, 4);
             if (buf == null) {
-                throw new Exception("Image file [" + fileName  + "] not loaded: " + stbi_failure_reason());
+                throw new IOException("Image file [" + fileName  + "] not loaded: " + stbi_failure_reason());
             }
 
             width = w.get();

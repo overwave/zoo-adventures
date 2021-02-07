@@ -45,7 +45,7 @@ public class HudImpl implements Hud {
             throw new Exception("Could not init nanoVg");
         }
 
-        fontBuffer = Utils.ioResourceToByteBuffer("/fonts/OpenSans-Bold.ttf", 150 * 1024);
+        fontBuffer = memoryManager.readFromFile("data/fonts/OpenSans-Bold.ttf");
         int font = nvgCreateFontMem(contextHandler, FONT_NAME, fontBuffer, 0);
         if (font == -1) {
             throw new Exception("Could not add font");

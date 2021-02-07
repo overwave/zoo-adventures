@@ -38,7 +38,7 @@ public class Injector {
     private static <T> T createInstance(Class<? super T> interf) {
         Class<?> clazz = bindMap.get(interf);
         if (clazz == null) {
-            throw new RuntimeException("Failed to bind");
+            throw new RuntimeException(String.format("Failed to bind interface %s", interf.getSimpleName()));
         }
 
         Constructor<?> constructor = getConstructor(clazz);

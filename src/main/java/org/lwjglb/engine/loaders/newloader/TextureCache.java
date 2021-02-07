@@ -2,6 +2,7 @@ package org.lwjglb.engine.loaders.newloader;
 
 import org.lwjglb.engine.graph.Texture;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class TextureCache {
         return INSTANCE;
     }
     
-    public Texture getTexture(String path) throws Exception {
+    public Texture getTexture(String path) throws IOException {
         Texture texture = texturesMap.get(path);
         if ( texture == null ) {
             texture = new Texture(path);
