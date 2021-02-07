@@ -2,9 +2,13 @@ package dev.overtow.service;
 
 import dev.overtow.util.injection.Bind;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -27,12 +31,17 @@ public class WindowImpl implements Window {
     private int height;
     private int width;
 
+    private DoubleBuffer posX;
+    private DoubleBuffer posY;
+
     public WindowImpl(Config config) {
         title = config.getString("window.title");
         width = config.getInteger("window.width");
         height = config.getInteger("window.height");
 
-//        this.windowHandle = new WindowKek(title, width, height);
+        posX = MemoryUtil.memAllocDouble(1);
+        posY = MemoryUtil.memAllocDouble(1);
+
         projectionMatrix = new Matrix4f();
         init();
     }
@@ -144,6 +153,14 @@ public class WindowImpl implements Window {
     }
 
     @Override
+    public Vector2f getMousePosition() {
+        glfwGetCursorPos(windowHandle, posX, posY);
+        int x = (int) posX.get(0);
+        int y = (int) posY.get(0);
+        return new Vector2f(x, y);
+    }
+
+    @Override
     public boolean windowShouldClose() {
         return glfwWindowShouldClose(windowHandle);
     }
@@ -183,5 +200,16 @@ public class WindowImpl implements Window {
     public Matrix4f updateProjectionMatrix() {
         float aspectRatio = (float) width / (float) height;
         return projectionMatrix.setPerspective(FOV, aspectRatio, Z_NEAR, Z_FAR);
+    }
+
+    @Override
+    public void cleanup() {
+
+        if (posX != null) {
+            MemoryUtil.memFree(posX);
+        }
+        if (posY != null) {
+            MemoryUtil.memFree(posY);
+        }
     }
 }

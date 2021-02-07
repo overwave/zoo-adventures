@@ -17,7 +17,6 @@ import org.lwjglb.engine.sound.SoundBuffer;
 import org.lwjglb.engine.sound.SoundListener;
 import org.lwjglb.engine.sound.SoundManager;
 import org.lwjglb.engine.sound.SoundSource;
-import org.lwjglb.game.Hud;
 import org.lwjglb.game.MouseBoxSelectionDetector;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -60,11 +59,11 @@ public class EngineImpl implements Engine {
     /////////////////////////////////////
     private final long startTime;
 
-    public EngineImpl(Window window, Renderer renderer) {
+    public EngineImpl(Window window, Renderer renderer, Hud hud) {
         this.window = window;
-
         this.renderer = renderer;
-        hud = new Hud();
+        this.hud = hud;
+
         soundMgr = new SoundManager();
         camera = new Camera();
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
@@ -77,7 +76,6 @@ public class EngineImpl implements Engine {
         timer.init();
         mouseInput.init(this.window);
         try {
-            hud.init();
             this.renderer.init();
             soundMgr.init();
 
@@ -91,7 +89,7 @@ public class EngineImpl implements Engine {
             int height = 10;
             int instances = 100;
 
-            Mesh mesh = StaticMeshesLoader.load("models\\cube2/c8.obj", "models\\cube2/")[0];
+            Mesh mesh = StaticMeshesLoader.load("models\\cube2/c9.obj", "models\\cube2/")[0];
             gameItems = new GameItem[instances];
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
@@ -143,6 +141,7 @@ public class EngineImpl implements Engine {
     }
 
     private void cleanup() {
+        window.cleanup();
         renderer.cleanup();
         soundMgr.cleanup();
 
@@ -231,7 +230,7 @@ private int fps = 0;
     private void render() {
                 fps++;
         renderer.render(window, camera, scene);
-        hud.render(window);
+        hud.render();
         window.update();
     }
 

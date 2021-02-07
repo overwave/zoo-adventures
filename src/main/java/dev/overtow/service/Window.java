@@ -1,6 +1,7 @@
 package dev.overtow.service;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 
 public interface Window {
     int getWidth();
@@ -10,6 +11,8 @@ public interface Window {
     String getTitle();
 
     long getWindowHandle();
+
+    Vector2f getMousePosition();
 
     boolean windowShouldClose();
 
@@ -24,4 +27,6 @@ public interface Window {
     void setWindowTitle(String title);
 
     Matrix4f updateProjectionMatrix();
+
+    void cleanup();
 }
