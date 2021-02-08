@@ -181,8 +181,8 @@ public class WindowImpl implements Window {
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_STENCIL_TEST);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_BACK);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     @Override

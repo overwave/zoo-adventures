@@ -215,10 +215,8 @@ public class EngineImpl implements Engine {
         lightDirection.z = zValue;
         lightDirection.normalize();
 
-        // Update view matrix
         camera.updateViewMatrix();
 
-        // Update sound listener position;
         soundMgr.updateListenerPosition(camera);
 
         boolean aux = mouseInput.isLeftButtonPressed();
@@ -228,10 +226,7 @@ public class EngineImpl implements Engine {
         this.leftButtonPressed = aux;
     }
 
-    private int fps = 0;
-
     private void render() {
-        fps++;
         renderer.render(window, camera, scene);
         hud.render();
         window.update();

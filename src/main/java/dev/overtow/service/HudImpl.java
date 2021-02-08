@@ -1,8 +1,11 @@
 package dev.overtow.service;
 
+import dev.overtow.graphics.hud.Circle;
+import dev.overtow.graphics.hud.Rectangle;
+import dev.overtow.graphics.hud.Text;
+import dev.overtow.graphics.hud.TextAlign;
 import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
-import org.lwjglb.engine.Utils;
 
 import java.awt.*;
 import java.nio.ByteBuffer;
@@ -25,16 +28,26 @@ public class HudImpl implements Hud {
     public static final Color TEXT_COLOR = new Color(0x23, 0xa1, 0xf1, 255);
     public static final Color CLOCK_TEXT_COLOR = new Color(0xe6, 0xea, 0xed, 255);
 
+    // data should be freed by byte buffer creator
+    private static final int DONT_FREE_DATA = 0;
+
     private final long contextHandler;
 
     private final MemoryManager memoryManager;
     private final Window window;
 
-    private ByteBuffer fontBuffer;
+    private final ByteBuffer fontBuffer;
 
     private final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     private int counter;
+    private final int fontHandler;
+
+    private final Rectangle upperRibbon;
+    private final Rectangle lowerRibbon;
+    private final Circle circle;
+    private final Text clicksNumberText;
+    private final Text clockText;
 
     public HudImpl(MemoryManager memoryManager, Window window) throws Exception {
         this.memoryManager = memoryManager;
@@ -46,69 +59,57 @@ public class HudImpl implements Hud {
         }
 
         fontBuffer = memoryManager.readFromFile("data/fonts/OpenSans-Bold.ttf");
-        int font = nvgCreateFontMem(contextHandler, FONT_NAME, fontBuffer, 0);
-        if (font == -1) {
+        fontHandler = nvgCreateFontMem(contextHandler, FONT_NAME, fontBuffer, DONT_FREE_DATA);
+        if (fontHandler == -1) {
             throw new Exception("Could not add font");
         }
         counter = 0;
+        upperRibbon = new Rectangle(
+                new Vector2f(0, window.getHeight() - 100),
+                new Vector2f(window.getWidth(), 50),
+                UPPER_RIBBON_COLOR);
+        lowerRibbon = new Rectangle(
+                new Vector2f(0, window.getHeight() - 50),
+                new Vector2f(window.getWidth(), 10),
+                LOWER_RIBBON_COLOR);
+        circle = new Circle(
+                new Vector2f(50, window.getHeight() - 75),
+                20,
+                CIRCLE_COLOR);
+        clicksNumberText = new Text(
+                new Vector2f(50, window.getHeight() - 87),
+                "???",
+                25, FONT_NAME, TEXT_COLOR, TextAlign.CENTER, TextAlign.TOP);
+        clockText = new Text(
+                new Vector2f(window.getWidth() - 150, window.getHeight() - 95),
+                "???",
+                40, FONT_NAME, CLOCK_TEXT_COLOR, TextAlign.LEFT, TextAlign.TOP);
     }
 
     public void render() {
         nvgBeginFrame(contextHandler, window.getWidth(), window.getHeight(), 1);
 
-        // Upper ribbon
-        nvgBeginPath(contextHandler);
-        nvgRect(contextHandler, 0, window.getHeight() - 100, window.getWidth(), 50);
-        memoryManager.doForColor(UPPER_RIBBON_COLOR, color -> nvgFillColor(contextHandler, color));
-        nvgFill(contextHandler);
+        upperRibbon.draw(contextHandler);
+        lowerRibbon.draw(contextHandler);
+        circle.draw(contextHandler);
 
-        // Lower ribbon
-        nvgBeginPath(contextHandler);
-        nvgRect(contextHandler, 0, window.getHeight() - 50, window.getWidth(), 10);
-        memoryManager.doForColor(LOWER_RIBBON_COLOR, color -> nvgFillColor(contextHandler, color));
-        nvgFill(contextHandler);
-
-        Vector2f position = window.getMousePosition();
-        int xcenter = 50;
-        int ycenter = window.getHeight() - 75;
-        int radius = 20;
-        boolean hover = Math.pow(position.x() - xcenter, 2) + Math.pow(position.y() - ycenter, 2) < Math.pow(radius, 2);
-
-        // Circle
-        nvgBeginPath(contextHandler);
-        nvgCircle(contextHandler, xcenter, ycenter, radius);
-        memoryManager.doForColor(CIRCLE_COLOR, color -> nvgFillColor(contextHandler, color));
-        nvgFill(contextHandler);
-
-        // Clicks Text
-        nvgFontSize(contextHandler, 25.0f);
-        nvgFontFace(contextHandler, FONT_NAME);
-        nvgTextAlign(contextHandler, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-        if (hover) {
-            memoryManager.doForColor(TEXT_HOVERED_COLOR, color -> nvgFillColor(contextHandler, color));
+        if (circle.isHovered(window.getMousePosition())) {
+            clicksNumberText.setColor(TEXT_HOVERED_COLOR);
         } else {
-            memoryManager.doForColor(TEXT_COLOR, color -> nvgFillColor(contextHandler, color));
+            clicksNumberText.setColor(TEXT_COLOR);
         }
-        nvgText(contextHandler, 50, window.getHeight() - 87, String.format("%02dasdфыв結婚記念日", counter));
+        clicksNumberText.setText(String.format("%02dasdфыв", counter));
+        clicksNumberText.draw(contextHandler);
 
-        // Render hour text
-        nvgFontSize(contextHandler, 40.0f);
-        nvgFontFace(contextHandler, FONT_NAME);
-        nvgTextAlign(contextHandler, NVG_ALIGN_LEFT | NVG_ALIGN_TOP);
-        memoryManager.doForColor(CLOCK_TEXT_COLOR, color -> nvgFillColor(contextHandler, color));
-        nvgText(contextHandler, window.getWidth() - 150, window.getHeight() - 95, dateFormat.format(new Date()));
+        clockText.setText(dateFormat.format(new Date()));
+        clockText.draw(contextHandler);
 
         nvgEndFrame(contextHandler);
-
-        // Restore state
         window.restoreState();
     }
 
     public void incCounter() {
-        counter++;
-        if (counter > 99) {
-            counter = 0;
-        }
+        counter = (counter + 1) % 100;
     }
 
     public void cleanup() {
