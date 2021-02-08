@@ -9,7 +9,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL11;
 import org.lwjglb.engine.MouseInput;
-import org.lwjglb.engine.Scene;
+import dev.overtow.core.Scene;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.Timer;
 import org.lwjglb.engine.graph.Camera;
@@ -131,9 +131,14 @@ public class EngineImpl implements Engine {
 
                 input();
 
-                while (accumulator >= interval) {
+//                while (accumulator >= interval) {
+//                    update();
+//                    counter++;
+//                    accumulator -= interval;
+//                }
+                if (accumulator > interval) {
                     update();
-                    accumulator -= interval;
+                    accumulator = 0;
                 }
                 render();
             }
@@ -186,6 +191,10 @@ public class EngineImpl implements Engine {
     }
 
     private void update() {
+        scene.update();
+
+
+
         if (mouseInput.isRightButtonPressed()) {
             // Update camera based on mouse
             Vector2f rotVec = mouseInput.getDisplVec();

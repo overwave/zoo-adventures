@@ -5,7 +5,7 @@ import dev.overtow.util.injection.Bind;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjglb.engine.Scene;
+import dev.overtow.core.Scene;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.Utils;
 import org.lwjglb.engine.graph.*;
@@ -76,7 +76,6 @@ public class RendererImpl implements Renderer {
         depthShaderProgram.createFragmentShader(Utils.loadResource("/shaders/depth_fragment.frag"));
         depthShaderProgram.link();
 
-        depthShaderProgram.createUniform("isInstanced");
         depthShaderProgram.createUniform("jointsMatrix");
         depthShaderProgram.createUniform("modelLightViewNonInstancedMatrix");
         depthShaderProgram.createUniform("orthoProjectionMatrix");
@@ -111,7 +110,6 @@ public class RendererImpl implements Renderer {
         // Create uniform for joint matrices
         sceneShaderProgram.createUniform("jointsMatrix");
 
-        sceneShaderProgram.createUniform("isInstanced");
         sceneShaderProgram.createUniform("numCols");
         sceneShaderProgram.createUniform("numRows");
 
@@ -172,7 +170,6 @@ public class RendererImpl implements Renderer {
     }
 
     private void renderNonInstancedMeshes(Scene scene, ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
-        sceneShaderProgram.setUniform("isInstanced", 0);
 
         // Render each mesh with the associated game Items
         Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();

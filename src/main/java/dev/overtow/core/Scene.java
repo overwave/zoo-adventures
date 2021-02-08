@@ -1,5 +1,6 @@
-package org.lwjglb.engine;
+package dev.overtow.core;
 
+import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.graph.InstancedMesh;
 import org.lwjglb.engine.graph.Mesh;
 import org.lwjglb.engine.items.GameItem;
@@ -14,12 +15,19 @@ public class Scene {
     private final Map<Mesh, List<GameItem>> meshMap;
 
     private final Map<InstancedMesh, List<GameItem>> instancedMeshMap;
+    private final ArrayList<Actor> actors;
 
     private SceneLight sceneLight;
 
     public Scene() {
+        actors = new ArrayList<>();
+
         meshMap = new HashMap<>();
         instancedMeshMap = new HashMap<>();
+    }
+
+    public void addActor(Actor actor) {
+        actors.add(actor);
     }
 
     public Map<Mesh, List<GameItem>> getGameMeshes() {
@@ -67,5 +75,9 @@ public class Scene {
 
     public void setSceneLight(SceneLight sceneLight) {
         this.sceneLight = sceneLight;
+    }
+
+    public void update() {
+        actors.forEach(Actor::update);
     }
 }

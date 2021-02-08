@@ -15,7 +15,6 @@ public class Text implements HudElement {
     private float x;
     private float y;
     private int align;
-    private float height;
     private Color color;
     private MemoryManager memoryManager;
 
