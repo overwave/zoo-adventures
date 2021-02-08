@@ -11,14 +11,12 @@ layout (location=4) in ivec4 jointIndices;
 layout (location=5) in mat4 modelViewInstancedMatrix;
 layout (location=9) in mat4 modelLightViewInstancedMatrix;
 
-uniform mat4 modelLightViewNonInstancedMatrix;
+uniform mat4 modelLightViewMatrix;
 uniform mat4 jointsMatrix[MAX_JOINTS];
 uniform mat4 orthoProjectionMatrix;
 
 void main() {
     vec4 initPos = vec4(0, 0, 0, 0);
-    mat4 modelLightViewMatrix;
-    modelLightViewMatrix = modelLightViewNonInstancedMatrix;
 
     int count = 0;
     for (int i = 0; i < MAX_WEIGHTS; i++) {

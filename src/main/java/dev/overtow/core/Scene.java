@@ -1,7 +1,6 @@
 package dev.overtow.core;
 
 import org.lwjglb.engine.SceneLight;
-import org.lwjglb.engine.graph.InstancedMesh;
 import org.lwjglb.engine.graph.Mesh;
 import org.lwjglb.engine.items.GameItem;
 
@@ -14,7 +13,6 @@ public class Scene {
 
     private final Map<Mesh, List<GameItem>> meshMap;
 
-    private final Map<InstancedMesh, List<GameItem>> instancedMeshMap;
     private final ArrayList<Actor> actors;
 
     private SceneLight sceneLight;
@@ -23,7 +21,6 @@ public class Scene {
         actors = new ArrayList<>();
 
         meshMap = new HashMap<>();
-        instancedMeshMap = new HashMap<>();
     }
 
     public void addActor(Actor actor) {
@@ -34,10 +31,6 @@ public class Scene {
         return meshMap;
     }
 
-    public Map<InstancedMesh, List<GameItem>> getGameInstancedMeshes() {
-        return instancedMeshMap;
-    }
-
     public void setGameItems(GameItem[] gameItems) {
         // Create a map of meshes to speed up rendering
         int numGameItems = gameItems != null ? gameItems.length : 0;
@@ -45,16 +38,7 @@ public class Scene {
             GameItem gameItem = gameItems[i];
             Mesh[] meshes = gameItem.getMeshes();
             for (Mesh mesh : meshes) {
-                boolean instancedMesh = mesh instanceof InstancedMesh;
-                List<GameItem> list = instancedMesh ? instancedMeshMap.get(mesh) : meshMap.get(mesh);
-                if (list == null) {
-                    list = new ArrayList<>();
-                    if (instancedMesh) {
-                        instancedMeshMap.put((InstancedMesh) mesh, list);
-                    } else {
-                        meshMap.put(mesh, list);
-                    }
-                }
+                List<GameItem> list = meshMap.computeIfAbsent(mesh, k -> new ArrayList<>());
                 list.add(gameItem);
             }
         }
@@ -62,9 +46,6 @@ public class Scene {
 
     public void cleanup() {
         for (Mesh mesh : meshMap.keySet()) {
-            mesh.cleanUp();
-        }
-        for (Mesh mesh : instancedMeshMap.keySet()) {
             mesh.cleanUp();
         }
     }

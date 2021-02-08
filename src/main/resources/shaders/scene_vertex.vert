@@ -20,23 +20,19 @@ out vec4 mlightviewVertexPos;
 out mat4 outModelViewMatrix;
 out float outSelected;
 
-uniform mat4 modelViewNonInstancedMatrix;
+uniform mat4 modelViewMatrix;
 uniform mat4 jointsMatrix[MAX_JOINTS];
 uniform mat4 projectionMatrix;
-uniform mat4 modelLightViewNonInstancedMatrix;
+uniform mat4 modelLightViewMatrix;
 uniform mat4 orthoProjectionMatrix;
 uniform int numCols;
 uniform int numRows;
-uniform float selectedNonInstanced;
+uniform float selected;
 
 void main() {
     vec4 initPos = vec4(0, 0, 0, 0);
     vec4 initNormal = vec4(0, 0, 0, 0);
-    mat4 modelViewMatrix;
-    mat4 lightViewMatrix;
-    outSelected = selectedNonInstanced;
-    modelViewMatrix = modelViewNonInstancedMatrix;
-    lightViewMatrix = modelLightViewNonInstancedMatrix;
+    outSelected = selected;
 
     int count = 0;
     for (int i = 0; i < MAX_WEIGHTS; i++) {
@@ -65,6 +61,6 @@ void main() {
 
     mvVertexNormal = normalize(modelViewMatrix * initNormal).xyz;
     mvVertexPos = mvPos.xyz;
-    mlightviewVertexPos = orthoProjectionMatrix * lightViewMatrix * initPos;
+    mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * initPos;
     outModelViewMatrix = modelViewMatrix;
 }

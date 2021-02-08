@@ -77,7 +77,7 @@ public class RendererImpl implements Renderer {
         depthShaderProgram.link();
 
         depthShaderProgram.createUniform("jointsMatrix");
-        depthShaderProgram.createUniform("modelLightViewNonInstancedMatrix");
+        depthShaderProgram.createUniform("modelLightViewMatrix");
         depthShaderProgram.createUniform("orthoProjectionMatrix");
     }
 
@@ -90,7 +90,7 @@ public class RendererImpl implements Renderer {
 
         // Create uniforms for modelView and projection matrices
         sceneShaderProgram.createUniform("projectionMatrix");
-        sceneShaderProgram.createUniform("modelViewNonInstancedMatrix");
+        sceneShaderProgram.createUniform("modelViewMatrix");
         sceneShaderProgram.createUniform("texture_sampler");
         sceneShaderProgram.createUniform("normalMap");
         // Create uniform for material
@@ -105,7 +105,7 @@ public class RendererImpl implements Renderer {
         // Create uniforms for shadow mapping
         sceneShaderProgram.createUniform("shadowMap");
         sceneShaderProgram.createUniform("orthoProjectionMatrix");
-        sceneShaderProgram.createUniform("modelLightViewNonInstancedMatrix");
+        sceneShaderProgram.createUniform("modelLightViewMatrix");
 
         // Create uniform for joint matrices
         sceneShaderProgram.createUniform("jointsMatrix");
@@ -113,7 +113,7 @@ public class RendererImpl implements Renderer {
         sceneShaderProgram.createUniform("numCols");
         sceneShaderProgram.createUniform("numRows");
 
-        sceneShaderProgram.createUniform("selectedNonInstanced");
+        sceneShaderProgram.createUniform("selected");
     }
 
     public void clear() {
@@ -140,7 +140,7 @@ public class RendererImpl implements Renderer {
 
         depthShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
 
-        renderNonInstancedMeshes(scene, depthShaderProgram, null, lightViewMatrix);
+        renderMeshes(scene, depthShaderProgram, null, lightViewMatrix);
 
         // Unbind
         depthShaderProgram.unbind();
@@ -164,12 +164,12 @@ public class RendererImpl implements Renderer {
         sceneShaderProgram.setUniform("normalMap", 1);
         sceneShaderProgram.setUniform("shadowMap", 2);
 
-        renderNonInstancedMeshes(scene, sceneShaderProgram, viewMatrix, lightViewMatrix);
+        renderMeshes(scene, sceneShaderProgram, viewMatrix, lightViewMatrix);
 
         sceneShaderProgram.unbind();
     }
 
-    private void renderNonInstancedMeshes(Scene scene, ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
+    private void renderMeshes(Scene scene, ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
 
         // Render each mesh with the associated game Items
         Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
@@ -187,14 +187,14 @@ public class RendererImpl implements Renderer {
             }
 
             mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) -> {
-                sceneShaderProgram.setUniform("selectedNonInstanced", gameItem.isSelected() ? 1.0f : 0.0f);
+                sceneShaderProgram.setUniform("selected", gameItem.isSelected() ? 1.0f : 0.0f);
                 Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
                 if (viewMatrix != null) {
                     Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
-                    sceneShaderProgram.setUniform("modelViewNonInstancedMatrix", modelViewMatrix);
+                    sceneShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
                 }
                 Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(modelMatrix, lightViewMatrix);
-                sceneShaderProgram.setUniform("modelLightViewNonInstancedMatrix", modelLightViewMatrix);
+                sceneShaderProgram.setUniform("modelLightViewMatrix", modelLightViewMatrix);
 
                 if (gameItem instanceof AnimGameItem) {
                     AnimGameItem animGameItem = (AnimGameItem) gameItem;
