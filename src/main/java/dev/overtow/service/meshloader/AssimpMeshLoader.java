@@ -1,5 +1,6 @@
-package dev.overtow.service;
+package dev.overtow.service.meshloader;
 
+import dev.overtow.service.memory.MemoryManager;
 import dev.overtow.util.injection.Bind;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
@@ -21,11 +22,11 @@ import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 @Bind
-public class StaticMeshLoader implements MeshLoader {
+public class AssimpMeshLoader implements MeshLoader {
 
-    final MemoryManager memoryManager;
+    private final MemoryManager memoryManager;
 
-    public StaticMeshLoader(MemoryManager memoryManager) {
+    public AssimpMeshLoader(MemoryManager memoryManager) {
         this.memoryManager = memoryManager;
     }
 
@@ -69,7 +70,6 @@ public class StaticMeshLoader implements MeshLoader {
         File file = new File(modelFilename);
         AIScene aiScene = aiImportFileEx(modelFilename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, fileIo);
 
-//        AIScene aiScene = aiImportFile(resourcePath, flags);
         if (aiScene == null) {
             throw new IOException("Error loading model:" + aiGetErrorString());
         }
@@ -90,84 +90,9 @@ public class StaticMeshLoader implements MeshLoader {
             throw new RuntimeException(String.format("Model %s has not exactly one mesh", modelFilename));
         }
 
-//        Mesh mesh = new Mesh[numMeshes];
-//        for (int i = 0; i < numMeshes; i++) {
         AIMesh aiMesh = AIMesh.create(aiMeshes.get(0));
         return processMesh(aiMesh, materials);
-//            meshes[i] = mesh;
-//        }
-//
-//        return meshes;
     }
-
-//    public static Mesh[] load(String resourcePath, String texturesDir) throws Exception {
-//        return load(resourcePath, texturesDir,
-//                aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_Triangulate
-//                        | aiProcess_FixInfacingNormals | aiProcess_PreTransformVertices);
-//    }
-//
-//    public static Mesh[] load(String resourcePath, String texturesDir, int flags) throws Exception {
-//        AIFileIO fileIo = AIFileIO.create().OpenProc((pFileIO, fileName, openMode) -> {
-//            ByteBuffer data;
-//            String fileNameUtf8 = memUTF8(fileName);
-//            try {
-//                data = ioResourceToByteBufferBetter(fileNameUtf8, 8192);
-//            } catch (IOException e) {
-//                throw new RuntimeException("Could not open file: " + fileNameUtf8);
-//            }
-//
-//            return AIFile.create()
-//                    .ReadProc((pFile, pBuffer, size, count) -> {
-//                        long max = Math.min(data.remaining(), size * count);
-//                        memCopy(memAddress(data) + data.position(), pBuffer, max);
-//                        return max;
-//                    })
-//                    .SeekProc((pFile, offset, origin) -> {
-//                        if (origin == Assimp.aiOrigin_CUR) {
-//                            data.position(data.position() + (int) offset);
-//                        } else if (origin == Assimp.aiOrigin_SET) {
-//                            data.position((int) offset);
-//                        } else if (origin == Assimp.aiOrigin_END) {
-//                            data.position(data.limit() + (int) offset);
-//                        }
-//                        return 0;
-//                    })
-//                    .FileSizeProc(pFile -> data.limit())
-//                    .address();
-//        }).CloseProc((pFileIO, pFile) -> {
-//            AIFile aiFile = AIFile.create(pFile);
-//
-//            aiFile.ReadProc().free();
-//            aiFile.SeekProc().free();
-//            aiFile.FileSizeProc().free();
-//        });
-//
-//        AIScene aiScene = aiImportFileEx(resourcePath, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, fileIo);
-//
-////        AIScene aiScene = aiImportFile(resourcePath, flags);
-//        if (aiScene == null) {
-//            throw new Exception("Error loading model:" + aiGetErrorString());
-//        }
-//
-//        int numMaterials = aiScene.mNumMaterials();
-//        PointerBuffer aiMaterials = aiScene.mMaterials();
-//        List<Material> materials = new ArrayList<>();
-//        for (int i = 0; i < numMaterials; i++) {
-//            AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-//            processMaterial(aiMaterial, materials, texturesDir);
-//        }
-//
-//        int numMeshes = aiScene.mNumMeshes();
-//        PointerBuffer aiMeshes = aiScene.mMeshes();
-//        Mesh[] meshes = new Mesh[numMeshes];
-//        for (int i = 0; i < numMeshes; i++) {
-//            AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-//            Mesh mesh = processMesh(aiMesh, materials);
-//            meshes[i] = mesh;
-//        }
-//
-//        return meshes;
-//    }
 
     private static void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) throws IOException {
         AIColor4D colour = AIColor4D.create();

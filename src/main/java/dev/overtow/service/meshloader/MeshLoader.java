@@ -1,4 +1,4 @@
-package dev.overtow.service;
+package dev.overtow.service.meshloader;
 
 import org.lwjglb.engine.graph.Mesh;
 

@@ -1,4 +1,4 @@
-package dev.overtow.service;
+package dev.overtow.service.window;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;

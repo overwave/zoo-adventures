@@ -1,4 +1,4 @@
-import dev.overtow.service.Engine;
+import dev.overtow.service.engine.Engine;
 import dev.overtow.util.injection.Injector;
 
 public class Main {

@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import static org.lwjgl.openal.AL10.*;
 
-import dev.overtow.service.MemoryManager;
+import dev.overtow.service.memory.MemoryManager;
 import dev.overtow.util.injection.Injector;
 import org.lwjgl.stb.STBVorbisInfo;
 import java.nio.ShortBuffer;

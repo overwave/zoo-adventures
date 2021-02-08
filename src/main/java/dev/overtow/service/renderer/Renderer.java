@@ -1,5 +1,6 @@
-package dev.overtow.service;
+package dev.overtow.service.renderer;
 
+import dev.overtow.service.window.Window;
 import org.lwjglb.engine.Scene;
 import org.lwjglb.engine.graph.Camera;
 

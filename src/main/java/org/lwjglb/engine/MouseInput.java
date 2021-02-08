@@ -1,6 +1,6 @@
 package org.lwjglb.engine;
 
-import dev.overtow.service.Window;
+import dev.overtow.service.window.Window;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import static org.lwjgl.glfw.GLFW.*;

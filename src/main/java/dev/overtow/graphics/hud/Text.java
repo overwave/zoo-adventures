@@ -1,6 +1,6 @@
 package dev.overtow.graphics.hud;
 
-import dev.overtow.service.MemoryManager;
+import dev.overtow.service.memory.MemoryManager;
 import dev.overtow.util.injection.Injector;
 import org.joml.Vector2f;
 

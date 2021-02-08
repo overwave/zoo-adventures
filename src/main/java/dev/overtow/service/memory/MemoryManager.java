@@ -1,4 +1,4 @@
-package dev.overtow.service;
+package dev.overtow.service.memory;
 
 import org.lwjgl.nanovg.NVGColor;
 

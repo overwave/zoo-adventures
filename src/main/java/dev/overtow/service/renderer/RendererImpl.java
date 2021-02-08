@@ -1,5 +1,6 @@
-package dev.overtow.service;
+package dev.overtow.service.renderer;
 
+import dev.overtow.service.window.Window;
 import dev.overtow.util.injection.Bind;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

@@ -1,4 +1,4 @@
-package dev.overtow.service;
+package dev.overtow.service.config;
 
 import dev.overtow.util.injection.Bind;
 

@@ -1,5 +1,9 @@
-package dev.overtow.service;
+package dev.overtow.service.engine;
 
+import dev.overtow.service.hud.Hud;
+import dev.overtow.service.meshloader.MeshLoader;
+import dev.overtow.service.renderer.Renderer;
+import dev.overtow.service.window.Window;
 import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

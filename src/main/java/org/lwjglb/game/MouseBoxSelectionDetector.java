@@ -1,6 +1,6 @@
 package org.lwjglb.game;
 
-import dev.overtow.service.Window;
+import dev.overtow.service.window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector3f;

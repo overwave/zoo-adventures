@@ -1,24 +1,25 @@
-package dev.overtow.service;
+package dev.overtow.service.memory;
 
 import dev.overtow.util.injection.Bind;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.nanovg.NVGColor;
 
 import java.awt.*;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 @Bind
-public class MemoryManagerImpl implements MemoryManager {
+public class NativeMemoryManager implements MemoryManager {
 
     private final List<ByteBuffer> buffers;
     private final NVGColor nativeColor;
 
-    public MemoryManagerImpl() {
+    public NativeMemoryManager() {
         nativeColor = NVGColor.create();
         buffers = new ArrayList<>();
     }
