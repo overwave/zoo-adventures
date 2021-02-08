@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-//import org.lwjglb.engine.graph.weather.Fog;
 
 public class Scene {
 
@@ -18,12 +17,9 @@ public class Scene {
 
     private SceneLight sceneLight;
 
-    private boolean renderShadows;
-
     public Scene() {
         meshMap = new HashMap<>();
         instancedMeshMap = new HashMap<>();
-        renderShadows = true;
     }
 
     public Map<Mesh, List<GameItem>> getGameMeshes() {
@@ -32,10 +28,6 @@ public class Scene {
 
     public Map<InstancedMesh, List<GameItem>> getGameInstancedMeshes() {
         return instancedMeshMap;
-    }
-
-    public boolean isRenderShadows() {
-        return renderShadows;
     }
 
     public void setGameItems(GameItem[] gameItems) {
@@ -67,10 +59,6 @@ public class Scene {
         for (Mesh mesh : instancedMeshMap.keySet()) {
             mesh.cleanUp();
         }
-    }
-
-    public void setRenderShadows(boolean renderShadows) {
-        this.renderShadows = renderShadows;
     }
 
     public SceneLight getSceneLight() {

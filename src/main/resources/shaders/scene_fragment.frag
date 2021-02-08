@@ -70,7 +70,6 @@ uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 uniform DirectionalLight directionalLight;
 //uniform Fog fog;
 uniform sampler2D shadowMap;
-uniform int renderShadow;
 
 vec4 ambientC;
 vec4 diffuseC;
@@ -184,11 +183,6 @@ vec3 calcNormal(Material material, vec3 normal, vec2 text_coord, mat4 modelViewM
 
 float calcShadow(vec4 position)
 {
-    if ( renderShadow == 0 )
-    {
-        return 1.0;
-    }
-
     vec3 projCoords = position.xyz;
     // Transform from screen coordinates to texture coordinates
     projCoords = projCoords * 0.5 + 0.5;

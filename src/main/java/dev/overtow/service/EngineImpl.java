@@ -105,8 +105,6 @@ public class EngineImpl implements Engine {
             }
             scene.setGameItems(gameItems);
 
-            scene.setRenderShadows(false);
-
             setupLights();
 
             this.soundMgr.init();

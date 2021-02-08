@@ -57,7 +57,7 @@ public class RendererImpl implements Renderer {
         clear();
 
         // Render depth map before view ports has been set up
-        renderDepthMap(window, camera, scene);
+        renderDepthMap(scene);
 
         glViewport(0, 0, window.getWidth(), window.getHeight());
 
@@ -106,7 +106,6 @@ public class RendererImpl implements Renderer {
         sceneShaderProgram.createUniform("shadowMap");
         sceneShaderProgram.createUniform("orthoProjectionMatrix");
         sceneShaderProgram.createUniform("modelLightViewNonInstancedMatrix");
-        sceneShaderProgram.createUniform("renderShadow");
 
         // Create uniform for joint matrices
         sceneShaderProgram.createUniform("jointsMatrix");
@@ -122,33 +121,31 @@ public class RendererImpl implements Renderer {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     }
 
-    private void renderDepthMap(Window windowKek, Camera camera, Scene scene) {
-        if (scene.isRenderShadows()) {
-            // Setup view port to match the texture size
-            glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
-            glViewport(0, 0, ShadowMap.SHADOW_MAP_WIDTH, ShadowMap.SHADOW_MAP_HEIGHT);
-            glClear(GL_DEPTH_BUFFER_BIT);
+    private void renderDepthMap(Scene scene) {
+        // Setup view port to match the texture size
+        glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
+        glViewport(0, 0, ShadowMap.SHADOW_MAP_WIDTH, ShadowMap.SHADOW_MAP_HEIGHT);
+        glClear(GL_DEPTH_BUFFER_BIT);
 
-            depthShaderProgram.bind();
+        depthShaderProgram.bind();
 
-            DirectionalLight light = scene.getSceneLight().getDirectionalLight();
-            Vector3f lightDirection = light.getDirection();
+        DirectionalLight light = scene.getSceneLight().getDirectionalLight();
+        Vector3f lightDirection = light.getDirection();
 
-            float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
-            float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
-            float lightAngleZ = 0;
-            Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
-            DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
-            Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
+        float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
+        float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
+        float lightAngleZ = 0;
+        Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
+        DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
+        Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
 
-            depthShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
+        depthShaderProgram.setUniform("orthoProjectionMatrix", orthoProjMatrix);
 
-            renderNonInstancedMeshes(scene, depthShaderProgram, null, lightViewMatrix);
+        renderNonInstancedMeshes(scene, depthShaderProgram, null, lightViewMatrix);
 
-            // Unbind
-            depthShaderProgram.unbind();
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        }
+        // Unbind
+        depthShaderProgram.unbind();
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     public void renderScene(Window windowKek, Camera camera, Scene scene) {
@@ -167,7 +164,6 @@ public class RendererImpl implements Renderer {
         sceneShaderProgram.setUniform("texture_sampler", 0);
         sceneShaderProgram.setUniform("normalMap", 1);
         sceneShaderProgram.setUniform("shadowMap", 2);
-        sceneShaderProgram.setUniform("renderShadow", scene.isRenderShadows() ? 1 : 0);
 
         renderNonInstancedMeshes(scene, sceneShaderProgram, viewMatrix, lightViewMatrix);
 
