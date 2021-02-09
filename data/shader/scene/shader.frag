@@ -42,7 +42,6 @@ struct Material {
     vec4 ambient;
     vec4 diffuse;
     vec4 specular;
-    vec4 backColor;
     int hasTexture;
     int hasNormalMap;
     float reflectance;
@@ -51,6 +50,7 @@ struct Material {
 uniform sampler2D textureSampler;
 uniform sampler2D normalMap;
 uniform vec3 ambientLight;
+uniform vec4 backColor;
 uniform float specularPower;
 uniform Material material;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
@@ -71,9 +71,9 @@ void setupColours(Material material, vec2 textCoord) {
         float noise = 1.0 - rand(round(textCoord * 50)) / 10.0;
 
         ambientC = texture(textureSampler, textCoord);
-        ambientC.rgb = mix(noise * material.backColor.rgb, ambientC.rgb, ambientC.a);
+        ambientC.rgb = mix(noise * backColor.rgb, ambientC.rgb, ambientC.a);
 
-        ambientC.a = material.backColor.a;
+        ambientC.a = backColor.a;
         diffuseC = ambientC;
         speculrC = ambientC;
     }

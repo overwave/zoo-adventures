@@ -1,16 +1,18 @@
 package org.lwjglb.engine.graph;
 
-import org.lwjglb.engine.graph.lights.SpotLight;
-import org.lwjglb.engine.graph.lights.PointLight;
-import org.lwjglb.engine.graph.lights.DirectionalLight;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.Map;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import static org.lwjgl.opengl.GL20.*;
 import org.lwjgl.system.MemoryStack;
+import org.lwjglb.engine.graph.lights.DirectionalLight;
+import org.lwjglb.engine.graph.lights.PointLight;
+import org.lwjglb.engine.graph.lights.SpotLight;
+
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.lwjgl.opengl.GL20.*;
 //import org.lwjglb.engine.graph.weather.Fog;
 
 public class ShaderProgram {
@@ -76,23 +78,16 @@ public class ShaderProgram {
         createUniform(uniformName + ".ambient");
         createUniform(uniformName + ".diffuse");
         createUniform(uniformName + ".specular");
-        createUniform(uniformName + ".backColor");
         createUniform(uniformName + ".hasTexture");
         createUniform(uniformName + ".hasNormalMap");
         createUniform(uniformName + ".reflectance");
     }
 
-//    public void createFogUniform(String uniformName) throws Exception {
-//        createUniform(uniformName + ".activeFog");
-//        createUniform(uniformName + ".colour");
-//        createUniform(uniformName + ".density");
-//    }
-
     public void setUniform(String uniformName, Matrix4f value) {
         // Dump the matrix into a float buffer
         try (MemoryStack stack = MemoryStack.stackPush()) {
             glUniformMatrix4fv(uniforms.get(uniformName), false,
-                               value.get(stack.mallocFloat(16)));
+                    value.get(stack.mallocFloat(16)));
         }
     }
 
@@ -171,7 +166,7 @@ public class ShaderProgram {
         setUniform(uniformName + ".ambient", material.getAmbientColour());
         setUniform(uniformName + ".diffuse", material.getDiffuseColour());
         setUniform(uniformName + ".specular", material.getSpecularColour());
-        setUniform(uniformName + ".backColor", new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
+        setUniform("backColor", new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
         setUniform(uniformName + ".hasTexture", material.isTextured() ? 1 : 0);
         setUniform(uniformName + ".hasNormalMap", material.hasNormalMap() ? 1 : 0);
         setUniform(uniformName + ".reflectance", material.getReflectance());

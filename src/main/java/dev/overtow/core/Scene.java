@@ -1,11 +1,12 @@
 package dev.overtow.core;
 
+import dev.overtow.core.shader.ShaderProgram;
+import dev.overtow.core.shader.uniform.*;
 import dev.overtow.service.renderer.RendererImpl;
-import dev.overtow.service.shader.*;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.graph.Mesh;
+import org.lwjglb.engine.graph.lights.PointLight;
+import org.lwjglb.engine.graph.lights.SpotLight;
 import org.lwjglb.engine.items.GameItem;
 
 import java.util.ArrayList;
@@ -14,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Scene {
-    private final Shader sceneShader;
-    private final Shader depthShader;
+    private final ShaderProgram sceneShader;
+    private final ShaderProgram depthShader;
 
     private final Map<Mesh, List<GameItem>> meshMap;
 
@@ -24,34 +25,38 @@ public class Scene {
     private SceneLight sceneLight;
 
     // scene uniforms
-    private final Uniform<Matrix4f> projectionMatrix = new Uniform<>("projectionMatrix");
-    private final Uniform<Matrix4f> modelViewMatrix = new Uniform<>("modelViewMatrix");
-    private final Uniform<Integer> textureSampler = new Uniform<>("textureSampler");
-    private final Uniform<Integer> normalMap = new Uniform<>("normalMap");
+    private final Matrix4fUniform projectionMatrix = new Matrix4fUniform("projectionMatrix");
+    private final Matrix4fUniform modelViewMatrix = new Matrix4fUniform("modelViewMatrix");
+    private final IntegerUniform textureSampler = new IntegerUniform("textureSampler");
+    private final IntegerUniform normalMap = new IntegerUniform("normalMap");
     private final MaterialUniform material = new MaterialUniform("material");
-    private final Uniform<Float> specularPower = new Uniform<>("specularPower");
-    private final Uniform<Vector3f> ambientLight = new Uniform<>("ambientLight");
-    private final ArrayUniform<PointLightUniform> pointLights =
-            new ArrayUniform<>("pointLights", RendererImpl.MAX_POINT_LIGHTS, PointLightUniform::new);
-    private final ArrayUniform<SpotLightUniform> spotLights =
-            new ArrayUniform<>("spotLights", RendererImpl.MAX_SPOT_LIGHTS, SpotLightUniform::new);
+    private final FloatUniform specularPower = new FloatUniform("specularPower");
+    private final Vector3fUniform ambientLight = new Vector3fUniform("ambientLight");
+    private final ArrayUniform<PointLight> pointLights = new ArrayUniform<>("pointLights", RendererImpl.MAX_POINT_LIGHTS, PointLightUniform::new);
+    private final ArrayUniform<SpotLight> spotLights = new ArrayUniform<>("spotLights", RendererImpl.MAX_SPOT_LIGHTS, SpotLightUniform::new);
     private final DirectionalLightUniform directionalLight = new DirectionalLightUniform("directionalLight");
-    private final Uniform<Integer> shadowMap = new Uniform<>("shadowMap");
-    private final Uniform<Matrix4f> orthoProjectionMatrix = new Uniform<>("orthoProjectionMatrix");
-    private final Uniform<Matrix4f> modelLightViewMatrix = new Uniform<>("modelLightViewMatrix");
-    private final Uniform<Matrix4f> jointsMatrix = new Uniform<>("jointsMatrix");
-    private final Uniform<Integer> numCols = new Uniform<>("numCols");
-    private final Uniform<Integer> numRows = new Uniform<>("numRows");
-    private final Uniform<Float> selected = new Uniform<>("selected");
+    private final IntegerUniform shadowMap = new IntegerUniform("shadowMap");
+    private final Matrix4fUniform orthoProjectionMatrix = new Matrix4fUniform("orthoProjectionMatrix");
+    private final Matrix4fUniform modelLightViewMatrix = new Matrix4fUniform("modelLightViewMatrix");
+    private final Matrix4fUniform jointsMatrix = new Matrix4fUniform("jointsMatrix");
+    private final IntegerUniform numCols = new IntegerUniform("numCols");
+    private final IntegerUniform numRows = new IntegerUniform("numRows");
+    private final FloatUniform selected = new FloatUniform("selected");
+    private final Vector3fUniform backColor = new Vector3fUniform("backColor");
+
+    // depth uniforms
+    private final Matrix4fUniform jointsMatrixDepth = new Matrix4fUniform("jointsMatrix");
+    private final Matrix4fUniform modelLightViewMatrixDepth = new Matrix4fUniform("modelLightViewMatrix");
+    private final Matrix4fUniform orthoProjectionMatrixDepth = new Matrix4fUniform("orthoProjectionMatrix");
 
 
-    public Scene(ShaderCompiler shaderCompiler) {
-        sceneShader = shaderCompiler.compile("shaders/scene/",
+    public Scene() {
+        sceneShader = new ShaderProgram("data/shader/scene/",
                 projectionMatrix, modelViewMatrix, textureSampler, normalMap, material, specularPower, ambientLight,
                 pointLights, spotLights, directionalLight, shadowMap, orthoProjectionMatrix, modelLightViewMatrix,
-                jointsMatrix, numCols, numRows, selected);
-        depthShader = shaderCompiler.compile("shaders/depth/",
-                jointsMatrix, modelLightViewMatrix, orthoProjectionMatrix);
+                jointsMatrix, numCols, numRows, selected, backColor);
+        depthShader = new ShaderProgram("data/shader/depth/",
+                jointsMatrixDepth, modelLightViewMatrixDepth, orthoProjectionMatrixDepth);
 
         actors = new ArrayList<>();
 
