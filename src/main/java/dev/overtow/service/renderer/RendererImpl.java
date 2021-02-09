@@ -28,9 +28,9 @@ import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 @Bind
 public class RendererImpl implements Renderer {
 
-    private static final int MAX_POINT_LIGHTS = 5;
+    public static final int MAX_POINT_LIGHTS = 2;
 
-    private static final int MAX_SPOT_LIGHTS = 5;
+    public static final int MAX_SPOT_LIGHTS = 2;
 
     private final Transformation transformation;
 
@@ -91,7 +91,7 @@ public class RendererImpl implements Renderer {
         // Create uniforms for modelView and projection matrices
         sceneShaderProgram.createUniform("projectionMatrix");
         sceneShaderProgram.createUniform("modelViewMatrix");
-        sceneShaderProgram.createUniform("texture_sampler");
+        sceneShaderProgram.createUniform("textureSampler");
         sceneShaderProgram.createUniform("normalMap");
         // Create uniform for material
         sceneShaderProgram.createMaterialUniform("material");
@@ -160,7 +160,7 @@ public class RendererImpl implements Renderer {
         SceneLight sceneLight = scene.getSceneLight();
         renderLights(viewMatrix, sceneLight);
 
-        sceneShaderProgram.setUniform("texture_sampler", 0);
+        sceneShaderProgram.setUniform("textureSampler", 0);
         sceneShaderProgram.setUniform("normalMap", 1);
         sceneShaderProgram.setUniform("shadowMap", 2);
 

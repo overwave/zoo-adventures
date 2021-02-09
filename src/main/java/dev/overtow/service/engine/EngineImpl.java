@@ -3,6 +3,7 @@ package dev.overtow.service.engine;
 import dev.overtow.service.hud.Hud;
 import dev.overtow.service.meshloader.MeshLoader;
 import dev.overtow.service.renderer.Renderer;
+import dev.overtow.service.shader.ShaderCompiler;
 import dev.overtow.service.window.Window;
 import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
@@ -64,7 +65,7 @@ public class EngineImpl implements Engine {
     /////////////////////////////////////
     private final long startTime;
 
-    public EngineImpl(Window window, Renderer renderer, Hud hud, MeshLoader meshLoader) {
+    public EngineImpl(Window window, Renderer renderer, Hud hud, MeshLoader meshLoader, ShaderCompiler shaderCompiler) {
         this.window = window;
         this.renderer = renderer;
         this.hud = hud;
@@ -87,7 +88,7 @@ public class EngineImpl implements Engine {
 
             leftButtonPressed = false;
 
-            scene = new Scene();
+            scene = new Scene(shaderCompiler);
 
             selectDetector = new MouseBoxSelectionDetector();
 
