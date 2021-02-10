@@ -21,8 +21,8 @@ public class MaterialUniform implements ValueUniform<Material> {
     private int hasNormalMap;
     private int reflectance;
 
-    public MaterialUniform(String name) {
-        namePrefix = name;
+    public MaterialUniform(Uniform.Name name) {
+        namePrefix = name.get();
     }
 
     public void setValue(Material value) {

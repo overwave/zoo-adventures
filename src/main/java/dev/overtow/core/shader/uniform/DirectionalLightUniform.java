@@ -16,8 +16,8 @@ public class DirectionalLightUniform implements ValueUniform<DirectionalLight> {
     private int directionId;
     private int intensityId;
 
-    public DirectionalLightUniform(String name) {
-        namePrefix = name;
+    public DirectionalLightUniform(Uniform.Name name) {
+        namePrefix = name.get();
     }
 
     public void setValue(DirectionalLight value) {

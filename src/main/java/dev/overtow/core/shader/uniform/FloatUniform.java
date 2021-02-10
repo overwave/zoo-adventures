@@ -7,7 +7,7 @@ import static org.lwjgl.opengl.GL20.glUniform1i;
 
 public class FloatUniform extends SingleValueUniform<Float> {
 
-    public FloatUniform(String name) {
+    public FloatUniform(Uniform.Name name) {
         super(name);
     }
 

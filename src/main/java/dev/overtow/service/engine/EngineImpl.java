@@ -87,7 +87,9 @@ public class EngineImpl implements Engine {
 
             leftButtonPressed = false;
 
-            scene = new Scene();
+            SceneLight sceneLight = setupLights();
+
+            scene = new Scene(window, camera, sceneLight);
 
             selectDetector = new MouseBoxSelectionDetector();
 
@@ -109,7 +111,6 @@ public class EngineImpl implements Engine {
             }
             scene.setGameItems(gameItems);
 
-            setupLights();
 
             this.soundMgr.init();
             this.soundMgr.setAttenuationModel(AL11.AL_EXPONENT_DISTANCE);
@@ -273,9 +274,9 @@ public class EngineImpl implements Engine {
 //        sourceBack.play();
     }
 
-    private void setupLights() {
+    private SceneLight setupLights() {
         SceneLight sceneLight = new SceneLight();
-        scene.setSceneLight(sceneLight);
+//        scene.setSceneLight(sceneLight);
 
         // Ambient Light
         sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
@@ -287,6 +288,8 @@ public class EngineImpl implements Engine {
         directionalLight.setShadowPosMult(10);
         directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
         sceneLight.setDirectionalLight(directionalLight);
+
+        return sceneLight;
     }
 
 }

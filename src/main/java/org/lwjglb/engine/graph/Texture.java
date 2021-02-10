@@ -28,9 +28,8 @@ public class Texture {
      * @param width Width of the texture
      * @param height Height of the texture
      * @param pixelFormat Specifies the format of the pixel data (GL_RGBA, etc.)
-     * @throws Exception
      */
-    public Texture(int width, int height, int pixelFormat) throws Exception {
+    public Texture(int width, int height, int pixelFormat) {
         this.id = glGenTextures();
         this.width = width;
         this.height = height;

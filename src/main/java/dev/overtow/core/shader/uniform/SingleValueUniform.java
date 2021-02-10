@@ -7,8 +7,8 @@ public abstract class SingleValueUniform<T> implements ValueUniform<T> {
     protected int id;
     protected T value;
 
-    public SingleValueUniform(String name) {
-        this.name = name;
+    public SingleValueUniform(Uniform.Name name) {
+        this.name = name.get();
         this.id = -1;
     }
 

@@ -13,7 +13,7 @@ public class ShadowMap {
 
     private final Texture depthMap;
 
-    public ShadowMap() throws Exception {
+    public ShadowMap() {
         // Create a FBO to render the depth map
         depthMapFBO = glGenFramebuffers();
 
@@ -28,7 +28,7 @@ public class ShadowMap {
         glReadBuffer(GL_NONE);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            throw new Exception("Could not create FrameBuffer");
+            throw new RuntimeException("Could not create FrameBuffer");
         }
 
         // Unbind

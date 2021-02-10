@@ -6,7 +6,7 @@ import static org.lwjgl.opengl.GL20.glUniform3f;
 
 public class Vector3fUniform extends SingleValueUniform<Vector3f> {
 
-    public Vector3fUniform(String name) {
+    public Vector3fUniform(Uniform.Name name) {
         super(name);
     }
 

@@ -6,7 +6,7 @@ import static org.lwjgl.opengl.GL20.glUniform1i;
 
 public class IntegerUniform extends SingleValueUniform<Integer> {
 
-    public IntegerUniform(String name) {
+    public IntegerUniform(Uniform.Name name) {
         super(name);
     }
 

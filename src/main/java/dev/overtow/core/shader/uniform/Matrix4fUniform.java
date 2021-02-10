@@ -1,15 +1,14 @@
 package dev.overtow.core.shader.uniform;
 
+import dev.overtow.core.DepthShader;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
-
-import java.util.function.Function;
 
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 
 public class Matrix4fUniform extends SingleValueUniform<Matrix4f> {
 
-    public Matrix4fUniform(String name) {
+    public Matrix4fUniform(Uniform.Name name) {
         super(name);
     }
 

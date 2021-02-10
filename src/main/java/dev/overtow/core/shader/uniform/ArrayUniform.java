@@ -7,11 +7,11 @@ import java.util.function.Function;
 public class ArrayUniform<T> implements Uniform<List<ValueUniform<T>>> {
     private final List<ValueUniform<T>> value;
 
-    public ArrayUniform(String name, int size, Function<String, ValueUniform<T>> elementConstructor) {
+    public ArrayUniform(Uniform.Name name, int size, Function<String, ValueUniform<T>> elementConstructor) {
         value = new ArrayList<>(size);
 
         for (int i = 0; i < size; i++) {
-            String arrayPrefix = String.format("%s[%d]", name, i);
+            String arrayPrefix = String.format("%s[%d]", name.get(), i);
 
             value.add(elementConstructor.apply(arrayPrefix));
         }

@@ -1,18 +1,27 @@
 package dev.overtow.core.shader;
 
+import dev.overtow.core.DepthShader;
 import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.service.reader.Reader;
 import dev.overtow.util.injection.Injector;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL20.*;
 
-public class ShaderProgram {
-    private final int programId;
+public abstract class ShaderProgram {
+    protected int programId;
 
-    public ShaderProgram(String folderPath, Uniform<?>... uniforms) {
-        programId = glCreateProgram();
+    protected final Map<Uniform.Name, Uniform<?>> uniformMap = new HashMap<>();
+
+    protected int compile(String folderPath) {
+        if (uniformMap.isEmpty()) {
+            throw new IllegalStateException();
+        }
+
+        int programId = glCreateProgram();
         if (programId == 0) {
             throw new RuntimeException("Could not create shader program");
         }
@@ -50,11 +59,13 @@ public class ShaderProgram {
         for (Uniform<?> uniform : uniforms) {
             uniform.locate(uniformName -> glGetUniformLocation(programId, uniformName));
         }
+
+        return programId;
     }
 
-    public void execute(Runnable runnable) {
-        glUseProgram(programId);
-        runnable.run();
-        glUseProgram(0);
-    }
+    public abstract void bind();
+
+    public abstract void unbind();
+
+    public abstract void draw();
 }
