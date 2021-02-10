@@ -95,6 +95,7 @@ public class RendererImpl implements Renderer {
         sceneShaderProgram.createUniform("normalMap");
         // Create uniform for material
         sceneShaderProgram.createMaterialUniform("material");
+        sceneShaderProgram.createUniform("backColor");
         // Create lighting related uniforms
         sceneShaderProgram.createUniform("specularPower");
         sceneShaderProgram.createUniform("ambientLight");
