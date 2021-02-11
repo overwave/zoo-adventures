@@ -2,15 +2,11 @@ package dev.overtow.core;
 
 import dev.overtow.core.shader.ShaderProgram;
 import dev.overtow.core.shader.uniform.*;
-import dev.overtow.service.renderer.RendererImpl;
-import dev.overtow.service.window.Window;
-import org.joml.Matrix4f;
-import org.lwjglb.engine.SceneLight;
-
-import static org.lwjgl.opengl.GL11.glViewport;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class SceneShader extends ShaderProgram {
+
+    private static final int MAX_POINT_LIGHTS = 5;  // also hardcoded in shader :(
+    private static final int MAX_SPOT_LIGHTS = 5;
 
     public SceneShader() {
         uniformMap.put(Uniform.Name.PROJECTION_MATRIX, new Matrix4fUniform(Uniform.Name.PROJECTION_MATRIX));
@@ -20,8 +16,8 @@ public class SceneShader extends ShaderProgram {
         uniformMap.put(Uniform.Name.MATERIAL, new MaterialUniform(Uniform.Name.MATERIAL));
         uniformMap.put(Uniform.Name.SPECULAR_POWER, new FloatUniform(Uniform.Name.SPECULAR_POWER));
         uniformMap.put(Uniform.Name.AMBIENT_LIGHT, new Vector3fUniform(Uniform.Name.AMBIENT_LIGHT));
-        uniformMap.put(Uniform.Name.POINT_LIGHTS, new ArrayUniform<>(Uniform.Name.POINT_LIGHTS, RendererImpl.MAX_POINT_LIGHTS, PointLightUniform::new));
-        uniformMap.put(Uniform.Name.SPOT_LIGHTS, new ArrayUniform<>(Uniform.Name.SPOT_LIGHTS, RendererImpl.MAX_SPOT_LIGHTS, SpotLightUniform::new));
+        uniformMap.put(Uniform.Name.POINT_LIGHTS, new ArrayUniform<>(Uniform.Name.POINT_LIGHTS, MAX_POINT_LIGHTS, PointLightUniform::new));
+        uniformMap.put(Uniform.Name.SPOT_LIGHTS, new ArrayUniform<>(Uniform.Name.SPOT_LIGHTS, MAX_SPOT_LIGHTS, SpotLightUniform::new));
         uniformMap.put(Uniform.Name.DIRECTIONAL_LIGHT, new DirectionalLightUniform(Uniform.Name.DIRECTIONAL_LIGHT));
         uniformMap.put(Uniform.Name.SHADOW_MAP, new IntegerUniform(Uniform.Name.SHADOW_MAP));
         uniformMap.put(Uniform.Name.ORTHO_PROJECTION_MATRIX, new Matrix4fUniform(Uniform.Name.ORTHO_PROJECTION_MATRIX));

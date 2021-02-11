@@ -2,7 +2,6 @@ package dev.overtow.service.engine;
 
 import dev.overtow.service.hud.Hud;
 import dev.overtow.service.meshloader.MeshLoader;
-import dev.overtow.service.renderer.Renderer;
 import dev.overtow.service.window.Window;
 import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
@@ -32,14 +31,12 @@ public class EngineImpl implements Engine {
 
     private final Vector3f cameraInc;
 
-    private final Renderer renderer;
-
     private final SoundManager soundMgr;
 
     private final Camera camera;
 
-
     private final Hud hud;
+
     private final MeshLoader meshLoader;
 
     private Scene scene;
@@ -64,9 +61,8 @@ public class EngineImpl implements Engine {
     /////////////////////////////////////
     private final long startTime;
 
-    public EngineImpl(Window window, Renderer renderer, Hud hud, MeshLoader meshLoader) {
+    public EngineImpl(Window window, Hud hud, MeshLoader meshLoader) {
         this.window = window;
-        this.renderer = renderer;
         this.hud = hud;
         this.meshLoader = meshLoader;
 
@@ -82,7 +78,6 @@ public class EngineImpl implements Engine {
         timer.init();
         mouseInput.init(this.window);
         try {
-            this.renderer.init();
             soundMgr.init();
 
             leftButtonPressed = false;
@@ -152,7 +147,6 @@ public class EngineImpl implements Engine {
 
     private void cleanup() {
         window.cleanup();
-        renderer.cleanup();
         soundMgr.cleanup();
 
         scene.cleanup();
@@ -239,7 +233,8 @@ public class EngineImpl implements Engine {
     }
 
     private void render() {
-        renderer.render(window, camera, scene);
+        scene.draw();
+//        renderer.render(window, camera, scene);
         hud.render();
         window.update();
     }

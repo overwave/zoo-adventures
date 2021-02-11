@@ -109,7 +109,7 @@ public class Scene {
 
             depthShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
 
-            renderMeshes(depthShader, null, lightViewMatrix);
+            renderMeshesDepth(depthShader, null, lightViewMatrix);
         });
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -136,11 +136,23 @@ public class Scene {
         });
     }
 
+    private void renderMeshesDepth(ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
+        // Render each mesh with the associated game Items
+//        Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
+        for (Mesh mesh : meshMap.keySet()) {
+            if (viewMatrix != null) {
+                shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+            }
+        }
+    }
+
     private void renderMeshes(ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
         // Render each mesh with the associated game Items
 //        Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
-        Map<Mesh, List<GameItem>> mapMeshes = Map.of();
-        for (Mesh mesh : mapMeshes.keySet()) {
+//        Map<Mesh, List<GameItem>> mapMeshes = meshMap;
+        for (Mesh mesh : meshMap.keySet()) {
             if (viewMatrix != null) {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
                 glActiveTexture(GL_TEXTURE2);
@@ -153,7 +165,7 @@ public class Scene {
                 shader.set(Uniform.Name.NUM_ROWS, text.getNumRows());
             }
 
-            mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) -> {
+            mesh.renderList(meshMap.get(mesh), (GameItem gameItem) -> {
                         shader.set(Uniform.Name.SELECTED, gameItem.isSelected() ? 1.0f : 0.0f);
                         Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
                         if (viewMatrix != null) {
