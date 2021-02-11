@@ -6,9 +6,10 @@ public interface Uniform<T> {
     void locate(Function<String, Integer> function);
 
     enum Name {
+        VIEW_PROJECTION_MATRIX("viewProjectionMatrix"),
+
         MODEL_LIGHT_VIEW_MATRIX("modelLightViewMatrix"),
         ORTHO_PROJECTION_MATRIX("orthoProjectionMatrix"),
-
         PROJECTION_MATRIX("projectionMatrix"),
         MODEL_VIEW_MATRIX("modelViewMatrix"),
         TEXTURE_SAMPLER("textureSampler"),

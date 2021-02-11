@@ -12,6 +12,7 @@ import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
 
 import java.time.Instant;
+import java.util.List;
 
 public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
 
@@ -31,7 +32,7 @@ public class MouseBoxSelectionDetector extends CameraBoxSelectionDetector {
         tmpVec = new Vector4f();
     }
     
-    public boolean selectGameItem(GameItem[] gameItems, Window windowKek, Vector2d mousePos, Camera camera) {
+    public boolean selectGameItem(List<GameItem> gameItems, Window windowKek, Vector2d mousePos, Camera camera) {
         // Transform mouse coordinates into normalized spaze [-1, 1]
         int wdwWitdh = windowKek.getWidth();
         int wdwHeight = windowKek.getHeight();

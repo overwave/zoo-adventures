@@ -6,6 +6,8 @@ import org.joml.Vector3f;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
 
+import java.util.List;
+
 public class CameraBoxSelectionDetector {
 
     private final Vector3f max;
@@ -23,12 +25,12 @@ public class CameraBoxSelectionDetector {
         nearFar = new Vector2f();
     }
 
-    public void selectGameItem(GameItem[] gameItems, Camera camera) {        
+    public void selectGameItem(List<GameItem> gameItems, Camera camera) {
         dir = camera.getViewMatrix().positiveZ(dir).negate();
         selectGameItem(gameItems, camera.getPosition(), dir);
     }
     
-    protected boolean selectGameItem(GameItem[] gameItems, Vector3f center, Vector3f dir) {
+    protected boolean selectGameItem(List<GameItem> gameItems, Vector3f center, Vector3f dir) {
         boolean selected = false;
         GameItem selectedGameItem = null;
         float closestDistance = Float.POSITIVE_INFINITY;

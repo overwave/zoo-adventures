@@ -62,11 +62,11 @@ public class Scene {
         return meshMap;
     }
 
-    public void setGameItems(GameItem[] gameItems) {
+    public void setGameItems(List<GameItem> gameItems) {
         // Create a map of meshes to speed up rendering
-        int numGameItems = gameItems != null ? gameItems.length : 0;
+        int numGameItems = gameItems != null ? gameItems.size() : 0;
         for (int i = 0; i < numGameItems; i++) {
-            GameItem gameItem = gameItems[i];
+            GameItem gameItem = gameItems.get(i);
             Mesh[] meshes = gameItem.getMeshes();
             for (Mesh mesh : meshes) {
                 List<GameItem> list = meshMap.computeIfAbsent(mesh, k -> new ArrayList<>());
@@ -97,19 +97,19 @@ public class Scene {
         glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
         glViewport(0, 0, ShadowMap.SHADOW_MAP_WIDTH, ShadowMap.SHADOW_MAP_HEIGHT);
         depthShader.draw(() -> {
-            DirectionalLight light = sceneLight.getDirectionalLight();
-            Vector3f lightDirection = light.getDirection();
-
-            float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
-            float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
-            float lightAngleZ = 0;
-            Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
-            DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
-            Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
-
-            depthShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
-
-            renderMeshesDepth(depthShader, null);
+//            DirectionalLight light = sceneLight.getDirectionalLight();
+//            Vector3f lightDirection = light.getDirection();
+//
+//            float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
+//            float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
+//            float lightAngleZ = 0;
+//            Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
+//            DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
+//            Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
+//
+//            depthShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
+//
+//            renderMeshesDepth(depthShader, null);
         });
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

@@ -1,5 +1,6 @@
 package dev.overtow.service.engine;
 
+import dev.overtow.core.Scene;
 import dev.overtow.service.hud.Hud;
 import dev.overtow.service.meshloader.MeshLoader;
 import dev.overtow.service.window.Window;
@@ -8,7 +9,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL11;
 import org.lwjglb.engine.MouseInput;
-import dev.overtow.core.Scene;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.Timer;
 import org.lwjglb.engine.graph.Camera;
@@ -20,6 +20,9 @@ import org.lwjglb.engine.sound.SoundListener;
 import org.lwjglb.engine.sound.SoundManager;
 import org.lwjglb.engine.sound.SoundSource;
 import org.lwjglb.game.MouseBoxSelectionDetector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -57,7 +60,7 @@ public class EngineImpl implements Engine {
 
     private final MouseInput mouseInput;
 
-    private GameItem[] gameItems;
+    private List<GameItem> gameItems;
     /////////////////////////////////////
     private final long startTime;
 
@@ -90,21 +93,26 @@ public class EngineImpl implements Engine {
 
             int width = 10;
             int height = 10;
-            int instances = 101;
 
             Mesh meshCube = meshLoader.load("data/model/cube2/c9.obj");
             Mesh meshPool = meshLoader.load("data/model/pool/pool_final_3.obj");
-            gameItems = new GameItem[instances];
+            gameItems = new ArrayList<>();
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
+                    if (i > 0 && i < 9) {
+                        if (j > 0 && j < 9) {
+                            continue;
+                        }
+                    }
+
                     GameItem gameItem = new GameItem(meshCube);
-                    gameItem.setPosition(j, 0, i);
-                    gameItems[i * width + j] = gameItem;
+                    gameItem.setPosition(j, 3, i);
+                    gameItems.add(gameItem);
                 }
             }
             GameItem gameItem = new GameItem(meshPool);
-            gameItem.setPosition(5, -1, 5);
-            gameItems[100] = gameItem;
+            gameItem.setPosition(5, 0, 5);
+            gameItems.add(gameItem);
 
 
             scene.setGameItems(gameItems);
@@ -190,7 +198,6 @@ public class EngineImpl implements Engine {
 
     private void update() {
         scene.update();
-
 
 
         if (mouseInput.isRightButtonPressed()) {

@@ -11,8 +11,6 @@ public class ConfigImpl implements Config {
     private final Properties prop;
 
     public ConfigImpl() {
-        System.out.println("ConfigImpl");
-
         prop = new Properties();
         String fileName = "config.properties";
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName)) {
