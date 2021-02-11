@@ -1,9 +1,14 @@
 package dev.overtow.core.shader;
 
-import dev.overtow.core.DepthShader;
-import dev.overtow.core.shader.uniform.Uniform;
+import dev.overtow.core.shader.uniform.*;
 import dev.overtow.service.reader.Reader;
 import dev.overtow.util.injection.Injector;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.lwjglb.engine.graph.Material;
+import org.lwjglb.engine.graph.lights.DirectionalLight;
+import org.lwjglb.engine.graph.lights.PointLight;
+import org.lwjglb.engine.graph.lights.SpotLight;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -56,16 +61,48 @@ public abstract class ShaderProgram {
             System.err.println("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
-        for (Uniform<?> uniform : uniforms) {
+        for (Uniform<?> uniform : uniformMap.values()) {
             uniform.locate(uniformName -> glGetUniformLocation(programId, uniformName));
         }
 
         return programId;
     }
 
-    public abstract void bind();
+    public void set(Uniform.Name name, int value) {
+        ((IntegerUniform) uniformMap.get(name)).setValue(value);
+    }
 
-    public abstract void unbind();
+    public void set(Uniform.Name name, float value) {
+        ((FloatUniform) uniformMap.get(name)).setValue(value);
+    }
 
-    public abstract void draw();
+    public void set(Uniform.Name name, Vector3f value) {
+        ((Vector3fUniform) uniformMap.get(name)).setValue(value);
+    }
+
+    public void set(Uniform.Name name, Matrix4f value) {
+        ((Matrix4fUniform) uniformMap.get(name)).setValue(value);
+    }
+
+    public void set(Uniform.Name name, Material value) {
+        ((MaterialUniform) uniformMap.get(name)).setValue(value);
+    }
+
+    public void set(Uniform.Name name, int index, PointLight value) {
+        ((ArrayUniform<PointLight>) uniformMap.get(name)).setElement(value, index);
+    }
+
+    public void set(Uniform.Name name, int index, SpotLight value) {
+        ((ArrayUniform<SpotLight>) uniformMap.get(name)).setElement(value, index);
+    }
+
+    public void set(Uniform.Name name, DirectionalLight value) {
+        ((DirectionalLightUniform) uniformMap.get(name)).setValue(value);
+    }
+
+    public void draw(Runnable runnable) {
+        glUseProgram(programId);
+        runnable.run();
+        glUseProgram(0);
+    }
 }
