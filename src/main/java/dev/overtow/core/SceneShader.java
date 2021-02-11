@@ -25,7 +25,7 @@ public class SceneShader extends ShaderProgram {
         uniformMap.put(Uniform.Name.NUM_COLS, new IntegerUniform(Uniform.Name.NUM_COLS));
         uniformMap.put(Uniform.Name.NUM_ROWS, new IntegerUniform(Uniform.Name.NUM_ROWS));
         uniformMap.put(Uniform.Name.SELECTED, new FloatUniform(Uniform.Name.SELECTED));
-        uniformMap.put(Uniform.Name.BACK_COLOR, new Vector3fUniform(Uniform.Name.BACK_COLOR));
+        uniformMap.put(Uniform.Name.BACK_COLOR, new Vector4fUniform(Uniform.Name.BACK_COLOR));
 
         programId = compile("data/shader/scene/");
     }

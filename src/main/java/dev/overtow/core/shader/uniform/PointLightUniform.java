@@ -24,10 +24,10 @@ public class PointLightUniform implements ValueUniform<PointLight> {
     }
 
     public void setValue(PointLight value) {
-        if (value.equals(this.value)) {
-            return;
-        }
-        this.value = value;
+//        if (value.equals(this.value)) {
+//            return;
+//        }
+//        this.value = value;
 
         glUniform3f(colorId, value.getColor().x(), value.getColor().y(), value.getColor().z());
         glUniform3f(positionId, value.getPosition().x(), value.getPosition().y(), value.getPosition().z());

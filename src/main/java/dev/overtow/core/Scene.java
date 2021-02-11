@@ -109,7 +109,7 @@ public class Scene {
 
             depthShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
 
-            renderMeshesDepth(depthShader, null, lightViewMatrix);
+            renderMeshesDepth(depthShader, null);
         });
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -136,12 +136,13 @@ public class Scene {
         });
     }
 
-    private void renderMeshesDepth(ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
+    private void renderMeshesDepth(ShaderProgram shader, Matrix4f viewMatrix) {
         // Render each mesh with the associated game Items
 //        Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
         for (Mesh mesh : meshMap.keySet()) {
             if (viewMatrix != null) {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
+                shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
                 glActiveTexture(GL_TEXTURE2);
                 glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
             }
@@ -155,6 +156,7 @@ public class Scene {
         for (Mesh mesh : meshMap.keySet()) {
             if (viewMatrix != null) {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
+                shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
                 glActiveTexture(GL_TEXTURE2);
                 glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
             }

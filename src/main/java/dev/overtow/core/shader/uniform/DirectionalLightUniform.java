@@ -21,10 +21,10 @@ public class DirectionalLightUniform implements ValueUniform<DirectionalLight> {
     }
 
     public void setValue(DirectionalLight value) {
-        if (value.equals(this.value)) {
-            return;
-        }
-        this.value = value;
+////        if (value.equals(this.value)) {
+////            return;
+////        }
+//        this.value = value;
 
         glUniform3f(colourId, value.getColor().x(), value.getColor().y(), value.getColor().z());
         glUniform3f(directionId, value.getDirection().x(), value.getDirection().y(), value.getDirection().z());

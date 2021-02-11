@@ -27,10 +27,10 @@ public class SpotLightUniform implements ValueUniform<SpotLight> {
     }
 
     public void setValue(SpotLight value) {
-        if (value.equals(this.value)) {
-            return;
-        }
-        this.value = value;
+//        if (value.equals(this.value)) {
+//            return;
+//        }
+//        this.value = value;
 
         PointLight pointLight = value.getPointLight();
         glUniform3f(pointLightColorId, pointLight.getColor().x(), pointLight.getColor().y(), pointLight.getColor().z());

@@ -14,10 +14,10 @@ public class Matrix4fUniform extends SingleValueUniform<Matrix4f> {
 
     @Override
     public void setValue(Matrix4f value) {
-        if (value.equals(this.value)) {
-            return;
-        }
-        this.value = value;
+//        if (value.equals(this.value)) {
+//            return;
+//        }
+//        this.value = value;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             glUniformMatrix4fv(id, false, value.get(stack.mallocFloat(16)));
         }

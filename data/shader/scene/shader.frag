@@ -166,8 +166,9 @@ float calcShadow(vec4 position) {
         shadowFactor = 1.0;
     }
 
-    return 1 - shadowFactor;
-} 
+//    return 1 - shadowFactor;
+    return 1;
+}
 
 void main() {
     setupColours(material, outTexCoord);
@@ -189,6 +190,7 @@ void main() {
     }
     
     float shadow = calcShadow(mlightviewVertexPos);
+//    shadow = 1;
     fragColor = clamp(ambientC * vec4(ambientLight, 1) + diffuseSpecularComp * shadow, 0, 1);
 
     if (outSelected > 0) {

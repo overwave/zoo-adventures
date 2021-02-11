@@ -26,10 +26,10 @@ public class MaterialUniform implements ValueUniform<Material> {
     }
 
     public void setValue(Material value) {
-        if (value.equals(this.value)) {
-            return;
-        }
-        this.value = value;
+//        if (value.equals(this.value)) {
+//            return;
+//        }
+//        this.value = value;
 
         glUniform3f(ambient, value.getAmbientColour().x(), value.getAmbientColour().y(), value.getAmbientColour().z());
         glUniform3f(diffuse, value.getDiffuseColour().x(), value.getDiffuseColour().y(), value.getDiffuseColour().z());

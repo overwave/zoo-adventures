@@ -18,9 +18,9 @@ public class ArrayUniform<T> implements Uniform<List<ValueUniform<T>>> {
     }
 
     public void setElement(T value, int index) {
-        if (value.equals(this.value.get(index))) {
-            return;
-        }
+//        if (value.equals(this.value.get(index))) {
+//            return;
+//        }
         this.value.get(index).setValue(value);
     }
 

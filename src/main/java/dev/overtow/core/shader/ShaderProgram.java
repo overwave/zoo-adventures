@@ -5,6 +5,7 @@ import dev.overtow.service.reader.Reader;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjglb.engine.graph.Material;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
 import org.lwjglb.engine.graph.lights.PointLight;
@@ -80,6 +81,10 @@ public abstract class ShaderProgram {
         ((Vector3fUniform) uniformMap.get(name)).setValue(value);
     }
 
+    public void set(Uniform.Name name, Vector4f value) {
+        ((Vector4fUniform) uniformMap.get(name)).setValue(value);
+    }
+
     public void set(Uniform.Name name, Matrix4f value) {
         ((Matrix4fUniform) uniformMap.get(name)).setValue(value);
     }
@@ -88,10 +93,12 @@ public abstract class ShaderProgram {
         ((MaterialUniform) uniformMap.get(name)).setValue(value);
     }
 
+    // TODO NOT TESTED
     public void set(Uniform.Name name, int index, PointLight value) {
         ((ArrayUniform<PointLight>) uniformMap.get(name)).setElement(value, index);
     }
 
+    // TODO NOT TESTED
     public void set(Uniform.Name name, int index, SpotLight value) {
         ((ArrayUniform<SpotLight>) uniformMap.get(name)).setElement(value, index);
     }

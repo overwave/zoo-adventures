@@ -12,10 +12,10 @@ public class IntegerUniform extends SingleValueUniform<Integer> {
 
     @Override
     public void setValue(Integer value) {
-        if (value.equals(this.value)) {
-            return;
-        }
-        this.value = value;
+//        if (value.equals(this.value)) {
+//            return;
+//        }
+//        this.value = value;
         glUniform1i(id, value);
     }
 }
