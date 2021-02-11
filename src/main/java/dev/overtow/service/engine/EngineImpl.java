@@ -90,20 +90,23 @@ public class EngineImpl implements Engine {
 
             int width = 10;
             int height = 10;
-            int instances = 100;
+            int instances = 101;
 
-            Mesh mesh = meshLoader.load("models/cube2/c9.obj");
+            Mesh meshCube = meshLoader.load("data/model/cube2/c9.obj");
+            Mesh meshPool = meshLoader.load("data/model/pool/pool_final_3.obj");
             gameItems = new GameItem[instances];
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-                    GameItem gameItem = new GameItem(mesh);
-                    gameItem.setScale(1);
+                    GameItem gameItem = new GameItem(meshCube);
                     gameItem.setPosition(j, 0, i);
-                    int textPos = Math.random() > 0.5f ? 0 : 1;
-                    gameItem.setTextPos(textPos);
                     gameItems[i * width + j] = gameItem;
                 }
             }
+            GameItem gameItem = new GameItem(meshPool);
+            gameItem.setPosition(5, -1, 5);
+            gameItems[100] = gameItem;
+
+
             scene.setGameItems(gameItems);
 
 
