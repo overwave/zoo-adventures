@@ -18,27 +18,29 @@ import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static demo.IOUtils.ioResourceToByteBuffer;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL30C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 
-/**
- * Simple demo to showcase shadow mapping with a custom shader doing perspective
- * divide and depth test (i.e. no sampler2DShadow).
- *
- * @author Kai Burjack
- */
 public class ShadowMappingDemo {
+    private static final Vector3f[] boxes = {
+            new Vector3f(-5.0f, -0.1f, -5.0f), new Vector3f(5.0f, 0.0f, 5.0f),
+            new Vector3f(-0.5f, 0.0f, -0.5f), new Vector3f(0.5f, 1.0f, 0.5f),
+            new Vector3f(-2.5f, 0.0f, -1.5f), new Vector3f(-1.5f, 1.0f, -0.5f),
+            new Vector3f(-2.5f, 0.0f, 1.5f), new Vector3f(-1.5f, 1.0f, 2.5f),
+            new Vector3f(1.5f, 0.0f, 1.5f), new Vector3f(2.5f, 1.0f, 2.5f),
+            new Vector3f(1.5f, 0.0f, -2.5f), new Vector3f(2.5f, 1.0f, -1.5f)
+    };
 
-    private static Vector3f[] boxes = Scene.boxes2;
-    private static Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
+    private static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
 
     static int shadowMapSize = 1024;
     static Vector3f lightPosition = new Vector3f(6.0f, 3.0f, 6.0f);
@@ -209,7 +211,7 @@ public class ShadowMappingDemo {
         ByteBuffer bb = BufferUtils.createByteBuffer(boxes.length * 4 * (3 + 3) * 6 * 6);
         FloatBuffer fv = bb.asFloatBuffer();
         for (int i = 0; i < boxes.length; i += 2) {
-            DemoUtils.triangulateBox(boxes[i], boxes[i + 1], fv);
+            boxToVertices(boxes[i], boxes[i + 1], fv);
         }
         glBufferData(GL_ARRAY_BUFFER, bb, GL_STATIC_DRAW);
         glEnableVertexAttribArray(0);
@@ -401,4 +403,60 @@ public class ShadowMappingDemo {
         new ShadowMappingDemo().run();
     }
 
+
+    public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
+        ByteBuffer buffer;
+        try (InputStream source = new FileInputStream(resource)) {
+            byte[] src = source.readAllBytes();
+            buffer = BufferUtils.createByteBuffer(src.length + 1);
+            buffer.put(src);
+            buffer.flip();
+        }
+        return buffer;
+    }
+
+    public static void boxToVertices(Vector3f min, Vector3f max, FloatBuffer fv) {
+        /* Front face */
+        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
+        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
+        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
+        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
+        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
+        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
+        /* Back face */
+        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
+        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
+        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
+        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
+        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
+        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
+        /* Left face */
+        fv.put(min.x).put(min.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
+        fv.put(min.x).put(min.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
+        fv.put(min.x).put(max.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
+        fv.put(min.x).put(max.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
+        fv.put(min.x).put(max.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
+        fv.put(min.x).put(min.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
+        /* Right face */
+        fv.put(max.x).put(min.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
+        fv.put(max.x).put(min.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
+        fv.put(max.x).put(max.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
+        fv.put(max.x).put(max.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
+        fv.put(max.x).put(max.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
+        fv.put(max.x).put(min.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
+        /* Top face */
+        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
+        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
+        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
+        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
+        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
+        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
+        /* Bottom face */
+        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
+        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
+        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
+        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
+        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
+        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
+    }
 }
