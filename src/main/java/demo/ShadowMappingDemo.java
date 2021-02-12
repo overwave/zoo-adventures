@@ -52,7 +52,8 @@ public class ShadowMappingDemo {
     static float lightDistance = 10.0f;
     static float lightHeight = 4.0f;
 
-    private static final Renderer renderer = Injector.getInstance(Renderer.class, Renderer.DEBUG);
+    private static final boolean DEBUG_MODE = false;
+    private static final Renderer renderer = Injector.getInstance(Renderer.class, DEBUG_MODE ? Renderer.DEBUG : "");
 
     long window;
     int width = 1200;
@@ -383,7 +384,9 @@ public class ShadowMappingDemo {
             renderNormal();
 
             renderer.glfwSwapBuffers(window);
-            counter++;
+            if (DEBUG_MODE) {
+                counter++;
+            }
         }
     }
 
