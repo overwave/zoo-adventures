@@ -1,5 +1,6 @@
 package dev.overtow.util.injection;
 
+import dev.overtow.util.misc.Tuple;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
@@ -10,40 +11,45 @@ import java.util.Map;
 
 public class Injector {
 
-    private static final Map<Class<?>, Class<?>> bindMap = new HashMap<>();
-    private static final Map<Class<?>, Object> servicesMap = new HashMap<>();
+    private static final Map<Tuple<Class<?>, String>, Class<?>> bindMap = new HashMap<>();
+    private static final Map<Tuple<Class<?>, String>, Object> servicesMap = new HashMap<>();
 
-
-    public static void init() {
+    static {
         Reflections reflections = new Reflections("dev.overtow");
         Collection<Class<?>> annotated = reflections.getTypesAnnotatedWith(Bind.class);
 
         annotated.forEach(clazz -> {
             for (Class<?> interf : clazz.getInterfaces()) {
-                bindMap.put(interf, clazz);
+                bindMap.put(new Tuple<>(interf, clazz.getAnnotation(Bind.class).value()), clazz);
             }
         });
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getInstance(Class<? extends T> interf) {
-        Object o = servicesMap.get(interf);
+    public static <T> T getInstance(Class<? extends T> interf, String tag) {
+        Tuple<Class<?>, String> tuple = new Tuple<>(interf, tag);
+
+        Object o = servicesMap.get(tuple);
         if (o != null) {
             return (T) o;
         }
 
-        return createInstance(interf);
+        return createInstance(tuple);
     }
 
-    private static <T> T createInstance(Class<? super T> interf) {
-        Class<?> clazz = bindMap.get(interf);
+    public static <T> T getInstance(Class<? extends T> interf) {
+        return getInstance(interf, "");
+    }
+
+    private static <T> T createInstance(Tuple<Class<?>, String> tuple) {
+        Class<?> clazz = bindMap.get(tuple);
         if (clazz == null) {
-            throw new RuntimeException(String.format("Failed to bind interface %s", interf.getSimpleName()));
+            throw new RuntimeException(String.format("Failed to bind interface %s", tuple.getT().getSimpleName()));
         }
 
         Constructor<?> constructor = getConstructor(clazz);
 
-        return getT(interf, constructor);
+        return getT(tuple, constructor);
     }
 
     private static Constructor<?> getConstructor(Class<?> clazz) {
@@ -62,7 +68,7 @@ public class Injector {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T getT(Class<? super T> interf, Constructor<?> constructor) {
+    private static <T> T getT(Tuple<Class<?>, String> tuple, Constructor<?> constructor) {
         try {
             Class<?>[] parameterTypes = constructor.getParameterTypes();
 
@@ -73,7 +79,7 @@ public class Injector {
 
             Object service = constructor.newInstance(arguments);
 
-            servicesMap.put(interf, service);
+            servicesMap.put(tuple, service);
             return (T) service;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
