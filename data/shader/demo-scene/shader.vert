@@ -1,19 +1,15 @@
-/*
- * Copyright LWJGL. All rights reserved.
- * License terms: https://www.lwjgl.org/license
- */
-#version 110
+#version 330
 
 uniform mat4 viewProjectionMatrix;
 uniform mat4 lightViewProjectionMatrix;
 uniform mat4 biasMatrix;
 
-attribute vec3 position;
-attribute vec3 normal;
+layout (location=0) in vec3 position;
+layout (location=1) in vec3 normal;
 
-varying vec4 lightBiasedClipPosition;
-varying vec3 worldPosition;
-varying vec3 worldNormal;
+out vec4 lightBiasedClipPosition;
+out vec3 worldPosition;
+out vec3 worldNormal;
 
 void main(void) {
     /* Pass the position and normal to the fragment shader

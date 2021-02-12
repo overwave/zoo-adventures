@@ -248,8 +248,8 @@ public class ShadowMappingDemo {
 
     void createShadowProgram() throws IOException {
         shadowProgram = glCreateProgram();
-        int vshader = createShader("data/shader/shader.vert", GL_VERTEX_SHADER);
-        int fshader = createShader("data/shader/shader.frag", GL_FRAGMENT_SHADER);
+        int vshader = createShader("data/shader/demo-shadow/shader.vert", GL_VERTEX_SHADER);
+        int fshader = createShader("data/shader/demo-shadow/shader.frag", GL_FRAGMENT_SHADER);
         glAttachShader(shadowProgram, vshader);
         glAttachShader(shadowProgram, fshader);
         glBindAttribLocation(shadowProgram, 0, "position");
@@ -272,8 +272,8 @@ public class ShadowMappingDemo {
 
     void createNormalProgram() throws IOException {
         normalProgram = glCreateProgram();
-        int vshader = createShader("data/shader/shader.vert", GL_VERTEX_SHADER);
-        int fshader = createShader("data/shader/shader.frag", GL_FRAGMENT_SHADER);
+        int vshader = createShader("data/shader/demo-scene/shader.vert", GL_VERTEX_SHADER);
+        int fshader = createShader("data/shader/demo-scene/shader.frag", GL_FRAGMENT_SHADER);
         glAttachShader(normalProgram, vshader);
         glAttachShader(normalProgram, fshader);
         glBindAttribLocation(normalProgram, 0, "position");
