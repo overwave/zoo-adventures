@@ -6,8 +6,6 @@ import org.joml.Vector3f;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
 
-import java.util.List;
-
 public class CameraBoxSelectionDetector {
 
     private final Vector3f max;
@@ -25,12 +23,12 @@ public class CameraBoxSelectionDetector {
         nearFar = new Vector2f();
     }
 
-    public void selectGameItem(List<GameItem> gameItems, Camera camera) {
+    public void selectGameItem(GameItem[] gameItems, Camera camera) {        
         dir = camera.getViewMatrix().positiveZ(dir).negate();
         selectGameItem(gameItems, camera.getPosition(), dir);
     }
     
-    protected boolean selectGameItem(List<GameItem> gameItems, Vector3f center, Vector3f dir) {
+    protected boolean selectGameItem(GameItem[] gameItems, Vector3f center, Vector3f dir) {
         boolean selected = false;
         GameItem selectedGameItem = null;
         float closestDistance = Float.POSITIVE_INFINITY;
@@ -39,7 +37,7 @@ public class CameraBoxSelectionDetector {
             gameItem.setSelected(false);
             min.set(gameItem.getPosition());
             max.set(gameItem.getPosition());
-//            min.add(-gameItem.getScale()/2, -gameItem.getScale()/2, -gameItem.getScale()/2);
+            min.add(-gameItem.getScale(), -gameItem.getScale(), -gameItem.getScale());
             max.add(gameItem.getScale(), gameItem.getScale(), gameItem.getScale());
             if (Intersectionf.intersectRayAab(center, dir, min, max, nearFar) && nearFar.x < closestDistance) {
                 closestDistance = nearFar.x;

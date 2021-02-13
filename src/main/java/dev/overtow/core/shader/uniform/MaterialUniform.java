@@ -1,8 +1,8 @@
 package dev.overtow.core.shader.uniform;
 
-import org.lwjglb.engine.graph.Material;
-import org.lwjglb.engine.graph.lights.PointLight;
-import org.lwjglb.engine.graph.lights.SpotLight;
+import org.lwjglb1.engine.graph.Material;
+import org.lwjglb1.engine.graph.lights.PointLight;
+import org.lwjglb1.engine.graph.lights.SpotLight;
 
 import java.util.function.Consumer;
 import java.util.function.Function;

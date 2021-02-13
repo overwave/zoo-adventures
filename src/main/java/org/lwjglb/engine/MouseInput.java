@@ -1,6 +1,5 @@
 package org.lwjglb.engine;
 
-import dev.overtow.service.window.Window;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import static org.lwjgl.glfw.GLFW.*;
@@ -25,15 +24,15 @@ public class MouseInput {
         displVec = new Vector2f();
     }
 
-    public void init(Window windowKek) {
-        glfwSetCursorPosCallback(windowKek.getWindowHandle(), (windowHandle, xpos, ypos) -> {
+    public void init(Window window) {
+        glfwSetCursorPosCallback(window.getWindowHandle(), (windowHandle, xpos, ypos) -> {
             currentPos.x = xpos;
             currentPos.y = ypos;
         });
-        glfwSetCursorEnterCallback(windowKek.getWindowHandle(), (windowHandle, entered) -> {
+        glfwSetCursorEnterCallback(window.getWindowHandle(), (windowHandle, entered) -> {
             inWindow = entered;
         });
-        glfwSetMouseButtonCallback(windowKek.getWindowHandle(), (windowHandle, button, action, mode) -> {
+        glfwSetMouseButtonCallback(window.getWindowHandle(), (windowHandle, button, action, mode) -> {
             leftButtonPressed = button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS;
             rightButtonPressed = button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS;
         });
@@ -47,7 +46,7 @@ public class MouseInput {
         return currentPos;        
     }
     
-    public void input(Window windowKek) {
+    public void input(Window window) {
         displVec.x = 0;
         displVec.y = 0;
         if (previousPos.x > 0 && previousPos.y > 0 && inWindow) {

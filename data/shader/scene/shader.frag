@@ -150,7 +150,7 @@ float calcShadow(vec4 position) {
     vec3 projCoords = position.xyz;
     // Transform from screen coordinates to texture coordinates
     projCoords = projCoords * 0.5 + 0.5;
-    float bias = 0.05;
+    float bias = 0.0;
 
     float shadowFactor = 0.0;
     vec2 inc = 1.0 / textureSize(shadowMap, 0);
@@ -163,11 +163,10 @@ float calcShadow(vec4 position) {
     shadowFactor /= 9.0;
 
     if(projCoords.z > 1.0) {
-        shadowFactor = 1.0;
+        shadowFactor = 0;
     }
 
-//    return 1 - shadowFactor;
-    return 1;
+    return 1 - shadowFactor;
 }
 
 void main() {
@@ -177,17 +176,17 @@ void main() {
 
     vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, currNomal);
 
-    for (int i=0; i<MAX_POINT_LIGHTS; i++) {
-        if ( pointLights[i].intensity > 0 ) {
-            diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, currNomal);
-        }
-    }
-
-    for (int i=0; i<MAX_SPOT_LIGHTS; i++) {
-        if ( spotLights[i].pl.intensity > 0 ) {
-            diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, currNomal);
-        }
-    }
+//    for (int i=0; i<MAX_POINT_LIGHTS; i++) {
+//        if ( pointLights[i].intensity > 0 ) {
+//            diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, currNomal);
+//        }
+//    }
+//
+//    for (int i=0; i<MAX_SPOT_LIGHTS; i++) {
+//        if ( spotLights[i].pl.intensity > 0 ) {
+//            diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, currNomal);
+//        }
+//    }
     
     float shadow = calcShadow(mlightviewVertexPos);
 //    shadow = 1;

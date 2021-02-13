@@ -1,10 +1,8 @@
-package org.lwjglb.engine.loaders.newloader;
+package org.lwjglb.engine.loaders.assimp;
 
-import org.lwjglb.engine.graph.Texture;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.lwjglb.engine.graph.Texture;
 
 public class TextureCache {
 
@@ -23,10 +21,14 @@ public class TextureCache {
         return INSTANCE;
     }
     
-    public Texture getTexture(String path) throws IOException {
+    public Texture getTexture(String path)  {
         Texture texture = texturesMap.get(path);
         if ( texture == null ) {
-            texture = new Texture(path);
+            try {
+                texture = new Texture(path);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             texturesMap.put(path, texture);
         }
         return texture;

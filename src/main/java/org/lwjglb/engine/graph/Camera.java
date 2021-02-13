@@ -12,8 +12,8 @@ public class Camera {
     private Matrix4f viewMatrix;
     
     public Camera() {
-        position = new Vector3f(5f, 17, 5.0f);
-        rotation = new Vector3f(90, 0, 0);
+        position = new Vector3f();
+        rotation = new Vector3f();
         viewMatrix = new Matrix4f();
     }
     

@@ -3,15 +3,13 @@ package org.lwjglb.engine.sound;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import static org.lwjgl.openal.AL10.*;
-
-import dev.overtow.service.memory.MemoryManager;
-import dev.overtow.util.injection.Injector;
 import org.lwjgl.stb.STBVorbisInfo;
 import java.nio.ShortBuffer;
 import static org.lwjgl.stb.STBVorbis.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.system.MemoryUtil.*;
+import org.lwjglb.engine.Utils;
 
 public class SoundBuffer {
 
@@ -44,9 +42,7 @@ public class SoundBuffer {
 
     private ShortBuffer readVorbis(String resource, int bufferSize, STBVorbisInfo info) throws Exception {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            MemoryManager memoryManager = Injector.getInstance(MemoryManager.class);
-
-            vorbis = memoryManager.readFromFile(resource);
+            vorbis = Utils.ioResourceToByteBuffer(resource, bufferSize);
             IntBuffer error = stack.mallocInt(1);
             long decoder = stb_vorbis_open_memory(vorbis, error, null);
             if (decoder == NULL) {

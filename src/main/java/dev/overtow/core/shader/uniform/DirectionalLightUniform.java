@@ -1,6 +1,6 @@
 package dev.overtow.core.shader.uniform;
 
-import org.lwjglb.engine.graph.lights.DirectionalLight;
+import org.lwjglb1.engine.graph.lights.DirectionalLight;
 
 import java.util.function.Function;
 

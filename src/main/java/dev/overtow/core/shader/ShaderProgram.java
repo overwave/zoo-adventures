@@ -6,10 +6,10 @@ import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjglb.engine.graph.Material;
-import org.lwjglb.engine.graph.lights.DirectionalLight;
-import org.lwjglb.engine.graph.lights.PointLight;
-import org.lwjglb.engine.graph.lights.SpotLight;
+import org.lwjglb1.engine.graph.Material;
+import org.lwjglb1.engine.graph.lights.DirectionalLight;
+import org.lwjglb1.engine.graph.lights.PointLight;
+import org.lwjglb1.engine.graph.lights.SpotLight;
 
 import java.io.IOException;
 import java.util.HashMap;

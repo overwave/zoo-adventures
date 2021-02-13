@@ -45,6 +45,8 @@ public class Mesh {
 
     private Material material;
 
+    private float boundingRadius;
+
     public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
         this(positions, textCoords, normals, indices, Mesh.createEmptyIntArray(Mesh.MAX_WEIGHTS * positions.length / 3, 0), Mesh.createEmptyFloatArray(Mesh.MAX_WEIGHTS * positions.length / 3, 0));
     }
@@ -57,6 +59,8 @@ public class Mesh {
         IntBuffer jointIndicesBuffer = null;
         IntBuffer indicesBuffer = null;
         try {
+            calculateBoundingRadius(positions);
+
             vertexCount = indices.length;
             vboIdList = new ArrayList<>();
 
@@ -150,6 +154,15 @@ public class Mesh {
         }
     }
 
+    private void calculateBoundingRadius(float positions[]) {
+        int length = positions.length;
+        boundingRadius = 0;
+        for (int i = 0; i < length; i++) {
+            float pos = positions[i];
+            boundingRadius = Math.max(Math.abs(pos), boundingRadius);
+        }
+    }
+
     public Material getMaterial() {
         return material;
     }
@@ -166,17 +179,25 @@ public class Mesh {
         return vertexCount;
     }
 
+    public float getBoundingRadius() {
+        return boundingRadius;
+    }
+
+    public void setBoundingRadius(float boundingRadius) {
+        this.boundingRadius = boundingRadius;
+    }
+
     protected void initRender() {
-        Texture texture = material.getTexture();
+        Texture texture = material != null ? material.getTexture() : null;
         if (texture != null) {
             // Activate first texture bank
             glActiveTexture(GL_TEXTURE0);
             // Bind the texture
             glBindTexture(GL_TEXTURE_2D, texture.getId());
         }
-        Texture normalMap = material.getNormalMap();
+        Texture normalMap = material != null ? material.getNormalMap() : null;
         if (normalMap != null) {
-            // Activate first texture bank
+            // Activate second texture bank
             glActiveTexture(GL_TEXTURE1);
             // Bind the texture
             glBindTexture(GL_TEXTURE_2D, normalMap.getId());
@@ -205,10 +226,12 @@ public class Mesh {
         initRender();
 
         for (GameItem gameItem : gameItems) {
-            // Set up data required by GameItem
-            consumer.accept(gameItem);
-            // Render this game item
-            glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+            if (gameItem.isInsideFrustum()) {
+                // Set up data required by GameItem
+                consumer.accept(gameItem);
+                // Render this game item
+                glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+            }
         }
 
         endRender();
@@ -257,4 +280,5 @@ public class Mesh {
         Arrays.fill(result, defaultValue);
         return result;
     }
+
 }

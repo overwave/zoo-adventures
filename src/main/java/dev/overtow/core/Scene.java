@@ -6,12 +6,12 @@ import dev.overtow.service.window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjglb.engine.SceneLight;
-import org.lwjglb.engine.graph.*;
-import org.lwjglb.engine.graph.lights.DirectionalLight;
-import org.lwjglb.engine.graph.lights.PointLight;
-import org.lwjglb.engine.graph.lights.SpotLight;
-import org.lwjglb.engine.items.GameItem;
+import org.lwjglb1.engine.SceneLight;
+import org.lwjglb1.engine.graph.*;
+import org.lwjglb1.engine.graph.lights.DirectionalLight;
+import org.lwjglb1.engine.graph.lights.PointLight;
+import org.lwjglb1.engine.graph.lights.SpotLight;
+import org.lwjglb1.engine.items.GameItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ public class Scene {
     private final Camera camera;
     private SceneLight sceneLight;
     private final Transformation transformation;
-    private ShadowMap shadowMap;
+//    private ShadowMap shadowMap;
     private final float specularPower;
 
 
@@ -51,7 +51,7 @@ public class Scene {
         this.window = window;
         this.camera = camera;
         this.sceneLight = sceneLight;
-        this.shadowMap = new ShadowMap();
+//        this.shadowMap = new ShadowMap();
     }
 
     public void addActor(Actor actor) {
@@ -90,28 +90,36 @@ public class Scene {
     }
 
     public void draw() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 
         // depthShader
-        glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
-        glViewport(0, 0, ShadowMap.SHADOW_MAP_WIDTH, ShadowMap.SHADOW_MAP_HEIGHT);
-        depthShader.draw(() -> {
-//            DirectionalLight light = sceneLight.getDirectionalLight();
-//            Vector3f lightDirection = light.getDirection();
+//        glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
+//        glViewport(0, 0, ShadowMap.SHADOW_MAP_WIDTH, ShadowMap.SHADOW_MAP_HEIGHT);
+//        depthShader.draw(() -> {
+//            glClear(GL_DEPTH_BUFFER_BIT);
 //
-//            float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
-//            float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
-//            float lightAngleZ = 0;
-//            Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
-//            DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
-//            Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
+//            depthShader.set(Uniform.Name.VIEW_PROJECTION_MATRIX, transformation.getLightViewMatrix());
 //
-//            depthShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
+////            Matrix4f projectionMatrix = window.getProjectionMatrix();
+////            sceneShader.set(Uniform.Name.PROJECTION_MATRIX, projectionMatrix);
+////            Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
+////            sceneShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
+////            Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
+////            Matrix4f viewMatrix = camera.getViewMatrix();
 //
-//            renderMeshesDepth(depthShader, null);
-        });
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+////            renderLights(sceneShader, viewMatrix, sceneLight);
+//
+//            Vector3f lightPosition = new Vector3f(camera.getPosition());
+//            Vector3f lightLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
+//            final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
+//            Matrix4f light = new Matrix4f();
+//
+//            light.setPerspective((float) Math.toRadians(45.0f), 1.0f, 0.1f, 60.0f)
+//                    .lookAt(lightPosition, lightLookAt, UP);
+//
+//            renderMeshesDepth(depthShader, light);
+//        });
+//        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
         window.updateProjectionMatrix();
@@ -119,6 +127,8 @@ public class Scene {
 
         glViewport(0, 0, window.getWidth(), window.getHeight());
         sceneShader.draw(() -> {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
             Matrix4f projectionMatrix = window.getProjectionMatrix();
             sceneShader.set(Uniform.Name.PROJECTION_MATRIX, projectionMatrix);
             Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
@@ -137,28 +147,25 @@ public class Scene {
     }
 
     private void renderMeshesDepth(ShaderProgram shader, Matrix4f viewMatrix) {
-        // Render each mesh with the associated game Items
-//        Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
         for (Mesh mesh : meshMap.keySet()) {
             if (viewMatrix != null) {
-                shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
-                shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
-                glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+                mesh.renderList(meshMap.get(mesh), gameItem -> {
+                            Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+                            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
+                            shader.set(Uniform.Name.VIEW_PROJECTION_MATRIX, modelViewMatrix);
+                        }
+                );
             }
         }
     }
 
     private void renderMeshes(ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
-        // Render each mesh with the associated game Items
-//        Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
-//        Map<Mesh, List<GameItem>> mapMeshes = meshMap;
         for (Mesh mesh : meshMap.keySet()) {
             if (viewMatrix != null) {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
                 shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
                 glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+//                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
             }
 
             Texture text = mesh.getMaterial().getTexture();
