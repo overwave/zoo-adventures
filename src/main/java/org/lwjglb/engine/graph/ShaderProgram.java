@@ -11,7 +11,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import static org.lwjgl.opengl.GL20.*;
 import org.lwjgl.system.MemoryStack;
-import org.lwjglb.engine.graph.weather.Fog;
 
 public class ShaderProgram {
 
@@ -20,8 +19,6 @@ public class ShaderProgram {
     private int vertexShaderId;
 
     private int fragmentShaderId;
-
-    private int geometryShaderId;
 
     private final Map<String, Integer> uniforms;
 
@@ -191,12 +188,6 @@ public class ShaderProgram {
         setUniform(uniformName + ".reflectance", material.getReflectance());
     }
 
-    public void setUniform(String uniformName, Fog fog) {
-        setUniform(uniformName + ".activeFog", fog.isActive() ? 1 : 0);
-        setUniform(uniformName + ".colour", fog.getColour());
-        setUniform(uniformName + ".density", fog.getDensity());
-    }
-
     public void createVertexShader(String shaderCode) throws Exception {
         vertexShaderId = createShader(shaderCode, GL_VERTEX_SHADER);
     }
@@ -231,9 +222,6 @@ public class ShaderProgram {
 
         if (vertexShaderId != 0) {
             glDetachShader(programId, vertexShaderId);
-        }
-        if (geometryShaderId != 0) {
-            glDetachShader(programId, geometryShaderId);
         }
         if (fragmentShaderId != 0) {
             glDetachShader(programId, fragmentShaderId);

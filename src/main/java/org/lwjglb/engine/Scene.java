@@ -1,27 +1,19 @@
 package org.lwjglb.engine;
 
-import org.lwjglb.engine.items.SkyBox;
+import org.lwjglb.engine.graph.Mesh;
+import org.lwjglb.engine.graph.particles.IParticleEmitter;
 import org.lwjglb.engine.items.GameItem;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.lwjglb.engine.graph.InstancedMesh;
-import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.particles.IParticleEmitter;
-import org.lwjglb.engine.graph.weather.Fog;
 
 public class Scene {
 
     private final Map<Mesh, List<GameItem>> meshMap;
 
-    private final Map<InstancedMesh, List<GameItem>> instancedMeshMap;
-
-    private SkyBox skyBox;
-
     private SceneLight sceneLight;
-
-    private Fog fog;
 
     private boolean renderShadows;
     
@@ -29,8 +21,6 @@ public class Scene {
 
     public Scene() {
         meshMap = new HashMap();
-        instancedMeshMap = new HashMap();
-        fog = Fog.NOFOG;
         renderShadows = true;
     }
 
@@ -38,31 +28,17 @@ public class Scene {
         return meshMap;
     }
 
-    public Map<InstancedMesh, List<GameItem>> getGameInstancedMeshes() {
-        return instancedMeshMap;
-    }
-
     public boolean isRenderShadows() {
         return renderShadows;
     }
 
     public void setGameItems(GameItem[] gameItems) {
-        // Create a map of meshes to speed up rendering
         int numGameItems = gameItems != null ? gameItems.length : 0;
         for (int i = 0; i < numGameItems; i++) {
             GameItem gameItem = gameItems[i];
             Mesh[] meshes = gameItem.getMeshes();
             for (Mesh mesh : meshes) {
-                boolean instancedMesh = mesh instanceof InstancedMesh;
-                List<GameItem> list = instancedMesh ? instancedMeshMap.get(mesh) : meshMap.get(mesh);
-                if (list == null) {
-                    list = new ArrayList<>();
-                    if (instancedMesh) {
-                        instancedMeshMap.put((InstancedMesh)mesh, list);
-                    } else {
-                        meshMap.put(mesh, list);
-                    }
-                }
+                List<GameItem> list = meshMap.computeIfAbsent(mesh, k -> new ArrayList<>());
                 list.add(gameItem);
             }
         }
@@ -72,9 +48,6 @@ public class Scene {
         for (Mesh mesh : meshMap.keySet()) {
             mesh.cleanUp();
         }
-        for (Mesh mesh : instancedMeshMap.keySet()) {
-            mesh.cleanUp();
-        }
         if (particleEmitters != null) {
             for (IParticleEmitter particleEmitter : particleEmitters) {
                 particleEmitter.cleanup();
@@ -82,16 +55,8 @@ public class Scene {
         }
     }
 
-    public SkyBox getSkyBox() {
-        return skyBox;
-    }
-
     public void setRenderShadows(boolean renderShadows) {
         this.renderShadows = renderShadows;
-    }
-
-    public void setSkyBox(SkyBox skyBox) {
-        this.skyBox = skyBox;
     }
 
     public SceneLight getSceneLight() {
@@ -102,20 +67,6 @@ public class Scene {
         this.sceneLight = sceneLight;
     }
 
-    /**
-     * @return the fog
-     */
-    public Fog getFog() {
-        return fog;
-    }
-
-    /**
-     * @param fog the fog to set
-     */
-    public void setFog(Fog fog) {
-        this.fog = fog;
-    }
-
     public IParticleEmitter[] getParticleEmitters() {
         return particleEmitters;
     }
@@ -123,5 +74,4 @@ public class Scene {
     public void setParticleEmitters(IParticleEmitter[] particleEmitters) {
         this.particleEmitters = particleEmitters;
     }
-
 }

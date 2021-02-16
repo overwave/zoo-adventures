@@ -1,26 +1,16 @@
 package org.lwjglb.game;
 
-import org.joml.*;
-
-import static org.lwjgl.glfw.GLFW.*;
-import org.lwjglb.engine.IGameLogic;
-import org.lwjglb.engine.MouseInput;
-import org.lwjglb.engine.Scene;
-import org.lwjglb.engine.SceneLight;
-import org.lwjglb.engine.Window;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.lwjglb.engine.*;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.graph.Mesh;
 import org.lwjglb.engine.graph.Renderer;
-import org.lwjglb.engine.graph.anim.AnimGameItem;
-import org.lwjglb.engine.graph.anim.Animation;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
-import org.lwjglb.engine.graph.weather.Fog;
 import org.lwjglb.engine.items.GameItem;
-import org.lwjglb.engine.items.SkyBox;
-import org.lwjglb.engine.loaders.assimp.AnimMeshesLoader;
 import org.lwjglb.engine.loaders.assimp.StaticMeshesLoader;
 
-import java.lang.Math;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class DummyGame implements IGameLogic {
 
@@ -43,10 +33,6 @@ public class DummyGame implements IGameLogic {
     private boolean firstTime;
 
     private boolean sceneChanged;
-
-    private Animation animation;
-
-    private AnimGameItem animItem;
 
     public DummyGame() {
         renderer = new Renderer();
@@ -73,20 +59,8 @@ public class DummyGame implements IGameLogic {
 
         scene.setGameItems(new GameItem[]{mesh22, terrain});
 
-        // Shadows
         scene.setRenderShadows(true);
 
-        // Fog
-        Vector3f fogColour = new Vector3f(0.5f, 0.5f, 0.5f);
-        scene.setFog(new Fog(false, fogColour, 0.02f));
-
-        // Setup  SkyBox
-//        float skyBoxScale = 100.0f;
-//        SkyBox skyBox = new SkyBox("C:\\Users\\overw\\IdeaProjects\\lwjglbook\\chapter27\\c27-p1\\src\\main\\resources\\models/skybox.obj", new Vector4f(0.65f, 0.65f, 0.65f, 1.0f));
-//        skyBox.setScale(skyBoxScale);
-//        scene.setSkyBox(skyBox);
-
-        // Setup Lights
         setupLights();
 
         camera.getPosition().x = -1.5f;
@@ -144,12 +118,6 @@ public class DummyGame implements IGameLogic {
             angleInc += 0.05f;
         } else {
             angleInc = 0;            
-        }
-        if (window.isKeyPressed(GLFW_KEY_SPACE)) {
-            sceneChanged = true;
-            if (animation != null) {
-                animation.nextFrame();
-            }
         }
     }
 

@@ -1,26 +1,20 @@
 package org.lwjglb.engine.graph.shadow;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.joml.Matrix4f;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
-import static org.lwjgl.opengl.GL30.*;
 import org.lwjglb.engine.Scene;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.Utils;
 import org.lwjglb.engine.Window;
-import org.lwjglb.engine.graph.Camera;
-import org.lwjglb.engine.graph.InstancedMesh;
-import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.Renderer;
-import org.lwjglb.engine.graph.ShaderProgram;
-import org.lwjglb.engine.graph.Transformation;
-import org.lwjglb.engine.graph.anim.AnimGameItem;
-import org.lwjglb.engine.graph.anim.AnimatedFrame;
+import org.lwjglb.engine.graph.*;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
 import org.lwjglb.engine.items.GameItem;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 
 public class ShadowRenderer {
 
@@ -105,8 +99,6 @@ public class ShadowRenderer {
             glClear(GL_DEPTH_BUFFER_BIT);
 
             renderNonInstancedMeshes(scene, transformation);
-
-            renderInstancedMeshes(scene, transformation);
         }
 
         // Unbind
@@ -123,31 +115,8 @@ public class ShadowRenderer {
             mesh.renderList(mapMeshes.get(mesh), (GameItem gameItem) -> {
                 Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
                 depthShaderProgram.setUniform("modelNonInstancedMatrix", modelMatrix);
-                if (gameItem instanceof AnimGameItem) {
-                    AnimGameItem animGameItem = (AnimGameItem) gameItem;
-                    AnimatedFrame frame = animGameItem.getCurrentAnimation().getCurrentFrame();
-                    depthShaderProgram.setUniform("jointsMatrix", frame.getJointMatrices());
-                }
-            }
+                    }
             );
-        }
-    }
-
-    private void renderInstancedMeshes(Scene scene, Transformation transformation) {
-        depthShaderProgram.setUniform("isInstanced", 1);
-
-        // Render each mesh with the associated game Items
-        Map<InstancedMesh, List<GameItem>> mapMeshes = scene.getGameInstancedMeshes();
-        for (InstancedMesh mesh : mapMeshes.keySet()) {
-            filteredItems.clear();
-            for (GameItem gameItem : mapMeshes.get(mesh)) {
-                if (gameItem.isInsideFrustum()) {
-                    filteredItems.add(gameItem);
-                }
-            }
-            bindTextures(GL_TEXTURE2);
-
-            mesh.renderListInstanced(filteredItems, transformation, null);
         }
     }
 
