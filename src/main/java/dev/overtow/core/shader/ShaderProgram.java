@@ -14,6 +14,7 @@ import org.lwjglb.engine.graph.lights.SpotLight;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -93,12 +94,29 @@ public abstract class ShaderProgram {
         ((MaterialUniform) uniformMap.get(name)).setValue(value);
     }
 
+    @SuppressWarnings("unchecked")
+    public void set(Uniform.Name name, int index, Matrix4f value) {
+        ((ArrayUniform<Matrix4f>) uniformMap.get(name)).setElement(value, index);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void set(Uniform.Name name, int index, float value) {
+        ((ArrayUniform<Float>) uniformMap.get(name)).setElement(value, index);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void set(Uniform.Name name, int index, int value) {
+        ((ArrayUniform<Integer>) uniformMap.get(name)).setElement(value, index);
+    }
+
     // TODO NOT TESTED
+    @SuppressWarnings("unchecked")
     public void set(Uniform.Name name, int index, PointLight value) {
         ((ArrayUniform<PointLight>) uniformMap.get(name)).setElement(value, index);
     }
 
     // TODO NOT TESTED
+    @SuppressWarnings("unchecked")
     public void set(Uniform.Name name, int index, SpotLight value) {
         ((ArrayUniform<SpotLight>) uniformMap.get(name)).setElement(value, index);
     }
@@ -107,9 +125,9 @@ public abstract class ShaderProgram {
         ((DirectionalLightUniform) uniformMap.get(name)).setValue(value);
     }
 
-    public void draw(Runnable runnable) {
+    public void draw(Consumer<ShaderProgram> consumer) {
         glUseProgram(programId);
-        runnable.run();
+        consumer.accept(this);
         glUseProgram(0);
     }
 }

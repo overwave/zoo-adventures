@@ -11,6 +11,10 @@ public class FloatUniform extends SingleValueUniform<Float> {
         super(name);
     }
 
+    public FloatUniform(String name) {
+        super(name);
+    }
+
     @Override
     public void setValue(Float value) {
 //        if (value.equals(this.value)) {

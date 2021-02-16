@@ -10,6 +10,10 @@ public class IntegerUniform extends SingleValueUniform<Integer> {
         super(name);
     }
 
+    public IntegerUniform(String name) {
+        super(name);
+    }
+
     @Override
     public void setValue(Integer value) {
 //        if (value.equals(this.value)) {

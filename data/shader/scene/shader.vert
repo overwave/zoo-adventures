@@ -1,5 +1,7 @@
 #version 330
 
+const int NUM_CASCADES = 3;
+
 layout (location=0) in vec3 position;
 layout (location=1) in vec2 texCoord;
 layout (location=2) in vec3 vertexNormal;
@@ -9,16 +11,15 @@ layout (location=14) in float selectedInstanced;
 out vec2 outTexCoord;
 out vec3 mvVertexNormal;
 out vec3 mvVertexPos;
-out vec4 mlightviewVertexPos;
+out vec4 mlightviewVertexPos[NUM_CASCADES];
 out mat4 outModelViewMatrix;
 out float outSelected;
 
+uniform mat4 lightViewMatrix[NUM_CASCADES];
+uniform mat4 orthoProjectionMatrix[NUM_CASCADES];
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
-uniform mat4 modelLightViewMatrix;
-uniform mat4 orthoProjectionMatrix;
-uniform int numCols;
-uniform int numRows;
+uniform mat4 modelNonInstancedMatrix;
 uniform float selected;
 
 void main() {
@@ -29,13 +30,13 @@ void main() {
     vec4 mvPos = modelViewMatrix * initPos;
     gl_Position = projectionMatrix * mvPos;
 
-    // Support for texture atlas, update texture coordinates
-    float x = (texCoord.x / numCols + texOffset.x);
-    float y = (texCoord.y / numRows + texOffset.y);
-    outTexCoord = vec2(x, y);
+    outTexCoord = texCoord;
 
     mvVertexNormal = normalize(modelViewMatrix * initNormal).xyz;
     mvVertexPos = mvPos.xyz;
-    mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * initPos;
+    for (int i = 0 ; i < NUM_CASCADES ; i++) {
+        mlightviewVertexPos[i] = orthoProjectionMatrix[i] * lightViewMatrix[i] * modelNonInstancedMatrix * initPos;
+    }
+//    mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * initPos;
     outModelViewMatrix = modelViewMatrix;
 }

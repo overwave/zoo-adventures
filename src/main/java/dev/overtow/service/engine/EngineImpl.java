@@ -281,17 +281,15 @@ public class EngineImpl implements Engine {
 
     private SceneLight setupLights() {
         SceneLight sceneLight = new SceneLight();
-//        scene.setSceneLight(sceneLight);
 
-        // Ambient Light
         sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
 
         // Directional Light
         float lightIntensity = 1.f;
         Vector3f lightDirection = new Vector3f(0, 1, 1);
         DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), lightDirection, lightIntensity);
-        directionalLight.setShadowPosMult(10);
-        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
+//        directionalLight.setShadowPosMult(10);
+//        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
         sceneLight.setDirectionalLight(directionalLight);
 
         return sceneLight;

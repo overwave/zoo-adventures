@@ -7,7 +7,10 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjglb.engine.SceneLight;
-import org.lwjglb.engine.graph.*;
+import org.lwjglb.engine.graph.Camera;
+import org.lwjglb.engine.graph.Mesh;
+import org.lwjglb.engine.graph.Texture;
+import org.lwjglb.engine.graph.Transformation;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
 import org.lwjglb.engine.graph.lights.PointLight;
 import org.lwjglb.engine.graph.lights.SpotLight;
@@ -21,8 +24,7 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
+import static org.lwjgl.opengl.GL30.*;
 
 public class Scene {
     private final ShaderProgram sceneShader;
@@ -35,12 +37,18 @@ public class Scene {
     private final Camera camera;
     private SceneLight sceneLight;
     private final Transformation transformation;
-    private ShadowMap shadowMap;
     private final float specularPower;
+
+    // shadow stuff
+    private ShadowBuffer shadowBuffer;
+    public static final int SHADOW_CASCADES_NUMBER = 3;
+
+    public static final float[] CASCADE_SPLITS = new float[]{Window.Z_FAR / 20.0f, Window.Z_FAR / 10.0f, Window.Z_FAR};
+    private List<ShadowCascade> shadowCascades;
 
 
     public Scene(Window window, Camera camera, SceneLight sceneLight) {
-        depthShader = new DepthShader();
+        depthShader = new ShadowShader();
         sceneShader = new SceneShader();
 
         actors = new ArrayList<>();
@@ -51,7 +59,16 @@ public class Scene {
         this.window = window;
         this.camera = camera;
         this.sceneLight = sceneLight;
-        this.shadowMap = new ShadowMap();
+
+        // shadow stuff
+        shadowCascades = new ArrayList<>();
+        shadowBuffer = new ShadowBuffer();
+        float zNear = Window.Z_NEAR;
+        for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {
+            ShadowCascade shadowCascade = new ShadowCascade(zNear, CASCADE_SPLITS[i]);
+            shadowCascades.add(shadowCascade);
+            zNear = CASCADE_SPLITS[i];
+        }
     }
 
     public void addActor(Actor actor) {
@@ -87,29 +104,36 @@ public class Scene {
 
     public void update() {
         actors.forEach(Actor::update);
+
+        // shadow shit
+//        SceneLight sceneLight = scene.getSceneLight();
+        DirectionalLight directionalLight = sceneLight != null ? sceneLight.getDirectionalLight() : null;
+        for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {
+            ShadowCascade shadowCascade = shadowCascades.get(i);
+            shadowCascade.update(window, camera.getViewMatrix(), directionalLight);
+        }
     }
 
     public void draw() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+        // TODO add frustum filtering!
 
-        // depthShader
-        glBindFramebuffer(GL_FRAMEBUFFER, shadowMap.getDepthMapFBO());
-        glViewport(0, 0, ShadowMap.SHADOW_MAP_WIDTH, ShadowMap.SHADOW_MAP_HEIGHT);
-        depthShader.draw(() -> {
-//            DirectionalLight light = sceneLight.getDirectionalLight();
-//            Vector3f lightDirection = light.getDirection();
-//
-//            float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
-//            float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
-//            float lightAngleZ = 0;
-//            Matrix4f lightViewMatrix = transformation.updateLightViewMatrix(new Vector3f(lightDirection).mul(light.getShadowPosMult()), new Vector3f(lightAngleX, lightAngleY, lightAngleZ));
-//            DirectionalLight.OrthoCoords orthCoords = light.getOrthoCoords();
-//            Matrix4f orthoProjMatrix = transformation.updateOrthoProjectionMatrix(orthCoords.left, orthCoords.right, orthCoords.bottom, orthCoords.top, orthCoords.near, orthCoords.far);
-//
-//            depthShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
-//
-//            renderMeshesDepth(depthShader, null);
+        glBindFramebuffer(GL_FRAMEBUFFER, shadowBuffer.getDepthMapFBO());
+        glViewport(0, 0, ShadowBuffer.SHADOW_MAP_WIDTH, ShadowBuffer.SHADOW_MAP_HEIGHT);
+
+        depthShader.draw(shader -> {
+            for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {
+                ShadowCascade shadowCascade = shadowCascades.get(i);
+
+                shader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, shadowCascade.getOrthoProjMatrix());
+                shader.set(Uniform.Name.LIGHT_VIEW_MATRIX, shadowCascade.getLightViewMatrix());
+
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowBuffer.getDepthMapTexture().getIds()[i], 0);
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                renderNonInstancedMeshes(shader, transformation);
+            }
         });
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -118,64 +142,55 @@ public class Scene {
 
 
         glViewport(0, 0, window.getWidth(), window.getHeight());
-        sceneShader.draw(() -> {
-            Matrix4f projectionMatrix = window.getProjectionMatrix();
-            sceneShader.set(Uniform.Name.PROJECTION_MATRIX, projectionMatrix);
-            Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
-            sceneShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
-            Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
+        sceneShader.draw(shader -> {
             Matrix4f viewMatrix = camera.getViewMatrix();
+            Matrix4f projectionMatrix = window.getProjectionMatrix();
+//            shader.set(Uniform.Name.VIEW_MATRIX, viewMatrix);
+            shader.set(Uniform.Name.PROJECTION_MATRIX, projectionMatrix);
 
-            renderLights(sceneShader, viewMatrix, sceneLight);
+            for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {
+                ShadowCascade shadowCascade = shadowCascades.get(i);
+                shader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, i, shadowCascade.getOrthoProjMatrix());
+                shader.set(Uniform.Name.CASCADE_FAR_PLANES, i, CASCADE_SPLITS[i]);
+                shader.set(Uniform.Name.LIGHT_VIEW_MATRIX, i, shadowCascade.getLightViewMatrix());
+            }
 
-            sceneShader.set(Uniform.Name.TEXTURE_SAMPLER, 0);
-            sceneShader.set(Uniform.Name.NORMAL_MAP, 1);
-            sceneShader.set(Uniform.Name.SHADOW_MAP, 2);
+            renderLights(shader, viewMatrix, sceneLight);
 
-            renderMeshes(sceneShader, viewMatrix, lightViewMatrix);
+            shader.set(Uniform.Name.TEXTURE_SAMPLER, 0);
+            shader.set(Uniform.Name.NORMAL_MAP, 1);
+            int offset = 2;
+            for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {
+                shader.set(Uniform.Name.SHADOW_MAP, i, offset + i);
+            }
+            renderMeshes(shader/*, viewMatrix, lightViewMatrix*/);
         });
     }
 
-    private void renderMeshesDepth(ShaderProgram shader, Matrix4f viewMatrix) {
-        // Render each mesh with the associated game Items
-//        Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
+    private void renderNonInstancedMeshes(ShaderProgram shader, Transformation transformation) {
         for (Mesh mesh : meshMap.keySet()) {
-            if (viewMatrix != null) {
-                shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
-                shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
-                glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
-            }
+            mesh.renderList(meshMap.get(mesh), gameItem -> {
+                        Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
+                        shader.set(Uniform.Name.MODEL_NON_INSTANCED_MATRIX, modelMatrix);
+                    }
+            );
         }
     }
 
-    private void renderMeshes(ShaderProgram shader, Matrix4f viewMatrix, Matrix4f lightViewMatrix) {
-        // Render each mesh with the associated game Items
-//        Map<Mesh, List<GameItem>> mapMeshes = scene.getGameMeshes();
-//        Map<Mesh, List<GameItem>> mapMeshes = meshMap;
+    private void renderMeshes(ShaderProgram shader) {
         for (Mesh mesh : meshMap.keySet()) {
-            if (viewMatrix != null) {
-                shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
-                shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
-                glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+            shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
+            shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
+
+            for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {
+                glActiveTexture(GL_TEXTURE2 + i);
+                glBindTexture(GL_TEXTURE_2D, shadowBuffer.getDepthMapTexture().getIds()[i]);
             }
 
-            Texture text = mesh.getMaterial().getTexture();
-            if (text != null) {
-                shader.set(Uniform.Name.NUM_COLS, text.getNumCols());
-                shader.set(Uniform.Name.NUM_ROWS, text.getNumRows());
-            }
-
-            mesh.renderList(meshMap.get(mesh), (GameItem gameItem) -> {
+            mesh.renderList(meshMap.get(mesh), gameItem -> {
                         shader.set(Uniform.Name.SELECTED, gameItem.isSelected() ? 1.0f : 0.0f);
                         Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
-                        if (viewMatrix != null) {
-                            Matrix4f modelViewMatrix = transformation.buildModelViewMatrix(modelMatrix, viewMatrix);
-                            shader.set(Uniform.Name.MODEL_VIEW_MATRIX, modelViewMatrix);
-                        }
-                        Matrix4f modelLightViewMatrix = transformation.buildModelLightViewMatrix(modelMatrix, lightViewMatrix);
-                        shader.set(Uniform.Name.MODEL_LIGHT_VIEW_MATRIX, modelLightViewMatrix);
+                        shader.set(Uniform.Name.MODEL_NON_INSTANCED_MATRIX, modelMatrix);
                     }
             );
         }

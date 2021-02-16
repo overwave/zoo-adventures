@@ -1,12 +1,13 @@
 #version 330
 
 layout (location=0) in vec3 position;
+layout (location=1) in vec2 texCoord;
+layout (location=2) in vec3 vertexNormal;
 
-//uniform mat4 modelLightViewMatrix;
-//uniform mat4 orthoProjectionMatrix;
-uniform mat4 viewProjectionMatrix;
+uniform mat4 modelNonInstancedMatrix;
+uniform mat4 lightViewMatrix;
+uniform mat4 orthoProjectionMatrix;
 
 void main() {
-    gl_Position = viewProjectionMatrix * vec4(position, 1.0);
-//    gl_Position = orthoProjectionMatrix * modelLightViewMatrix * vec4(position, 1.0);
+    gl_Position = orthoProjectionMatrix * lightViewMatrix * modelNonInstancedMatrix * vec4(position, 1.0);
 }

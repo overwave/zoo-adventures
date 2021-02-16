@@ -4,6 +4,10 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 
 public interface Window {
+    float FOV = (float) Math.toRadians(60.0f);
+    float Z_NEAR = 0.01f;
+    float Z_FAR = 1000.f;
+
     int getWidth();
 
     int getHeight();
