@@ -145,7 +145,7 @@ public class Scene {
         sceneShader.draw(shader -> {
             Matrix4f viewMatrix = camera.getViewMatrix();
             Matrix4f projectionMatrix = window.getProjectionMatrix();
-//            shader.set(Uniform.Name.VIEW_MATRIX, viewMatrix);
+            shader.set(Uniform.Name.MODEL_VIEW_MATRIX, viewMatrix);
             shader.set(Uniform.Name.PROJECTION_MATRIX, projectionMatrix);
 
             for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {

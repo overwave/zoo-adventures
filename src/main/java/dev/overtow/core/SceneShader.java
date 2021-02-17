@@ -25,7 +25,7 @@ public class SceneShader extends ShaderProgram {
         uniformMap.put(Uniform.Name.SHADOW_MAP, new ArrayUniform<>(Uniform.Name.SHADOW_MAP, SHADOW_CASCADES_NUMBER, IntegerUniform::new));
         uniformMap.put(Uniform.Name.LIGHT_VIEW_MATRIX, new ArrayUniform<>(Uniform.Name.LIGHT_VIEW_MATRIX, SHADOW_CASCADES_NUMBER, Matrix4fUniform::new));
         uniformMap.put(Uniform.Name.ORTHO_PROJECTION_MATRIX, new ArrayUniform<>(Uniform.Name.ORTHO_PROJECTION_MATRIX, SHADOW_CASCADES_NUMBER, Matrix4fUniform::new));
-        uniformMap.put(Uniform.Name.MODEL_LIGHT_VIEW_MATRIX, new Matrix4fUniform(Uniform.Name.MODEL_LIGHT_VIEW_MATRIX));
+        uniformMap.put(Uniform.Name.MODEL_VIEW_MATRIX, new Matrix4fUniform(Uniform.Name.MODEL_VIEW_MATRIX));
         uniformMap.put(Uniform.Name.SELECTED, new FloatUniform(Uniform.Name.SELECTED));
         uniformMap.put(Uniform.Name.BACK_COLOR, new Vector4fUniform(Uniform.Name.BACK_COLOR));
 

@@ -5,8 +5,6 @@ const int NUM_CASCADES = 3;
 layout (location=0) in vec3 position;
 layout (location=1) in vec2 texCoord;
 layout (location=2) in vec3 vertexNormal;
-layout (location=13) in vec2 texOffset;
-layout (location=14) in float selectedInstanced;
 
 out vec2 outTexCoord;
 out vec3 mvVertexNormal;
