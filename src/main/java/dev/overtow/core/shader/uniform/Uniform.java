@@ -6,12 +6,12 @@ public interface Uniform<T> {
     void locate(Function<String, Integer> function);
 
     enum Name {
-        // scene & vert
+        // scene & shadow vert
         LIGHT_VIEW_MATRIX("lightViewMatrix"),
         ORTHO_PROJECTION_MATRIX("orthoProjectionMatrix"),
-        MODEL_VIEW_MATRIX("modelViewMatrix"),
+        VIEW_MATRIX("viewMatrix"),
         PROJECTION_MATRIX("projectionMatrix"),
-        MODEL_NON_INSTANCED_MATRIX("modelNonInstancedMatrix"),
+        MODEL_MATRIX("modelMatrix"),
         SELECTED("selected"),
 
         // scene frag

@@ -15,9 +15,9 @@ out float outSelected;
 
 uniform mat4 lightViewMatrix[NUM_CASCADES];
 uniform mat4 orthoProjectionMatrix[NUM_CASCADES];
-uniform mat4 modelViewMatrix;
+uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
-uniform mat4 modelNonInstancedMatrix;
+uniform mat4 modelMatrix;
 uniform float selected;
 
 void main() {
@@ -25,6 +25,7 @@ void main() {
     vec4 initPos = vec4(position, 1.0);
     vec4 initNormal = vec4(vertexNormal, 0.0);
 
+    mat4 modelViewMatrix =  viewMatrix * modelMatrix;
     vec4 mvPos = modelViewMatrix * initPos;
     gl_Position = projectionMatrix * mvPos;
 
@@ -32,9 +33,8 @@ void main() {
 
     mvVertexNormal = normalize(modelViewMatrix * initNormal).xyz;
     mvVertexPos = mvPos.xyz;
-    for (int i = 0 ; i < NUM_CASCADES ; i++) {
-        mlightviewVertexPos[i] = orthoProjectionMatrix[i] * lightViewMatrix[i] * modelNonInstancedMatrix * initPos;
+    for (int i = 0; i < NUM_CASCADES; i++) {
+        mlightviewVertexPos[i] = orthoProjectionMatrix[i] * lightViewMatrix[i] * modelMatrix * initPos;
     }
-//    mlightviewVertexPos = orthoProjectionMatrix * modelLightViewMatrix * initPos;
     outModelViewMatrix = modelViewMatrix;
 }

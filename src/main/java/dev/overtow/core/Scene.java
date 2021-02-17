@@ -9,7 +9,6 @@ import org.joml.Vector4f;
 import org.lwjglb.engine.SceneLight;
 import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.Texture;
 import org.lwjglb.engine.graph.Transformation;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
 import org.lwjglb.engine.graph.lights.PointLight;
@@ -145,7 +144,7 @@ public class Scene {
         sceneShader.draw(shader -> {
             Matrix4f viewMatrix = camera.getViewMatrix();
             Matrix4f projectionMatrix = window.getProjectionMatrix();
-            shader.set(Uniform.Name.MODEL_VIEW_MATRIX, viewMatrix);
+            shader.set(Uniform.Name.VIEW_MATRIX, viewMatrix);
             shader.set(Uniform.Name.PROJECTION_MATRIX, projectionMatrix);
 
             for (int i = 0; i < SHADOW_CASCADES_NUMBER; i++) {
@@ -171,7 +170,7 @@ public class Scene {
         for (Mesh mesh : meshMap.keySet()) {
             mesh.renderList(meshMap.get(mesh), gameItem -> {
                         Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
-                        shader.set(Uniform.Name.MODEL_NON_INSTANCED_MATRIX, modelMatrix);
+                        shader.set(Uniform.Name.MODEL_MATRIX, modelMatrix);
                     }
             );
         }
@@ -190,7 +189,7 @@ public class Scene {
             mesh.renderList(meshMap.get(mesh), gameItem -> {
                         shader.set(Uniform.Name.SELECTED, gameItem.isSelected() ? 1.0f : 0.0f);
                         Matrix4f modelMatrix = transformation.buildModelMatrix(gameItem);
-                        shader.set(Uniform.Name.MODEL_NON_INSTANCED_MATRIX, modelMatrix);
+                        shader.set(Uniform.Name.MODEL_MATRIX, modelMatrix);
                     }
             );
         }
