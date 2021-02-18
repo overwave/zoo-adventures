@@ -3,6 +3,7 @@ package dev.overtow.core;
 import dev.overtow.service.window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4f;
 import org.lwjglb.engine.graph.Transformation;
 import org.lwjglb.engine.graph.lights.DirectionalLight;
@@ -86,10 +87,18 @@ public class ShadowCascade {
     }
 
     private void updateLightViewMatrix(Vector3f lightDirection, Vector3f lightPosition) {
-        float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
-        float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
-        float lightAngleZ = 0;
-        Transformation.updateGenericViewMatrix(lightPosition, new Vector3f(lightAngleX, lightAngleY, lightAngleZ), lightViewMatrix);
+//            float x = (float) (3.5f + 3.5 * Math.sin((System.currentTimeMillis() % 5000) / 5000. * Math.PI));
+//            float y = (float) (3.5f + 3.5 * Math.sin((System.currentTimeMillis() % 5000) / 5000. * Math.PI));
+            float v = (float) (3.5f + 1.5 * Math.sin((System.currentTimeMillis() % 5000) / 5000. * Math.PI));
+        Vector3f camera = new Vector3f(8, v, 15);
+        Vector3f center = new Vector3f(0, 0, 0);
+        Vector3fc up = new Vector3f(0, 1, 0);
+        lightViewMatrix.setLookAt(camera, center, up);
+
+//        float lightAngleX = (float) Math.toDegrees(Math.acos(lightDirection.z));
+//        float lightAngleY = (float) Math.toDegrees(Math.asin(lightDirection.x));
+//        float lightAngleZ = 0;
+//        Transformation.updateGenericViewMatrix(lightPosition, new Vector3f(lightAngleX, lightAngleY, lightAngleZ), lightViewMatrix);
     }
 
     private void updateLightProjectionMatrix() {

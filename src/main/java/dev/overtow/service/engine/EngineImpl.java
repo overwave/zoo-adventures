@@ -54,7 +54,7 @@ public class EngineImpl implements Engine {
 
     private boolean leftButtonPressed;
 
-    public static final int TARGET_UPS = 30;
+    public static final int TARGET_UPS = 144;
 
     private final Timer timer;
 
@@ -106,7 +106,7 @@ public class EngineImpl implements Engine {
                     }
 
                     GameItem gameItem = new GameItem(meshCube);
-                    gameItem.setPosition(j, 3, i);
+                    gameItem.setPosition(j, 0, i);
                     gameItems.add(gameItem);
                 }
             }
@@ -199,6 +199,13 @@ public class EngineImpl implements Engine {
     private void update() {
         scene.update();
 
+//        for (int i = 0; i < gameItems.size() - 1; i++) {
+//            GameItem gameItem = gameItems.get(i);
+//            Vector3f position = gameItem.getPosition();
+//            float v = (float) (3.5f + 3.5 * Math.sin((System.currentTimeMillis() % 5000) / 5000. * Math.PI));
+//            gameItem.setPosition(position.x, v, position.z);
+//        }
+
 
         if (mouseInput.isRightButtonPressed()) {
             // Update camera based on mouse
@@ -287,7 +294,7 @@ public class EngineImpl implements Engine {
         // Directional Light
         float lightIntensity = 1.f;
         Vector3f lightDirection = new Vector3f(0, 1, 1);
-        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), lightDirection, lightIntensity);
+        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), new Vector3f(5, 5, 7), new Vector3f(0, 0, 0), lightIntensity);
 //        directionalLight.setShadowPosMult(10);
 //        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
         sceneLight.setDirectionalLight(directionalLight);

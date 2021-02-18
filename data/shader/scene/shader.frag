@@ -77,8 +77,7 @@ void setupColours(Material material, vec2 textCoord) {
         ambientC.a = backColor.a;
         diffuseC = ambientC;
         speculrC = ambientC;
-    }
-    else {
+    } else {
         ambientC = material.ambient;
         diffuseC = material.diffuse;
         speculrC = material.specular;
@@ -106,36 +105,36 @@ vec4 calcLightColour(vec3 light_colour, float light_intensity, vec3 position, ve
     return (diffuseColour + specColour);
 }
 
-vec4 calcPointLight(PointLight light, vec3 position, vec3 normal) {
-    vec3 light_direction = light.position - position;
-    vec3 to_light_dir  = normalize(light_direction);
-    vec4 light_colour = calcLightColour(light.colour, light.intensity, position, to_light_dir, normal);
+//vec4 calcPointLight(PointLight light, vec3 position, vec3 normal) {
+//    vec3 light_direction = light.position - position;
+//    vec3 to_light_dir  = normalize(light_direction);
+//    vec4 light_colour = calcLightColour(light.colour, light.intensity, position, to_light_dir, normal);
+//
+//    // Apply Attenuation
+//    float distance = length(light_direction);
+//    float attenuationInv = light.att.constant + light.att.linear * distance +
+//    light.att.exponent * distance * distance;
+//    return light_colour / attenuationInv;
+//}
 
-    // Apply Attenuation
-    float distance = length(light_direction);
-    float attenuationInv = light.att.constant + light.att.linear * distance +
-    light.att.exponent * distance * distance;
-    return light_colour / attenuationInv;
-}
+//vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal) {
+//    vec3 light_direction = light.pl.position - position;
+//    vec3 to_light_dir  = normalize(light_direction);
+//    vec3 from_light_dir  = -to_light_dir;
+//    float spot_alfa = dot(from_light_dir, normalize(light.conedir));
+//
+//    vec4 colour = vec4(0, 0, 0, 0);
+//
+//    if (spot_alfa > light.cutoff)  {
+//        colour = calcPointLight(light.pl, position, normal);
+//        colour *= (1.0 - (1.0 - spot_alfa)/(1.0 - light.cutoff));
+//    }
+//    return colour;
+//}
 
-vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal) {
-    vec3 light_direction = light.pl.position - position;
-    vec3 to_light_dir  = normalize(light_direction);
-    vec3 from_light_dir  = -to_light_dir;
-    float spot_alfa = dot(from_light_dir, normalize(light.conedir));
-
-    vec4 colour = vec4(0, 0, 0, 0);
-
-    if (spot_alfa > light.cutoff)  {
-        colour = calcPointLight(light.pl, position, normal);
-        colour *= (1.0 - (1.0 - spot_alfa)/(1.0 - light.cutoff));
-    }
-    return colour;
-}
-
-vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal) {
-    return calcLightColour(light.colour, light.intensity, position, normalize(light.direction), normal);
-}
+//vec4 calcDirectionalLight(DirectionalLight light, vec3 position, vec3 normal) {
+//    return calcLightColour(light.colour, light.intensity, position, normalize(light.direction), normal);
+//}
 
 vec3 calcNormal(Material material, vec3 normal, vec2 text_coord, mat4 modelViewMatrix) {
     vec3 newNormal = normal;
@@ -151,7 +150,7 @@ float calcShadow(vec4 position, int idx) {
     vec3 projCoords = position.xyz;
     // Transform from screen coordinates to texture coordinates
     projCoords = projCoords * 0.5 + 0.5;
-    float bias = 0.05;
+    float bias = 0.0005;
 
     float shadowFactor = 0.0;
     vec2 inc = 1.0 / textureSize(shadowMap[idx], 0);
@@ -174,20 +173,20 @@ void main() {
     setupColours(material, outTexCoord);
 
     vec3 currNomal = calcNormal(material, mvVertexNormal, outTexCoord, outModelViewMatrix);
+//    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, currNomal);
+    vec4 diffuseSpecularComp = calcLightColour(directionalLight.colour, directionalLight.intensity, mvVertexPos, normalize(directionalLight.direction), currNomal);
 
-    vec4 diffuseSpecularComp = calcDirectionalLight(directionalLight, mvVertexPos, currNomal);
-
-    for (int i=0; i<MAX_POINT_LIGHTS; i++) {
-        if (pointLights[i].intensity > 0) {
-            diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, currNomal);
-        }
-    }
-
-    for (int i=0; i<MAX_SPOT_LIGHTS; i++) {
-        if (spotLights[i].pl.intensity > 0) {
-            diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, currNomal);
-        }
-    }
+//    for (int i=0; i<MAX_POINT_LIGHTS; i++) {
+//        if (pointLights[i].intensity > 0) {
+//            diffuseSpecularComp += calcPointLight(pointLights[i], mvVertexPos, currNomal);
+//        }
+//    }
+//
+//    for (int i=0; i<MAX_SPOT_LIGHTS; i++) {
+//        if (spotLights[i].pl.intensity > 0) {
+//            diffuseSpecularComp += calcSpotLight(spotLights[i], mvVertexPos, currNomal);
+//        }
+//    }
 
 
     int idx;    // cascade
