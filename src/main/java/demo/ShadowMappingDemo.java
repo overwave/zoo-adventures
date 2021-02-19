@@ -73,12 +73,12 @@ public class ShadowMappingDemo {
 
     private static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
 
-    static int shadowMapSize = 1024;
-    static Vector3f lightPosition = new Vector3f(6.0f, 3.0f, 6.0f);
+    static int shadowMapSize = 2048;
+    static Vector3f lightPosition = new Vector3f(9.0f, 3.0f, 9.0f);
     static Vector3f lightLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
-    static Vector3f cameraPosition = new Vector3f(-3.0f, 6.0f, 6.0f);
+    static Vector3f cameraPosition = new Vector3f(-6.0f, 6.0f, 12.0f);
     static Vector3f cameraLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
-    static float lightDistance = 10.0f;
+    static float lightDistance = 13.0f;
     static float lightHeight = 4.0f;
 
     long window;
@@ -86,7 +86,7 @@ public class ShadowMappingDemo {
     int height = 800;
 
     int vao;
-    int vbo;
+    int vao2;
     int shadowProgram;
     int shadowProgramVPUniform;
     int shadowProgramModel;
@@ -121,6 +121,7 @@ public class ShadowMappingDemo {
     GLFWFramebufferSizeCallback fbCallback;
     Callback debugProc;
     private Mesh mesh;
+    private Mesh mesh2;
 
     void init() throws IOException {
         glfwSetErrorCallback(errCallback = new GLFWErrorCallback() {
@@ -244,10 +245,12 @@ public class ShadowMappingDemo {
         MeshLoader meshLoader = Injector.getInstance(MeshLoader.class);
         try {
             mesh = meshLoader.load("data/model/cube2/c10.obj");
+            mesh2 = meshLoader.load("data/model/pool/pool_final_3.obj");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         vao = mesh.getVaoId();
+        vao2 = mesh2.getVaoId();
 
 //        vao = glGenVertexArrays();
 //        int vbo = glGenBuffers();
@@ -395,13 +398,19 @@ public class ShadowMappingDemo {
         }
         glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
-        Vector3f position3 = new Vector3f(0, -1, 0);
-        modelMatrix.translationRotateScale(position3, new Quaternionf(), new Vector3f(10, 1, 10));
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            glUniformMatrix4fv(shadowProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
-        }
-        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+//        Vector3f position3 = new Vector3f(0, -1, 0);
+//        modelMatrix.translationRotateScale(position3, new Quaternionf(), new Vector3f(10, 1, 10));
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            glUniformMatrix4fv(shadowProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
+//        }
+//        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
+
+        glBindVertexArray(vao2);
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            glUniformMatrix4fv(shadowProgramModel, false, new Matrix4f().identity().get(stack.mallocFloat(16)));
+        }
+        glDrawElements(GL_TRIANGLES, mesh2.getVertexCount(), GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -449,12 +458,21 @@ public class ShadowMappingDemo {
         }
         glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
-        Vector3f position3 = new Vector3f(0, -1, 0);
-        modelMatrix.translationRotateScale(position3, new Quaternionf(), new Vector3f(10, 1, 10));
+//        Vector3f position3 = new Vector3f(0, -1, 0);
+//        modelMatrix.translationRotateScale(position3, new Quaternionf(), new Vector3f(10, 1, 10));
+//        try (MemoryStack stack = MemoryStack.stackPush()) {
+//            glUniformMatrix4fv(normalProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
+//        }
+//        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+
+        mesh2.getMaterial().getTexture().bind();
+        glBindVertexArray(vao2);
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            glUniformMatrix4fv(normalProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
+            glUniformMatrix4fv(normalProgramModel, false, new Matrix4f().identity().get(stack.mallocFloat(16)));
         }
-        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mesh2.getVertexCount(), GL_UNSIGNED_INT, 0);
+
 
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
