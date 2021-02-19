@@ -1,8 +1,8 @@
 #version 330
 
-#define DEPTH_OFFSET 0.00005
-#define LIGHT_INTENSITY 0.7
-#define AMBIENT 0.3
+#define DEPTH_OFFSET 0.00000
+#define LIGHT_INTENSITY 0.5
+#define AMBIENT 0.5
 
 uniform sampler2D textureSampler;
 uniform sampler2D depthTexture;
@@ -33,7 +33,7 @@ void main(void) {
     vec4 backColor = vec4(0.9019608f, 1.0f, 0.1764706f, 1);
     float noise = 1.0 - rand(round(textureCoord * 50)) / 10.0;
     vec4 background = texture(textureSampler, textureCoord);
-    background.rgb = mix(noise * backColor.rgb, background.rgb, background.a);
+    background.rgb = mix(noise * backColor.rgb, background.rgb, background.a) * LIGHT_INTENSITY;
     fragColor = background;
 
     /* "in shadow" test... */

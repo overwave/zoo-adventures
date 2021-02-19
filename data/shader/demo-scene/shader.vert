@@ -17,7 +17,7 @@ out vec2 textureCoord;
 void main(void) {
     /* Pass the position and normal to the fragment shader
        (we do lighting computations in world coordinates) */
-    worldPosition = position;
+    worldPosition = (modelMatrix * vec4(position, 1)).xyz;
     worldNormal = normal;
     textureCoord = texture;
 
@@ -25,8 +25,8 @@ void main(void) {
        the light and use linear interpolation when passing it
        to the fragment shader
     */
-    lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * vec4(position, 1.0);
+    lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * vec4(worldPosition, 1.0);
 
     /* Normally transform the vertex */
-    gl_Position = viewProjectionMatrix * vec4(position, 1.0);
+    gl_Position = viewProjectionMatrix * modelMatrix * vec4(position, 1.0);
 }

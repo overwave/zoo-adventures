@@ -75,8 +75,8 @@ public class ShadowMappingDemo {
 
     static int shadowMapSize = 1024;
     static Vector3f lightPosition = new Vector3f(6.0f, 3.0f, 6.0f);
-    static Vector3f lightLookAt = new Vector3f(0.0f, 1.0f, 0.0f);
-    static Vector3f cameraPosition = new Vector3f(-30.0f, 6.0f, 60.0f);
+    static Vector3f lightLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
+    static Vector3f cameraPosition = new Vector3f(-3.0f, 6.0f, 6.0f);
     static Vector3f cameraLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
     static float lightDistance = 10.0f;
     static float lightHeight = 4.0f;
@@ -143,7 +143,7 @@ public class ShadowMappingDemo {
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
@@ -357,11 +357,11 @@ public class ShadowMappingDemo {
         float x = (float) Math.sin(alpha);
         float z = (float) Math.cos(alpha);
         lightPosition.set(lightDistance * x, 3 + (float) Math.sin(alpha), lightDistance * z);
-        light.setPerspective((float) Math.toRadians(45.0f), 1.0f, 0.1f, 60.0f)
+        light.setPerspective((float) Math.toRadians(45.0f), 1.0f, 0.1f, 90.0f)
                 .lookAt(lightPosition, lightLookAt, UP);
 
         /* Update camera */
-        camera.setPerspective((float) Math.toRadians(45.0f), (float) width / height, 0.1f, 30.0f)
+        camera.setPerspective((float) Math.toRadians(45.0f), (float) width / height, 0.1f, 90.0f)
                 .lookAt(cameraPosition, cameraLookAt, UP);
     }
 
@@ -388,12 +388,19 @@ public class ShadowMappingDemo {
         }
         glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
-//        Vector3f position2 = new Vector3f(-2, 0, 4);
-//        modelMatrix.translationRotateScale(position2, new Quaternionf(), new Vector3f(1));
-//        try (MemoryStack stack = MemoryStack.stackPush()) {
-//            glUniformMatrix4fv(shadowProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
-//        }
-//        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+        Vector3f position2 = new Vector3f(-2, 0, 4);
+        modelMatrix.translationRotateScale(position2, new Quaternionf(), new Vector3f(1));
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            glUniformMatrix4fv(shadowProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
+        }
+        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+        Vector3f position3 = new Vector3f(0, -1, 0);
+        modelMatrix.translationRotateScale(position3, new Quaternionf(), new Vector3f(10, 1, 10));
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            glUniformMatrix4fv(shadowProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
+        }
+        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
 
         glBindVertexArray(0);
@@ -437,6 +444,13 @@ public class ShadowMappingDemo {
 
         Vector3f position2 = new Vector3f(-2, 0, 4);
         modelMatrix.translationRotateScale(position2, new Quaternionf(), new Vector3f(1));
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            glUniformMatrix4fv(normalProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
+        }
+        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+        Vector3f position3 = new Vector3f(0, -1, 0);
+        modelMatrix.translationRotateScale(position3, new Quaternionf(), new Vector3f(10, 1, 10));
         try (MemoryStack stack = MemoryStack.stackPush()) {
             glUniformMatrix4fv(normalProgramModel, false, modelMatrix.get(stack.mallocFloat(16)));
         }
@@ -493,50 +507,5 @@ public class ShadowMappingDemo {
             buffer.flip();
         }
         return buffer;
-    }
-
-    public static void boxToVertices(Vector3f min, Vector3f max, FloatBuffer fv) {
-        /* Front face */
-        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        /* Back face */
-        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        /* Left face */
-        fv.put(min.x).put(min.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
-        /* Right face */
-        fv.put(max.x).put(min.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
-        /* Top face */
-        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
-        /* Bottom face */
-        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
     }
 }
