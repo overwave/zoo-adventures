@@ -6,6 +6,7 @@ package demo;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -47,7 +48,7 @@ public class ShadowMappingDemo {
     static Vector3f lightLookAt = new Vector3f(0.0f, 1.0f, 0.0f);
     static Vector3f cameraPosition = new Vector3f(-3.0f, 6.0f, 6.0f);
     static Vector3f cameraLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
-    static float lightDistance = 10.0f;
+    static float lightDistance = 15.0f;
     static float lightHeight = 4.0f;
 
     long window;
@@ -60,6 +61,8 @@ public class ShadowMappingDemo {
     int shadowProgramVPUniform;
     int normalProgram;
     int normalProgramBiasUniform;
+    int normalModelMatrixUniform;
+    int shadowModelMatrixUniform;
     int normalProgramVPUniform;
     int normalProgramLVPUniform;
     int normalProgramLightPosition;
@@ -267,6 +270,7 @@ public class ShadowMappingDemo {
     void initShadowProgram() {
         glUseProgram(shadowProgram);
         shadowProgramVPUniform = glGetUniformLocation(shadowProgram, "viewProjectionMatrix");
+        shadowModelMatrixUniform = glGetUniformLocation(shadowProgram, "modelMatrix");
         glUseProgram(0);
     }
 
@@ -297,6 +301,7 @@ public class ShadowMappingDemo {
         normalProgramLVPUniform = glGetUniformLocation(normalProgram, "lightViewProjectionMatrix");
         normalProgramLightPosition = glGetUniformLocation(normalProgram, "lightPosition");
         normalProgramLightLookAt = glGetUniformLocation(normalProgram, "lightLookAt");
+        normalModelMatrixUniform = glGetUniformLocation(normalProgram, "modelMatrix");
         glUniform1i(samplerLocation, 0);
         glUseProgram(0);
     }
@@ -326,6 +331,7 @@ public class ShadowMappingDemo {
 
         /* Set MVP matrix of the "light camera" */
         glUniformMatrix4fv(shadowProgramVPUniform, false, light.get(matrixBuffer));
+        glUniformMatrix4fv(shadowModelMatrixUniform, false, new Matrix4f().identity().get(matrixBuffer));
 
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glViewport(0, 0, shadowMapSize, shadowMapSize);
@@ -333,6 +339,15 @@ public class ShadowMappingDemo {
         glClear(GL_DEPTH_BUFFER_BIT);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
+
+
+        Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                -1, 0, 2.F,
+                0, 0, 0, 1,
+                1, 1, 1);
+        glUniformMatrix4fv(shadowModelMatrixUniform, false, matrix4f.get(matrixBuffer));
+        glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
+
         glBindVertexArray(0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -352,6 +367,7 @@ public class ShadowMappingDemo {
         glUniformMatrix4fv(normalProgramLVPUniform, false, light.get(matrixBuffer));
         /* The bias-matrix used to convert to NDC coordinates */
         glUniformMatrix4fv(normalProgramBiasUniform, false, biasMatrix.get(matrixBuffer));
+        glUniformMatrix4fv(normalModelMatrixUniform, false, new Matrix4f().identity().get(matrixBuffer));
         /* Light position and lookat for normal lambertian computation */
         glUniform3f(normalProgramLightPosition, lightPosition.x, lightPosition.y, lightPosition.z);
         glUniform3f(normalProgramLightLookAt, lightLookAt.x, lightLookAt.y, lightLookAt.z);
@@ -361,6 +377,14 @@ public class ShadowMappingDemo {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBindTexture(GL_TEXTURE_2D, depthTexture);
         glBindVertexArray(vao);
+        glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
+
+        Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                -1, 0, 2.F,
+                0, 0, 0, 1,
+                1, 1, 1);
+        glUniformMatrix4fv(normalModelMatrixUniform, false, matrix4f.get(matrixBuffer));
+
         glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);

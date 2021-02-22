@@ -1,6 +1,6 @@
 #version 330
 
-#define DEPTH_OFFSET 0.00000
+#define DEPTH_OFFSET 0.00005
 #define LIGHT_INTENSITY 0.9
 #define AMBIENT 0.1
 
