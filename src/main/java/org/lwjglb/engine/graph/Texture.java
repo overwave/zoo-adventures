@@ -48,11 +48,7 @@ public class Texture {
         this.numRows = numRows;
     }
 
-    public Texture(String fileName) throws Exception {
-        this(Utils.ioResourceToByteBuffer(fileName, 1024));
-    }
-
-    public Texture(String fileName) throws IOException {
+    public Texture(String fileName) {
         ByteBuffer buf;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer w = stack.mallocInt(1);
@@ -61,7 +57,7 @@ public class Texture {
 
             buf = stbi_load(fileName, w, h, channels, 4);
             if (buf == null) {
-                throw new IOException("Image file [" + fileName  + "] not loaded: " + stbi_failure_reason());
+                throw new RuntimeException("Image file [" + fileName  + "] not loaded: " + stbi_failure_reason());
             }
 
             width = w.get();

@@ -5,11 +5,11 @@ import dev.overtow.util.injection.Bind;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
-import org.lwjglb1.engine.Utils;
-import org.lwjglb1.engine.graph.Material;
-import org.lwjglb1.engine.graph.Mesh;
-import org.lwjglb1.engine.graph.Texture;
-import org.lwjglb1.engine.loaders.assimp.TextureCache;
+import org.lwjglb.engine.Utils;
+import org.lwjglb.engine.graph.Material;
+import org.lwjglb.engine.graph.Mesh;
+import org.lwjglb.engine.graph.Texture;
+import org.lwjglb.engine.loaders.assimp.TextureCache;
 
 import java.io.File;
 import java.io.IOException;

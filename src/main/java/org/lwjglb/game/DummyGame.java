@@ -148,7 +148,7 @@ public class DummyGame implements IGameLogic {
         lightDirection.normalize();
 
         // Update view matrix
-        camera.updateViewMatrix();
+//        camera.updateViewMatrix();
     }
 
     @Override

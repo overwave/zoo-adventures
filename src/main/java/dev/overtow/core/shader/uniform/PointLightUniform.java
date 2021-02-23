@@ -1,6 +1,6 @@
 package dev.overtow.core.shader.uniform;
 
-import org.lwjglb1.engine.graph.lights.PointLight;
+import org.lwjglb.engine.graph.lights.PointLight;
 
 import java.util.function.Function;
 

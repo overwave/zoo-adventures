@@ -8,18 +8,18 @@ import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.openal.AL11;
-import org.lwjglb1.engine.MouseInput;
-import org.lwjglb1.engine.SceneLight;
-import org.lwjglb1.engine.Timer;
-import org.lwjglb1.engine.graph.Camera;
-import org.lwjglb1.engine.graph.Mesh;
-import org.lwjglb1.engine.graph.lights.DirectionalLight;
-import org.lwjglb1.engine.items.GameItem;
-import org.lwjglb1.engine.sound.SoundBuffer;
-import org.lwjglb1.engine.sound.SoundListener;
-import org.lwjglb1.engine.sound.SoundManager;
-import org.lwjglb1.engine.sound.SoundSource;
-import org.lwjglb1.game.MouseBoxSelectionDetector;
+import org.lwjglb.engine.MouseInput;
+import org.lwjglb.engine.SceneLight;
+import org.lwjglb.engine.Timer;
+import org.lwjglb.engine.graph.Camera;
+import org.lwjglb.engine.graph.Mesh;
+import org.lwjglb.engine.graph.lights.DirectionalLight;
+import org.lwjglb.engine.items.GameItem;
+import org.lwjglb.engine.sound.SoundBuffer;
+import org.lwjglb.engine.sound.SoundListener;
+import org.lwjglb.engine.sound.SoundManager;
+import org.lwjglb.engine.sound.SoundSource;
+import org.lwjglb.game.MouseBoxSelectionDetector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +79,7 @@ public class EngineImpl implements Engine {
         startTime = System.nanoTime();
 
         timer.init();
-        mouseInput.init(this.window);
+//        mouseInput.init(this.window);
         try {
             soundMgr.init();
 
@@ -167,7 +167,7 @@ public class EngineImpl implements Engine {
     }
 
     private void input() {
-        mouseInput.input(window);
+//        mouseInput.input(window);
         cameraInc.set(0, 0, 0);
         if (window.isKeyPressed(GLFW_KEY_W)) {
             cameraInc.z = -1;
@@ -236,9 +236,9 @@ public class EngineImpl implements Engine {
         soundMgr.updateListenerPosition(camera);
 
         boolean aux = mouseInput.isLeftButtonPressed();
-        if (aux && !this.leftButtonPressed && this.selectDetector.selectGameItem(gameItems, window, mouseInput.getCurrentPos(), camera)) {
-            this.hud.incCounter();
-        }
+//        if (aux && !this.leftButtonPressed && this.selectDetector.selectGameItem(gameItems, window, mouseInput.getCurrentPos(), camera)) {
+//            this.hud.incCounter();
+//        }
         this.leftButtonPressed = aux;
     }
 

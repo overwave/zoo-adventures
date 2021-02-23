@@ -1,6 +1,6 @@
 package dev.overtow.service.meshloader;
 
-import org.lwjglb1.engine.graph.Mesh;
+import org.lwjglb.engine.graph.Mesh;
 
 import java.io.IOException;
 

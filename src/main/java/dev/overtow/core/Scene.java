@@ -35,7 +35,7 @@ public class Scene {
     private final Camera camera;
     private SceneLight sceneLight;
     private final Transformation transformation;
-    private ShadowMap shadowMap;
+//    private ShadowMap shadowMap;
     private final float specularPower;
 
 
@@ -51,7 +51,7 @@ public class Scene {
         this.window = window;
         this.camera = camera;
         this.sceneLight = sceneLight;
-        this.shadowMap = new ShadowMap();
+//        this.shadowMap = new ShadowMap();
     }
 
     public void addActor(Actor actor) {
@@ -132,8 +132,8 @@ public class Scene {
 
             Matrix4f projectionMatrix = window.getProjectionMatrix();
             sceneShader.set(Uniform.Name.PROJECTION_MATRIX, projectionMatrix);
-            Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
-            sceneShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
+//            Matrix4f orthoProjMatrix = transformation.getOrthoProjectionMatrix();
+//            sceneShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
             Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
             Matrix4f viewMatrix = camera.getViewMatrix();
 
@@ -166,7 +166,7 @@ public class Scene {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
                 shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
                 glActiveTexture(GL_TEXTURE2);
-                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+//                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
             }
 
             Texture text = mesh.getMaterial().getTexture();
