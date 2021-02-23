@@ -33,6 +33,7 @@ public class Texture {
         this.id = glGenTextures();
         this.width = width;
         this.height = height;
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, this.id);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, this.width, this.height, 0, pixelFormat, GL_FLOAT, (ByteBuffer) null);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -95,6 +96,7 @@ public class Texture {
         // Create a new OpenGL texture
         int textureId = glGenTextures();
         // Bind the texture
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, textureId);
 
         // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size

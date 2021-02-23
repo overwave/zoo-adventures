@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
@@ -143,7 +143,7 @@ public class Scene {
             if (viewMatrix != null) {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
                 shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
-                glActiveTexture(GL_TEXTURE2);
+                glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
             }
         }
@@ -157,7 +157,7 @@ public class Scene {
             if (viewMatrix != null) {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
                 shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
-                glActiveTexture(GL_TEXTURE2);
+                glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
             }
 

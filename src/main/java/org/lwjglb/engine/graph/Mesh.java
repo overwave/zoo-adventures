@@ -19,6 +19,7 @@ import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13C.GL_TEXTURE2;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
@@ -170,14 +171,14 @@ public class Mesh {
         Texture texture = material.getTexture();
         if (texture != null) {
             // Activate first texture bank
-            glActiveTexture(GL_TEXTURE0);
+            glActiveTexture(GL_TEXTURE1);
             // Bind the texture
             glBindTexture(GL_TEXTURE_2D, texture.getId());
         }
         Texture normalMap = material.getNormalMap();
         if (normalMap != null) {
             // Activate first texture bank
-            glActiveTexture(GL_TEXTURE1);
+            glActiveTexture(GL_TEXTURE2);
             // Bind the texture
             glBindTexture(GL_TEXTURE_2D, normalMap.getId());
         }

@@ -4,9 +4,10 @@ package demo;
  * License terms: https://www.lwjgl.org/license
  */
 
+import dev.overtow.service.meshloader.MeshLoader;
+import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -18,6 +19,7 @@ import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
+import org.lwjglb.engine.graph.Mesh;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +29,12 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL30C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
@@ -56,6 +64,7 @@ public class ShadowMappingDemo {
     int height = 800;
 
     int vao;
+    int vao2;
     int vbo;
     int shadowProgram;
     int shadowProgramVPUniform;
@@ -69,7 +78,10 @@ public class ShadowMappingDemo {
     int normalProgramLightLookAt;
     int fbo;
     int depthTexture;
-    int samplerLocation;
+    int depthSamplerLocation;
+    int textureSamplerLocation;
+
+    Matrix4f modelMatrix = new Matrix4f();
 
     FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
@@ -87,6 +99,8 @@ public class ShadowMappingDemo {
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
     Callback debugProc;
+    private Mesh mesh;
+    private Mesh mesh2;
 
     void init() throws IOException {
         glfwSetErrorCallback(errCallback = new GLFWErrorCallback() {
@@ -207,22 +221,15 @@ public class ShadowMappingDemo {
      * Creates a VAO for the scene with some boxes.
      */
     void createVao() {
-        vao = glGenVertexArrays();
-        int vbo = glGenBuffers();
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        ByteBuffer bb = BufferUtils.createByteBuffer(boxes.length * 4 * (3 + 3) * 6 * 6);
-        FloatBuffer fv = bb.asFloatBuffer();
-        for (int i = 0; i < boxes.length; i += 2) {
-            boxToVertices(boxes[i], boxes[i + 1], fv);
+        MeshLoader meshLoader = Injector.getInstance(MeshLoader.class);
+        try {
+            mesh = meshLoader.load("data/model/cube2/c10.obj");
+            mesh2 = meshLoader.load("data/model/pool/pool_final_3.obj");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        glBufferData(GL_ARRAY_BUFFER, bb, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 4 * (3 + 3), 0L);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 4 * (3 + 3), 4 * 3);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        vao = mesh.getVaoId();
+        vao2 = mesh2.getVaoId();
     }
 
     static int createShader(String resource, int type) throws IOException {
@@ -295,14 +302,17 @@ public class ShadowMappingDemo {
 
     void initNormalProgram() {
         glUseProgram(normalProgram);
-        samplerLocation = glGetUniformLocation(normalProgram, "depthTexture");
+        depthSamplerLocation = glGetUniformLocation(normalProgram, "depthTexture");
+        glUniform1i(depthSamplerLocation, 0);
+        textureSamplerLocation = glGetUniformLocation(normalProgram, "textureSampler");
+        glUniform1i(textureSamplerLocation, 1);
+
         normalProgramBiasUniform = glGetUniformLocation(normalProgram, "biasMatrix");
         normalProgramVPUniform = glGetUniformLocation(normalProgram, "viewProjectionMatrix");
         normalProgramLVPUniform = glGetUniformLocation(normalProgram, "lightViewProjectionMatrix");
         normalProgramLightPosition = glGetUniformLocation(normalProgram, "lightPosition");
         normalProgramLightLookAt = glGetUniformLocation(normalProgram, "lightLookAt");
         normalModelMatrixUniform = glGetUniformLocation(normalProgram, "modelMatrix");
-        glUniform1i(samplerLocation, 0);
         glUseProgram(0);
     }
 
@@ -338,7 +348,11 @@ public class ShadowMappingDemo {
         /* Only clear depth buffer, since we don't have a color draw buffer */
         glClear(GL_DEPTH_BUFFER_BIT);
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
+
+        glActiveTexture(GL_TEXTURE0);
+
+        glUniformMatrix4fv(shadowModelMatrixUniform, false, new Matrix4f().identity().get(matrixBuffer));
+        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
 
         Matrix4f matrix4f = new Matrix4f().translationRotateScale(
@@ -346,7 +360,7 @@ public class ShadowMappingDemo {
                 0, 0, 0, 1,
                 1, 1, 1);
         glUniformMatrix4fv(shadowModelMatrixUniform, false, matrix4f.get(matrixBuffer));
-        glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
+        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -375,9 +389,17 @@ public class ShadowMappingDemo {
         glViewport(0, 0, width, height);
         /* Must clear both color and depth, since we are re-rendering the scene */
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glBindTexture(GL_TEXTURE_2D, depthTexture);
+
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
+
+        glActiveTexture(GL_TEXTURE1);
+        mesh.getMaterial().getTexture().bind();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, depthTexture);
+
+
+        glUniformMatrix4fv(normalModelMatrixUniform, false, new Matrix4f().identity().get(matrixBuffer));
+        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
         Matrix4f matrix4f = new Matrix4f().translationRotateScale(
                 -1, 0, 2.F,
@@ -385,7 +407,7 @@ public class ShadowMappingDemo {
                 1, 1, 1);
         glUniformMatrix4fv(normalModelMatrixUniform, false, matrix4f.get(matrixBuffer));
 
-        glDrawArrays(GL_TRIANGLES, 0, 6 * 6 * boxes.length);
+        glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
