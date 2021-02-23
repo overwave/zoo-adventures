@@ -231,7 +231,7 @@ public class EngineImpl implements Engine {
         lightDirection.z = zValue;
         lightDirection.normalize();
 
-        camera.updateViewMatrix();
+//        camera.updateViewMatrix();
 
         soundMgr.updateListenerPosition(camera);
 

@@ -35,11 +35,7 @@ public class Camera {
     public Matrix4f getViewMatrix() {
         return viewMatrix;
     }
-    
-    public Matrix4f updateViewMatrix() {
-        return Transformation.updateGenericViewMatrix(position, rotation, viewMatrix);
-    }
-    
+
     public void movePosition(float offsetX, float offsetY, float offsetZ) {
         if ( offsetZ != 0 ) {
             position.x += (float)Math.sin(Math.toRadians(rotation.y)) * -1.0f * offsetZ;

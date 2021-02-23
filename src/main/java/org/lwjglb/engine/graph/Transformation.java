@@ -36,9 +36,6 @@ public class Transformation {
         this.lightViewMatrix.set(lightViewMatrix);
     }
 
-    public Matrix4f updateLightViewMatrix(Vector3f position, Vector3f rotation) {
-        return updateGenericViewMatrix(position, rotation, lightViewMatrix);
-    }
 
     public static  Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
         // First do the rotation so camera rotates over its position

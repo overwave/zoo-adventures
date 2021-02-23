@@ -6,12 +6,12 @@ import dev.overtow.service.window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjglb1.engine.SceneLight;
-import org.lwjglb1.engine.graph.*;
-import org.lwjglb1.engine.graph.lights.DirectionalLight;
-import org.lwjglb1.engine.graph.lights.PointLight;
-import org.lwjglb1.engine.graph.lights.SpotLight;
-import org.lwjglb1.engine.items.GameItem;
+import org.lwjglb.engine.SceneLight;
+import org.lwjglb.engine.graph.*;
+import org.lwjglb.engine.graph.lights.DirectionalLight;
+import org.lwjglb.engine.graph.lights.PointLight;
+import org.lwjglb.engine.graph.lights.SpotLight;
+import org.lwjglb.engine.items.GameItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE2;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
@@ -35,7 +35,7 @@ public class Scene {
     private final Camera camera;
     private SceneLight sceneLight;
     private final Transformation transformation;
-//    private ShadowMap shadowMap;
+    private ShadowMap shadowMap;
     private final float specularPower;
 
 
@@ -51,7 +51,7 @@ public class Scene {
         this.window = window;
         this.camera = camera;
         this.sceneLight = sceneLight;
-//        this.shadowMap = new ShadowMap();
+        this.shadowMap = new ShadowMap();
     }
 
     public void addActor(Actor actor) {
@@ -90,6 +90,7 @@ public class Scene {
     }
 
     public void draw() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 
         // depthShader
@@ -107,7 +108,7 @@ public class Scene {
 ////            Matrix4f lightViewMatrix = transformation.getLightViewMatrix();
 ////            Matrix4f viewMatrix = camera.getViewMatrix();
 //
-////            renderLights(sceneShader, viewMatrix, sceneLight);
+//            depthShader.set(Uniform.Name.ORTHO_PROJECTION_MATRIX, orthoProjMatrix);
 //
 //            Vector3f lightPosition = new Vector3f(camera.getPosition());
 //            Vector3f lightLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
@@ -165,7 +166,7 @@ public class Scene {
                 shader.set(Uniform.Name.MATERIAL, mesh.getMaterial());
                 shader.set(Uniform.Name.BACK_COLOR, new Vector4f(0.9019608f, 1.0f, 0.1764706f, 1));
                 glActiveTexture(GL_TEXTURE2);
-//                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
+                glBindTexture(GL_TEXTURE_2D, shadowMap.getDepthMapTexture().getId());
             }
 
             Texture text = mesh.getMaterial().getTexture();
