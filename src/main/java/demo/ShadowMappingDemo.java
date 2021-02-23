@@ -60,8 +60,8 @@ public class ShadowMappingDemo {
     static float lightDistance = 25.0f;
 
     long window;
-    int width = 1200;
-    int height = 800;
+    int width = 1600;
+    int height = 900;
 
     int vao;
     int vao2;
@@ -329,8 +329,18 @@ public class ShadowMappingDemo {
                 .lookAt(lightPosition, lightLookAt, UP);
 
         /* Update camera */
+        Vector3f position = new Vector3f(0f, 27, 00f);
+        Vector3f rotation = new Vector3f(90, 0, 0);
         camera.setPerspective((float) Math.toRadians(45.0f), (float) width / height, 0.1f, 30.0f)
-                .lookAt(cameraPosition, cameraLookAt, UP);
+//                .lookAt(cameraPosition, cameraLookAt, UP)
+//        .rotateY((float) Math.toRadians(45));
+//        camera.identity();
+                .rotateX((float)Math.toRadians(rotation.x))
+                .rotateY((float)Math.toRadians(rotation.y))
+                .translate(-position.x, -position.y, -position.z);
+//        camera.rotationX((float)Math.toRadians(rotation.x))
+//                .rotateY((float)Math.toRadians(rotation.y))
+//                .translate(-position.x, -position.y, -position.z);
     }
 
     /**
