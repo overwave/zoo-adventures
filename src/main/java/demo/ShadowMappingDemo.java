@@ -52,12 +52,12 @@ public class ShadowMappingDemo {
     private static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
 
     static int shadowMapSize = 1024;
-    static Vector3f lightPosition = new Vector3f(6.0f, 3.0f, 6.0f);
-    static Vector3f lightLookAt = new Vector3f(0.0f, 1.0f, 0.0f);
-    static Vector3f cameraPosition = new Vector3f(-3.0f, 6.0f, 6.0f);
+    static float lightHeight = 15.0f;
+    static Vector3f lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
+    static Vector3f lightLookAt = new Vector3f(0.5f, 0.0f, 0.5f);
+    static Vector3f cameraPosition = new Vector3f(0.5f, 17.0f, 0.5f);
     static Vector3f cameraLookAt = new Vector3f(0.0f, 0.0f, 0.0f);
-    static float lightDistance = 15.0f;
-    static float lightHeight = 4.0f;
+    static float lightDistance = 25.0f;
 
     long window;
     int width = 1200;
@@ -324,7 +324,7 @@ public class ShadowMappingDemo {
         double alpha = System.currentTimeMillis() / 1000.0 * 0.5;
         float x = (float) Math.sin(alpha);
         float z = (float) Math.cos(alpha);
-        lightPosition.set(lightDistance * x, 3 + (float) Math.sin(alpha), lightDistance * z);
+        lightPosition.set(lightDistance * x, lightHeight + (float) Math.sin(alpha), lightDistance * z);
         light.setPerspective((float) Math.toRadians(45.0f), 1.0f, 0.1f, 60.0f)
                 .lookAt(lightPosition, lightLookAt, UP);
 
@@ -362,6 +362,10 @@ public class ShadowMappingDemo {
         glUniformMatrix4fv(shadowModelMatrixUniform, false, matrix4f.get(matrixBuffer));
         glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
 
+        glBindVertexArray(vao2);
+        glUniformMatrix4fv(shadowModelMatrixUniform, false, new Matrix4f().identity().get(matrixBuffer));
+        glDrawElements(GL_TRIANGLES, mesh2.getVertexCount(), GL_UNSIGNED_INT, 0);
+
         glBindVertexArray(0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -392,11 +396,11 @@ public class ShadowMappingDemo {
 
         glBindVertexArray(vao);
 
-        glActiveTexture(GL_TEXTURE1);
-        mesh.getMaterial().getTexture().bind();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, depthTexture);
 
+        glActiveTexture(GL_TEXTURE1);
+        mesh.getMaterial().getTexture().bind();
 
         glUniformMatrix4fv(normalModelMatrixUniform, false, new Matrix4f().identity().get(matrixBuffer));
         glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
@@ -408,6 +412,12 @@ public class ShadowMappingDemo {
         glUniformMatrix4fv(normalModelMatrixUniform, false, matrix4f.get(matrixBuffer));
 
         glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(vao2);
+        mesh2.getMaterial().getTexture().bind();
+        glUniformMatrix4fv(normalModelMatrixUniform, false, new Matrix4f().identity().get(matrixBuffer));
+        glDrawElements(GL_TRIANGLES, mesh2.getVertexCount(), GL_UNSIGNED_INT, 0);
+
         glBindVertexArray(0);
         glBindTexture(GL_TEXTURE_2D, 0);
 

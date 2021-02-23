@@ -1,8 +1,8 @@
 #version 330
 
 #define DEPTH_OFFSET 0.00005
-#define LIGHT_INTENSITY 0.5
-#define AMBIENT 0.5
+#define LIGHT_INTENSITY 0.3
+#define AMBIENT 0.3
 
 uniform sampler2D textureSampler;
 uniform sampler2D depthTexture;
@@ -30,18 +30,18 @@ void main(void) {
     float dot = max(0.0, dot(normalize(lightPosition - worldPosition), worldNormal));
 
 
-    //    vec4 backColor = vec4(0.9019608f, 1.0f, 0.1764706f, 1);
-    //    float noise = 1.0 - rand(round(textureCoord * 50)) / 10.0;
-    //    vec4 background = texture(textureSampler, textureCoord);
-    //    background.rgb = mix(noise * backColor.rgb, background.rgb, background.a);
-    //    fragColor = background;
-    fragColor = vec4(AMBIENT, AMBIENT, AMBIENT, 1.0);
+        vec4 backColor = vec4(0.9019608f, 1.0f, 0.1764706f, 1);
+        float noise = 1.0 - rand(round(textureCoord * 50)) / 10.0;
+        vec4 background = texture(textureSampler, textureCoord);
+        background.rgb = mix(noise * backColor.rgb, background.rgb, background.a) * 0.7;
+        fragColor = background;
+//    fragColor = vec4(AMBIENT, AMBIENT, AMBIENT, 1.0);
 
     /* "in shadow" test... */
     if (depth.z < lightNDCPosition.z - DEPTH_OFFSET) {
-        fragColor -= vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0) * dot / 2;
+        fragColor -= vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0) * dot;
     } else {
         /* lit */
-        fragColor += vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0) * dot / 2;
+        fragColor += vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0) * dot;
     }
 }
