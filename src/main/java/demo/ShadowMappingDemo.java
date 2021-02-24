@@ -4,6 +4,8 @@ package demo;
  * License terms: https://www.lwjgl.org/license
  */
 
+import dev.overtow.glsl.Converter;
+import dev.overtow.glsl.shader.SceneFragmentShader;
 import dev.overtow.service.meshloader.MeshLoader;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
@@ -451,6 +453,8 @@ public class ShadowMappingDemo {
     }
 
     public static void main(String[] args) {
+        new Converter(SceneFragmentShader.class);
+        System.exit(0);
         new ShadowMappingDemo().run();
     }
 

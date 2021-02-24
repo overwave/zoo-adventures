@@ -27,6 +27,14 @@
             <version>0.9.12</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.javaparser/javaparser-core -->
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
+            <version>3.19.0</version>
+        </dependency>
+
+        <!-- LWJGL/JOML -->
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
@@ -79,8 +87,7 @@
             <classifier>${native.target}</classifier>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- Natives -->
+        <!-- LWJGL/JOML Natives -->
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl</artifactId>
