@@ -40,17 +40,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 
 public class ShadowMappingDemo {
-    private static final Vector3f[] boxes = {
-            new Vector3f(-5.0f, -0.1f, -5.0f), new Vector3f(5.0f, 0.0f, 5.0f),
-            new Vector3f(-0.5f, 0.0f, -0.5f), new Vector3f(0.5f, 1.0f, 0.5f),
-            new Vector3f(-2.5f, 0.0f, -1.5f), new Vector3f(-1.5f, 1.0f, -0.5f),
-            new Vector3f(-2.5f, 0.0f, 1.5f), new Vector3f(-1.5f, 1.0f, 2.5f),
-            new Vector3f(1.5f, 0.0f, 1.5f), new Vector3f(2.5f, 1.0f, 2.5f),
-            new Vector3f(1.5f, 0.0f, -2.5f), new Vector3f(2.5f, 1.0f, -1.5f)
-    };
 
     private static final Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
-
     static int shadowMapSize = 1024;
     static float lightHeight = 15.0f;
     static Vector3f lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
@@ -65,7 +56,6 @@ public class ShadowMappingDemo {
 
     int vao;
     int vao2;
-    int vbo;
     int shadowProgram;
     int shadowProgramVPUniform;
     int normalProgram;
@@ -80,8 +70,6 @@ public class ShadowMappingDemo {
     int depthTexture;
     int depthSamplerLocation;
     int textureSamplerLocation;
-
-    Matrix4f modelMatrix = new Matrix4f();
 
     FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
@@ -338,9 +326,6 @@ public class ShadowMappingDemo {
                 .rotateX((float)Math.toRadians(rotation.x))
                 .rotateY((float)Math.toRadians(rotation.y))
                 .translate(-position.x, -position.y, -position.z);
-//        camera.rotationX((float)Math.toRadians(rotation.x))
-//                .rotateY((float)Math.toRadians(rotation.y))
-//                .translate(-position.x, -position.y, -position.z);
     }
 
     /**
@@ -479,50 +464,5 @@ public class ShadowMappingDemo {
             buffer.flip();
         }
         return buffer;
-    }
-
-    public static void boxToVertices(Vector3f min, Vector3f max, FloatBuffer fv) {
-        /* Front face */
-        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(0.0f).put(1.0f);
-        /* Back face */
-        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(0.0f).put(-1.0f);
-        /* Left face */
-        fv.put(min.x).put(min.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(min.z).put(-1.0f).put(0.0f).put(0.0f);
-        /* Right face */
-        fv.put(max.x).put(min.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(1.0f).put(0.0f).put(0.0f);
-        /* Top face */
-        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(max.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(min.z).put(0.0f).put(1.0f).put(0.0f);
-        fv.put(min.x).put(max.y).put(max.z).put(0.0f).put(1.0f).put(0.0f);
-        /* Bottom face */
-        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(max.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(max.z).put(0.0f).put(-1.0f).put(0.0f);
-        fv.put(min.x).put(min.y).put(min.z).put(0.0f).put(-1.0f).put(0.0f);
     }
 }
