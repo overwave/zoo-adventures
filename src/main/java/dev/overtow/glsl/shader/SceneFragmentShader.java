@@ -12,7 +12,7 @@ import dev.overtow.glsl.type.Vec4;
 import static dev.overtow.glsl.GlslLibrary.*;
 
 @Fragment
-public class SceneFragmentShader {
+public class SceneFragmentShader implements Shader {
     public static final float DEPTH_OFFSET = 0.00005f;
     public static final float LIGHT_INTENSITY = 0.3f;
     public static final float AMBIENT = 0.3f;
@@ -40,7 +40,7 @@ public class SceneFragmentShader {
         return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
     }
 
-    void main() {
+    public void main() {
         /* Convert the linearly interpolated clip-space position to NDC */
         Vec4 lightNDCPosition = lightBiasedClipPosition.divide(lightBiasedClipPosition.w);
 

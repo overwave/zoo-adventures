@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -453,8 +454,8 @@ public class ShadowMappingDemo {
     }
 
     public static void main(String[] args) {
-        new Converter(SceneFragmentShader.class);
-        System.exit(0);
+        new Converter(List.of(SceneFragmentShader.class));
+
         new ShadowMappingDemo().run();
     }
 
