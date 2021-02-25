@@ -7,6 +7,8 @@ package demo;
 import dev.overtow.glsl.Converter;
 import dev.overtow.glsl.shader.SceneFragmentShader;
 import dev.overtow.glsl.shader.SceneVertexShader;
+import dev.overtow.glsl.shader.ShadowFragmentShader;
+import dev.overtow.glsl.shader.ShadowVertexShader;
 import dev.overtow.service.meshloader.MeshLoader;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
@@ -250,7 +252,7 @@ public class ShadowMappingDemo {
     static int createShader(String resource, int type) throws IOException {
         int shader = glCreateShader(type);
 
-        ByteBuffer source = ioResourceToByteBuffer(resource, 8192);
+        ByteBuffer source = ioResourceToByteBuffer(resource);
 
         PointerBuffer strings = BufferUtils.createPointerBuffer(1);
         IntBuffer lengths = BufferUtils.createIntBuffer(1);
@@ -273,8 +275,8 @@ public class ShadowMappingDemo {
 
     void createShadowProgram() throws IOException {
         shadowProgram = glCreateProgram();
-        int vshader = createShader("data/shader/demo-shadow/shader.vert", GL_VERTEX_SHADER);
-        int fshader = createShader("data/shader/demo-shadow/shader.frag", GL_FRAGMENT_SHADER);
+        int vshader = createShader("data/shader/target/ShadowVertexShader.glsl", GL_VERTEX_SHADER);
+        int fshader = createShader("data/shader/target/ShadowFragmentShader.glsl", GL_FRAGMENT_SHADER);
         glAttachShader(shadowProgram, vshader);
         glAttachShader(shadowProgram, fshader);
         glBindAttribLocation(shadowProgram, 0, "position");
@@ -298,8 +300,8 @@ public class ShadowMappingDemo {
 
     void createNormalProgram() throws IOException {
         normalProgram = glCreateProgram();
-        int vshader = createShader("data/shader/demo-scene/shader.vert", GL_VERTEX_SHADER);
-        int fshader = createShader("data/shader/demo-scene/shader.frag", GL_FRAGMENT_SHADER);
+        int vshader = createShader("data/shader/target/SceneVertexShader.glsl", GL_VERTEX_SHADER);
+        int fshader = createShader("data/shader/target/SceneFragmentShader.glsl", GL_FRAGMENT_SHADER);
         glAttachShader(normalProgram, vshader);
         glAttachShader(normalProgram, fshader);
         glBindAttribLocation(normalProgram, 0, "position");
@@ -479,16 +481,18 @@ public class ShadowMappingDemo {
 
     public static void main(String[] args) {
         try {
-            Converter.convert(List.of(SceneVertexShader.class, SceneFragmentShader.class));
+            Converter.convert(List.of(
+                    SceneVertexShader.class, SceneFragmentShader.class,
+                    ShadowVertexShader.class, ShadowFragmentShader.class
+            ));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.exit(0);
         new ShadowMappingDemo().run();
     }
 
 
-    public static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
+    public static ByteBuffer ioResourceToByteBuffer(String resource) throws IOException {
         ByteBuffer buffer;
         try (InputStream source = new FileInputStream(resource)) {
             byte[] src = source.readAllBytes();

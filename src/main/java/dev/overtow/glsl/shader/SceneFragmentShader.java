@@ -1,6 +1,5 @@
 package dev.overtow.glsl.shader;
 
-import dev.overtow.glsl.Fragment;
 import dev.overtow.glsl.Input;
 import dev.overtow.glsl.Output;
 import dev.overtow.glsl.Uniform;
@@ -12,7 +11,6 @@ import dev.overtow.glsl.type.Vec4;
 import static dev.overtow.core.shader.uniform.Uniform.Name.*;
 import static dev.overtow.glsl.GlslLibrary.*;
 
-@Fragment
 public class SceneFragmentShader implements Shader {
     private static final float DEPTH_OFFSET = 0.00005f;
     private static final float LIGHT_INTENSITY = 0.3f;
