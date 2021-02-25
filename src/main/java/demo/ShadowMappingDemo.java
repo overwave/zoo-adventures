@@ -478,7 +478,7 @@ public class ShadowMappingDemo {
     }
 
     public static void main(String[] args) {
-        new Converter(List.of(SceneFragmentShader.class, SceneVertexShader.class));
+        new Converter(List.of(SceneVertexShader.class, SceneFragmentShader.class));
         System.exit(0);
         new ShadowMappingDemo().run();
     }
