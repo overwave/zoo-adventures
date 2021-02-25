@@ -10,6 +10,7 @@ public final class Vec4 {
     public Vec2 xy;
     public Vec3 rgb;
     public double a;
+    public Vec3 xyz;
 
     private Vec4() {
     }

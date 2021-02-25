@@ -9,29 +9,32 @@ import dev.overtow.glsl.type.Vec2;
 import dev.overtow.glsl.type.Vec3;
 import dev.overtow.glsl.type.Vec4;
 
+import static dev.overtow.core.shader.uniform.Uniform.Name.*;
 import static dev.overtow.glsl.GlslLibrary.*;
 
 @Fragment
 public class SceneFragmentShader implements Shader {
-    public static final float DEPTH_OFFSET = 0.00005f;
-    public static final float LIGHT_INTENSITY = 0.3f;
-    public static final float AMBIENT = 0.3f;
+    private static final float DEPTH_OFFSET = 0.00005f;
+    private static final float LIGHT_INTENSITY = 0.3f;
+    private static final float AMBIENT = 0.3f;
 
-    @Uniform
+    private final SceneVertexShader parentShader = new SceneVertexShader();
+
+    @Uniform(TEXTURE_SAMPLER)
     private final Sampler2D textureSampler = new Sampler2D();
-    @Uniform
+    @Uniform(DEPTH_TEXTURE)
     private final Sampler2D depthTexture = new Sampler2D();
-    @Uniform
+    @Uniform(LIGHT_POSITION)
     private final Vec3 lightPosition = vec3(0);
 
     @Input
-    private final Vec4 lightBiasedClipPosition = vec4(0);
+    private final Vec4 lightBiasedClipPosition = parentShader.lightBiasedClipPosition;
     @Input
-    private final Vec3 worldPosition = vec3(0);
+    private final Vec3 worldPosition = parentShader.worldPosition;
     @Input
-    private final Vec3 worldNormal = vec3(0);
+    private final Vec3 worldNormal = parentShader.worldNormal;
     @Input
-    private final Vec2 textureCoord = vec2(0);
+    private final Vec2 textureCoord = parentShader.textureCoord;
 
     @Output
     private Vec4 fragColor;

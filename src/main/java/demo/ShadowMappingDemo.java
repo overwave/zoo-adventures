@@ -38,6 +38,29 @@ import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
+import static org.lwjgl.opengl.GL30C.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL30C.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL30C.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL30C.GL_DEPTH_COMPONENT;
+import static org.lwjgl.opengl.GL30C.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL30C.GL_NEAREST;
+import static org.lwjgl.opengl.GL30C.GL_NONE;
+import static org.lwjgl.opengl.GL30C.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL30C.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL30C.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL30C.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL30C.GL_TEXTURE_WRAP_T;
+import static org.lwjgl.opengl.GL30C.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL30C.glBindTexture;
+import static org.lwjgl.opengl.GL30C.glClear;
+import static org.lwjgl.opengl.GL30C.glClearColor;
+import static org.lwjgl.opengl.GL30C.glDrawBuffer;
+import static org.lwjgl.opengl.GL30C.glEnable;
+import static org.lwjgl.opengl.GL30C.glGenTextures;
+import static org.lwjgl.opengl.GL30C.glReadBuffer;
+import static org.lwjgl.opengl.GL30C.glTexImage2D;
+import static org.lwjgl.opengl.GL30C.glTexParameteri;
+import static org.lwjgl.opengl.GL30C.glViewport;
 import static org.lwjgl.opengl.GL30C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
@@ -326,8 +349,8 @@ public class ShadowMappingDemo {
 //                .lookAt(cameraPosition, cameraLookAt, UP)
 //        .rotateY((float) Math.toRadians(45));
 //        camera.identity();
-                .rotateX((float)Math.toRadians(rotation.x))
-                .rotateY((float)Math.toRadians(rotation.y))
+                .rotateX((float) Math.toRadians(rotation.x))
+                .rotateY((float) Math.toRadians(rotation.y))
                 .translate(-position.x, -position.y, -position.z);
     }
 
@@ -455,7 +478,7 @@ public class ShadowMappingDemo {
 
     public static void main(String[] args) {
         new Converter(List.of(SceneFragmentShader.class));
-
+        System.exit(0);
         new ShadowMappingDemo().run();
     }
 

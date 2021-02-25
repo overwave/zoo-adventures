@@ -1,9 +1,6 @@
 package dev.overtow.glsl;
 
-import dev.overtow.glsl.type.Sampler2D;
-import dev.overtow.glsl.type.Vec2;
-import dev.overtow.glsl.type.Vec3;
-import dev.overtow.glsl.type.Vec4;
+import dev.overtow.glsl.type.*;
 
 public interface GlslLibrary {
 
@@ -43,6 +40,10 @@ public interface GlslLibrary {
         return Vec2.STUB;
     }
 
+    static Mat4 mat4(double c) {
+        return Mat4.STUB;
+    }
+
     static Vec3 vec3(double c) {
         return Vec3.STUB;
     }
@@ -52,6 +53,10 @@ public interface GlslLibrary {
     }
 
     static Vec4 vec4(double x, double y, double z, double w) {
+        return Vec4.STUB;
+    }
+
+    static Vec4 vec4(Vec3 xyz, double w) {
         return Vec4.STUB;
     }
 

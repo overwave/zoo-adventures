@@ -6,13 +6,11 @@ public interface Uniform<T> {
     void locate(Function<String, Integer> function);
 
     enum Name {
-        VIEW_PROJECTION_MATRIX("viewProjectionMatrix"),
 
         MODEL_LIGHT_VIEW_MATRIX("modelLightViewMatrix"),
         ORTHO_PROJECTION_MATRIX("orthoProjectionMatrix"),
         PROJECTION_MATRIX("projectionMatrix"),
         MODEL_VIEW_MATRIX("modelViewMatrix"),
-        TEXTURE_SAMPLER("textureSampler"),
         NORMAL_MAP("normalMap"),
         MATERIAL("material"),
         SPECULAR_POWER("specularPower"),
@@ -24,7 +22,20 @@ public interface Uniform<T> {
         NUM_COLS("numCols"),
         NUM_ROWS("numRows"),
         SELECTED("selected"),
-        BACK_COLOR("backColor");
+        BACK_COLOR("backColor"),
+
+
+        TEXTURE_SAMPLER("textureSampler"),
+        DEPTH_TEXTURE("depthTexture"),
+        LIGHT_POSITION("lightPosition"),
+        VIEW_PROJECTION_MATRIX("viewProjectionMatrix"),
+        LIGHT_VIEW_PROJECTION_MATRIX("lightViewProjectionMatrix"),
+        BIAS_MATRIX("biasMatrix"),
+        MODEL_MATRIX("modelMatrix"),
+
+        ;
+
+
 
         private final String name;
 
