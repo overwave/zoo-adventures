@@ -45,11 +45,9 @@ public class Mesh {
         }
     }
 
-    public static final int MAX_WEIGHTS = 4;
+    private final int vaoId;
 
-    protected final int vaoId;
-
-    protected final List<Integer> vboIdList;
+    private final List<Integer> vboIdList;
 
     private final int vertexCount;
 
@@ -57,11 +55,11 @@ public class Mesh {
 
     private float boundingRadius;
 
-    public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
-        this(positions, textCoords, normals, indices, Mesh.createEmptyIntArray(Mesh.MAX_WEIGHTS * positions.length / 3, 0), Mesh.createEmptyFloatArray(Mesh.MAX_WEIGHTS * positions.length / 3, 0));
-    }
+//    public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
+//        this(positions, textCoords, normals, indices, Mesh.createEmptyIntArray(Mesh.MAX_WEIGHTS * positions.length / 3, 0), Mesh.createEmptyFloatArray(Mesh.MAX_WEIGHTS * positions.length / 3, 0));
+//    }
 
-    public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices, int[] jointIndices, float[] weights) {
+    public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices/*, int[] jointIndices, float[] weights*/) {
         FloatBuffer posBuffer = null;
         FloatBuffer textCoordsBuffer = null;
         FloatBuffer vecNormalsBuffer = null;
@@ -113,24 +111,24 @@ public class Mesh {
             glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
 
             // Weights
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            weightsBuffer = MemoryUtil.memAllocFloat(weights.length);
-            weightsBuffer.put(weights).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, weightsBuffer, GL_DYNAMIC_DRAW);
-            glEnableVertexAttribArray(3);
-            glVertexAttribPointer(3, 4, GL_FLOAT, false, 0, 0);
-
-            // Joint indices
-            vboId = glGenBuffers();
-            vboIdList.add(vboId);
-            jointIndicesBuffer = MemoryUtil.memAllocInt(jointIndices.length);
-            jointIndicesBuffer.put(jointIndices).flip();
-            glBindBuffer(GL_ARRAY_BUFFER, vboId);
-            glBufferData(GL_ARRAY_BUFFER, jointIndicesBuffer, GL_DYNAMIC_DRAW);
-            glEnableVertexAttribArray(4);
-            glVertexAttribPointer(4, 4, GL_FLOAT, false, 0, 0);
+//            vboId = glGenBuffers();
+//            vboIdList.add(vboId);
+//            weightsBuffer = MemoryUtil.memAllocFloat(weights.length);
+//            weightsBuffer.put(weights).flip();
+//            glBindBuffer(GL_ARRAY_BUFFER, vboId);
+//            glBufferData(GL_ARRAY_BUFFER, weightsBuffer, GL_DYNAMIC_DRAW);
+//            glEnableVertexAttribArray(3);
+//            glVertexAttribPointer(3, 4, GL_FLOAT, false, 0, 0);
+//
+//            // Joint indices
+//            vboId = glGenBuffers();
+//            vboIdList.add(vboId);
+//            jointIndicesBuffer = MemoryUtil.memAllocInt(jointIndices.length);
+//            jointIndicesBuffer.put(jointIndices).flip();
+//            glBindBuffer(GL_ARRAY_BUFFER, vboId);
+//            glBufferData(GL_ARRAY_BUFFER, jointIndicesBuffer, GL_DYNAMIC_DRAW);
+//            glEnableVertexAttribArray(4);
+//            glVertexAttribPointer(4, 4, GL_FLOAT, false, 0, 0);
 
             // Index VBO
             vboId = glGenBuffers();

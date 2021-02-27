@@ -40,7 +40,7 @@ public class Converter {
     private static void convertToGlsl(Class<? extends Shader> clazz) throws IOException {
         File javaFile = classToFile(clazz);
         CompilationUnit compilationUnit = parseJava(javaFile);
-        String fileExtension = clazz.isAssignableFrom(VertexShader.class) ? ".vert" : ".frag";
+        String fileExtension = VertexShader.class.isAssignableFrom(clazz) ? ".vert" : ".frag";
         String filename = "data/shader/target/" + clazz.getSimpleName() + fileExtension;
 
 

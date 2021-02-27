@@ -1,33 +1,44 @@
 package org.lwjglb.engine.graph;
 
+import dev.overtow.core.Actor;
 import dev.overtow.core.DepthShader;
 import dev.overtow.core.GeneralShader;
 import dev.overtow.core.Scene;
 import dev.overtow.core.shader.ShaderProgram;
+import dev.overtow.service.meshlibrary.MeshLibrary;
+import dev.overtow.util.injection.Injector;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLDebugMessageCallback;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.List;
 
+import static dev.overtow.core.shader.uniform.Uniform.Name.*;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11.glDrawElements;
 import static org.lwjgl.opengl.GL11C.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11C.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.opengl.GL11C.glEnable;
-import static org.lwjgl.opengl.GL11C.glGetInteger;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL30C.GL_CONTEXT_FLAGS;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL43C.*;
-import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
-import static org.lwjgl.system.APIUtil.apiLog;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Renderer {
     private final GLCapabilities capabilities;
     private final ShaderProgram generalShader;
     private final ShaderProgram depthShader;
+    private final MeshLibrary meshLibrary;
     GLDebugMessageCallback debugProc;
+    FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+    Matrix4f light = new Matrix4f();
 
 
     int fbo;
@@ -69,6 +80,7 @@ public class Renderer {
 
         createDepthTexture();
         createFbo();
+        meshLibrary = Injector.getInstance(MeshLibrary.class);
     }
 
     void createDepthTexture() {
@@ -101,7 +113,85 @@ public class Renderer {
     }
 
     public void render(Scene scene) {
+        List<Actor> actors = scene.getActors();
+        for (Actor actor : actors) {
+            Mesh mesh = meshLibrary.get(actor.getMeshId());
 
+            depthShader.draw(shader -> {
+                shader.set(VIEW_PROJECTION_MATRIX, light);
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+                glViewport(0, 0, shadowMapSize, shadowMapSize);
+                glClear(GL_DEPTH_BUFFER_BIT);
+                glBindVertexArray(mesh.getVaoId());
+
+                Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                        actor.getPosition(),
+                        actor.getRotation(),
+                        new Vector3f(actor.getScale()));
+                shader.set(MODEL_MATRIX, matrix4f);
+                glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+                glBindVertexArray(0);
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            });
+
+
+            Vector3f position = new Vector3f(0f, 27, 00f);
+            Vector3f rotation = new Vector3f(90, 0, 0);
+            Matrix4f camera = new Matrix4f();
+            camera.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 30.0f)
+                    .rotateX((float) Math.toRadians(rotation.x))
+                    .rotateY((float) Math.toRadians(rotation.y))
+                    .translate(-position.x, -position.y, -position.z);
+            Matrix4f biasMatrix = new Matrix4f(
+                    0.5f, 0.0f, 0.0f, 0.0f,
+                    0.0f, 0.5f, 0.0f, 0.0f,
+                    0.0f, 0.0f, 0.5f, 0.0f,
+                    0.5f, 0.5f, 0.5f, 1.0f
+            );
+            float lightHeight = 15.0f;
+            Vector3f lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
+
+            generalShader.draw(shader -> {
+                shader.set(VIEW_PROJECTION_MATRIX, camera);
+                shader.set(LIGHT_VIEW_PROJECTION_MATRIX, light);
+                shader.set(BIAS_MATRIX, biasMatrix);
+                shader.set(LIGHT_POSITION, lightPosition);
+
+                glViewport(0, 0, 1600, 900);
+                // TODO maybe i can skip color buffer clearance
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                glBindVertexArray(mesh.getVaoId());
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, depthTexture);
+
+                glActiveTexture(GL_TEXTURE1);
+                mesh.getMaterial().getTexture().bind();
+
+
+                Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                        actor.getPosition(),
+                        actor.getRotation(),
+                        new Vector3f(actor.getScale()));
+                shader.set(MODEL_MATRIX, matrix4f);
+                glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+
+                glBindVertexArray(0);
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, 0);
+
+                glUseProgram(0);
+            });
+        }
     }
 //    private static final int MAX_POINT_LIGHTS = 5;
 //

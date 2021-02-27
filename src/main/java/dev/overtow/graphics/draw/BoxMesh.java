@@ -1,12 +1,8 @@
 package dev.overtow.graphics.draw;
 
-public class BoxMesh implements Mesh {
+public class BoxMesh  {
 
     public BoxMesh() {
     }
 
-    @Override
-    public void draw() {
-
-    }
 }

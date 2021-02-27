@@ -16,6 +16,7 @@ import org.lwjglb.engine.graph.lights.SpotLight;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL20.*;
 
@@ -111,9 +112,9 @@ public abstract class ShaderProgram {
         ((DirectionalLightUniform) uniformMap.get(name)).setValue(value);
     }
 
-    public void draw(Runnable runnable) {
+    public void draw(Consumer<ShaderProgram> runnable) {
         glUseProgram(programId);
-        runnable.run();
+        runnable.accept(this);
         glUseProgram(0);
     }
 }

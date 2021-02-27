@@ -2,6 +2,11 @@ package dev.overtow.service.engine;
 
 import demo.ShadowMappingDemo;
 import dev.overtow.core.Scene;
+import dev.overtow.glsl.Converter;
+import dev.overtow.glsl.shader.DepthFragmentShader;
+import dev.overtow.glsl.shader.DepthVertexShader;
+import dev.overtow.glsl.shader.GeneralFragmentShader;
+import dev.overtow.glsl.shader.GeneralVertexShader;
 import dev.overtow.service.hud.Hud;
 import dev.overtow.service.meshlibrary.MeshLibrary;
 import dev.overtow.service.meshloader.MeshLoader;
@@ -35,8 +40,10 @@ import org.lwjglb.engine.sound.SoundSource;
 import org.lwjglb.game.MouseBoxSelectionDetector;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11C.GL_CULL_FACE;
@@ -51,7 +58,6 @@ import static org.lwjgl.system.APIUtil.apiLog;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 
-@Bind
 public class Engine  {
     private final Window window;
     private final Renderer renderer;
@@ -92,6 +98,15 @@ public class Engine  {
 //    private final long startTime;
 
     public Engine() {
+
+        try {
+            Converter.convert(List.of(
+                    GeneralVertexShader.class, GeneralFragmentShader.class,
+                    DepthVertexShader.class, DepthFragmentShader.class
+            ));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         window = new Window();
         renderer = new Renderer();
         scene = new Scene();

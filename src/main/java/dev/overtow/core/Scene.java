@@ -1,35 +1,17 @@
 package dev.overtow.core;
 
-import dev.overtow.core.shader.ShaderProgram;
-import dev.overtow.core.shader.uniform.Uniform;
-import dev.overtow.service.window.Window;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
-import org.lwjglb.engine.SceneLight;
-import org.lwjglb.engine.graph.*;
-import org.lwjglb.engine.graph.lights.DirectionalLight;
-import org.lwjglb.engine.graph.lights.PointLight;
-import org.lwjglb.engine.graph.lights.SpotLight;
-import org.lwjglb.engine.items.GameItem;
+import org.joml.Vector2i;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
-import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class Scene {
-//    private final ShaderProgram sceneShader;
+    //    private final ShaderProgram sceneShader;
 //    private final ShaderProgram depthShader;
 //
 //    private final Map<Mesh, List<GameItem>> meshMap;
-//    private final ArrayList<Actor> actors;
+    private final ArrayList<Actor> actors;
 //
 //    private final Window window;
 //    private final Camera camera;
@@ -43,7 +25,8 @@ public class Scene {
 //        depthShader = new DepthShader();
 //        sceneShader = new SceneShader();
 //
-//        actors = new ArrayList<>();
+        actors = new ArrayList<>();
+        actors.add(new BoxActor(new Vector2i(2, 3)));
 //        meshMap = new HashMap<>();
 //
 //        transformation = new Transformation();
@@ -56,6 +39,10 @@ public class Scene {
 
     public void update() {
 
+    }
+
+    public List<Actor> getActors() {
+        return Collections.unmodifiableList(actors);
     }
 
 //    public void addActor(Actor actor) {
