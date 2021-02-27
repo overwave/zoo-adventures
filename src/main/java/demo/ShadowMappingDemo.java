@@ -21,14 +21,14 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
-import org.lwjgl.opengl.GLUtil;
-import org.lwjgl.system.Callback;
+import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.system.MemoryStack;
 import org.lwjglb.engine.graph.Mesh;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -46,8 +46,7 @@ import static org.lwjgl.opengl.GL30C.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL30C.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL30C.GL_DEPTH_COMPONENT;
 import static org.lwjgl.opengl.GL30C.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL30C.GL_NEAREST;
-import static org.lwjgl.opengl.GL30C.GL_NONE;
+import static org.lwjgl.opengl.GL30C.GL_LINEAR;
 import static org.lwjgl.opengl.GL30C.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL30C.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL30C.GL_TEXTURE_MIN_FILTER;
@@ -57,14 +56,16 @@ import static org.lwjgl.opengl.GL30C.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL30C.glBindTexture;
 import static org.lwjgl.opengl.GL30C.glClear;
 import static org.lwjgl.opengl.GL30C.glClearColor;
-import static org.lwjgl.opengl.GL30C.glDrawBuffer;
 import static org.lwjgl.opengl.GL30C.glEnable;
 import static org.lwjgl.opengl.GL30C.glGenTextures;
-import static org.lwjgl.opengl.GL30C.glReadBuffer;
+import static org.lwjgl.opengl.GL30C.glGetInteger;
 import static org.lwjgl.opengl.GL30C.glTexImage2D;
 import static org.lwjgl.opengl.GL30C.glTexParameteri;
 import static org.lwjgl.opengl.GL30C.glViewport;
 import static org.lwjgl.opengl.GL30C.*;
+import static org.lwjgl.opengl.GL43C.*;
+import static org.lwjgl.system.APIUtil.apiLog;
+import static org.lwjgl.system.APIUtil.apiUnknownToken;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.system.MemoryUtil.memAddress;
 
@@ -115,7 +116,7 @@ public class ShadowMappingDemo {
     GLFWErrorCallback errCallback;
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
-    Callback debugProc;
+    GLDebugMessageCallback debugProc;
     private Mesh mesh;
     private Mesh mesh2;
 
@@ -183,7 +184,29 @@ public class ShadowMappingDemo {
         }
 
         capabilities = GL.createCapabilities();
-        debugProc = GLUtil.setupDebugMessageCallback();
+
+        if (capabilities.OpenGL43) {
+            apiLog("[GL] Using OpenGL 4.3 for error logging.");
+            debugProc = GLDebugMessageCallback.create((source, type, id, severity, length, message, userParam) -> {
+                if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) {
+                    return;
+                }
+                System.out.println("[LWJGL] OpenGL debug message");
+                printDetail(System.out, "ID", String.format("0x%X", id));
+                printDetail(System.out, "Source", getDebugSource(source));
+                printDetail(System.out, "Type", getDebugType(type));
+                printDetail(System.out, "Severity", getDebugSeverity(severity));
+                printDetail(System.out, "Message", GLDebugMessageCallback.getMessage(length, message));
+            });
+            glDebugMessageCallback(debugProc, NULL);
+            if ((glGetInteger(GL_CONTEXT_FLAGS) & GL_CONTEXT_FLAG_DEBUG_BIT) == 0) {
+                apiLog("[GL] Warning: A non-debug context may not produce any debug output.");
+                glEnable(GL_DEBUG_OUTPUT);
+            }
+        } else {
+            throw new RuntimeException("opengl 4.3!");
+        }
+
 
         /* Set some GL states */
         glEnable(GL_CULL_FACE);
@@ -200,14 +223,53 @@ public class ShadowMappingDemo {
         createFbo();
     }
 
+    private static void printDetail(PrintStream stream, String type, String message) {
+        stream.printf("\t%s: %s\n", type, message);
+    }
+
+    private static String getDebugSource(int source) {
+        return switch (source) {
+            case GL_DEBUG_SOURCE_API -> "API";
+            case GL_DEBUG_SOURCE_WINDOW_SYSTEM -> "WINDOW SYSTEM";
+            case GL_DEBUG_SOURCE_SHADER_COMPILER -> "SHADER COMPILER";
+            case GL_DEBUG_SOURCE_THIRD_PARTY -> "THIRD PARTY";
+            case GL_DEBUG_SOURCE_APPLICATION -> "APPLICATION";
+            case GL_DEBUG_SOURCE_OTHER -> "OTHER";
+            default -> apiUnknownToken(source);
+        };
+    }
+
+    private static String getDebugType(int type) {
+        return switch (type) {
+            case GL_DEBUG_TYPE_ERROR -> "ERROR";
+            case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR -> "DEPRECATED BEHAVIOR";
+            case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR -> "UNDEFINED BEHAVIOR";
+            case GL_DEBUG_TYPE_PORTABILITY -> "PORTABILITY";
+            case GL_DEBUG_TYPE_PERFORMANCE -> "PERFORMANCE";
+            case GL_DEBUG_TYPE_OTHER -> "OTHER";
+            case GL_DEBUG_TYPE_MARKER -> "MARKER";
+            default -> apiUnknownToken(type);
+        };
+    }
+
+    private static String getDebugSeverity(int severity) {
+        return switch (severity) {
+            case GL_DEBUG_SEVERITY_HIGH -> "HIGH";
+            case GL_DEBUG_SEVERITY_MEDIUM -> "MEDIUM";
+            case GL_DEBUG_SEVERITY_LOW -> "LOW";
+            case GL_DEBUG_SEVERITY_NOTIFICATION -> "NOTIFICATION";
+            default -> apiUnknownToken(severity);
+        };
+    }
+
     /**
      * Create the texture storing the depth values of the light-render.
      */
     void createDepthTexture() {
         depthTexture = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, depthTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowMapSize, shadowMapSize, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE,
