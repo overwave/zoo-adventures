@@ -30,6 +30,21 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Mesh {
 
+    public enum Id {
+        CUBE("data/model/cube2/c10.obj"),
+        POOL("data/model/pool/pool_final_3.obj");
+
+        private final String path;
+
+        Id(String path) {
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
+    }
+
     public static final int MAX_WEIGHTS = 4;
 
     protected final int vaoId;

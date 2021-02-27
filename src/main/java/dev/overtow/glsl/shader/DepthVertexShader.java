@@ -11,7 +11,7 @@ import static dev.overtow.core.shader.uniform.Uniform.Name.MODEL_MATRIX;
 import static dev.overtow.core.shader.uniform.Uniform.Name.VIEW_PROJECTION_MATRIX;
 import static dev.overtow.glsl.GlslLibrary.*;
 
-public class ShadowVertexShader implements Shader {
+public class DepthVertexShader implements VertexShader {
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);

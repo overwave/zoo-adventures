@@ -5,10 +5,10 @@ package demo;
  */
 
 import dev.overtow.glsl.Converter;
-import dev.overtow.glsl.shader.SceneFragmentShader;
-import dev.overtow.glsl.shader.SceneVertexShader;
-import dev.overtow.glsl.shader.ShadowFragmentShader;
-import dev.overtow.glsl.shader.ShadowVertexShader;
+import dev.overtow.glsl.shader.GeneralFragmentShader;
+import dev.overtow.glsl.shader.GeneralVertexShader;
+import dev.overtow.glsl.shader.DepthFragmentShader;
+import dev.overtow.glsl.shader.DepthVertexShader;
 import dev.overtow.service.meshloader.MeshLoader;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
@@ -301,12 +301,8 @@ public class ShadowMappingDemo {
      */
     void createVao() {
         MeshLoader meshLoader = Injector.getInstance(MeshLoader.class);
-        try {
-            mesh = meshLoader.load("data/model/cube2/c10.obj");
-            mesh2 = meshLoader.load("data/model/pool/pool_final_3.obj");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        mesh = meshLoader.load("data/model/cube2/c10.obj");
+        mesh2 = meshLoader.load("data/model/pool/pool_final_3.obj");
         vao = mesh.getVaoId();
         vao2 = mesh2.getVaoId();
     }
@@ -341,6 +337,7 @@ public class ShadowMappingDemo {
         int fshader = createShader("data/shader/target/ShadowFragmentShader.glsl", GL_FRAGMENT_SHADER);
         glAttachShader(shadowProgram, vshader);
         glAttachShader(shadowProgram, fshader);
+        // TODO IS IT IMPORTANT???
         glBindAttribLocation(shadowProgram, 0, "position");
         glLinkProgram(shadowProgram);
         int linked = glGetProgrami(shadowProgram, GL_LINK_STATUS);
@@ -544,8 +541,8 @@ public class ShadowMappingDemo {
     public static void main(String[] args) {
         try {
             Converter.convert(List.of(
-                    SceneVertexShader.class, SceneFragmentShader.class,
-                    ShadowVertexShader.class, ShadowFragmentShader.class
+                    GeneralVertexShader.class, GeneralFragmentShader.class,
+                    DepthVertexShader.class, DepthFragmentShader.class
             ));
         } catch (IOException e) {
             throw new RuntimeException(e);

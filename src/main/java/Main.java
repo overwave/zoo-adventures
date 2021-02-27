@@ -4,8 +4,6 @@ import dev.overtow.util.injection.Injector;
 public class Main {
 
     public static void main(String[] args) {
-        Engine engine = Injector.getInstance(Engine.class);
-
-        engine.start();
+        new Engine().start();
     }
 }

@@ -1,6 +1,8 @@
 package dev.overtow.core.shader;
 
 import dev.overtow.core.shader.uniform.*;
+import dev.overtow.glsl.shader.FragmentShader;
+import dev.overtow.glsl.shader.VertexShader;
 import dev.overtow.service.reader.Reader;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
@@ -22,7 +24,7 @@ public abstract class ShaderProgram {
 
     protected final Map<Uniform.Name, Uniform<?>> uniformMap = new HashMap<>();
 
-    protected int compile(String folderPath) {
+    protected int compile(Class<? extends VertexShader> vsClassToken, Class<? extends FragmentShader> fsClassToken) {
         if (uniformMap.isEmpty()) {
             throw new IllegalStateException();
         }
@@ -37,8 +39,8 @@ public abstract class ShaderProgram {
         String vertexShaderCode;
         String fragmentShaderCode;
         try {
-            vertexShaderCode = reader.read(folderPath + "shader.vert");
-            fragmentShaderCode = reader.read(folderPath + "shader.frag");
+            vertexShaderCode = reader.read("data/shader/target/" + vsClassToken.getSimpleName() + ".vert");
+            fragmentShaderCode = reader.read("data/shader/target/" + fsClassToken.getSimpleName() + ".frag");
         } catch (IOException e) {
             throw new RuntimeException("failed to load shader code", e);
         }
@@ -62,9 +64,11 @@ public abstract class ShaderProgram {
             System.err.println("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
 
+        glUseProgram(programId);
         for (Uniform<?> uniform : uniformMap.values()) {
             uniform.locate(uniformName -> glGetUniformLocation(programId, uniformName));
         }
+        glUseProgram(0);
 
         return programId;
     }

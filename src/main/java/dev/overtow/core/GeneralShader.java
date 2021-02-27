@@ -2,13 +2,15 @@ package dev.overtow.core;
 
 import dev.overtow.core.shader.ShaderProgram;
 import dev.overtow.core.shader.uniform.*;
+import dev.overtow.glsl.shader.GeneralFragmentShader;
+import dev.overtow.glsl.shader.GeneralVertexShader;
 
-public class SceneShader extends ShaderProgram {
+public class GeneralShader extends ShaderProgram {
 
     private static final int MAX_POINT_LIGHTS = 5;  // also hardcoded in shader :(
     private static final int MAX_SPOT_LIGHTS = 5;
 
-    public SceneShader() {
+    public GeneralShader() {
         uniformMap.put(Uniform.Name.PROJECTION_MATRIX, new Matrix4fUniform(Uniform.Name.PROJECTION_MATRIX));
         uniformMap.put(Uniform.Name.MODEL_VIEW_MATRIX, new Matrix4fUniform(Uniform.Name.MODEL_VIEW_MATRIX));
         uniformMap.put(Uniform.Name.TEXTURE_SAMPLER, new IntegerUniform(Uniform.Name.TEXTURE_SAMPLER));
@@ -27,6 +29,6 @@ public class SceneShader extends ShaderProgram {
         uniformMap.put(Uniform.Name.SELECTED, new FloatUniform(Uniform.Name.SELECTED));
         uniformMap.put(Uniform.Name.BACK_COLOR, new Vector4fUniform(Uniform.Name.BACK_COLOR));
 
-        programId = compile("data/shader/scene/");
+        programId = compile(GeneralVertexShader.class, GeneralFragmentShader.class);
     }
 }

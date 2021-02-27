@@ -11,12 +11,12 @@ import dev.overtow.glsl.type.Vec4;
 import static dev.overtow.core.shader.uniform.Uniform.Name.*;
 import static dev.overtow.glsl.GlslLibrary.*;
 
-public class SceneFragmentShader implements Shader {
+public class GeneralFragmentShader implements FragmentShader {
     private static final float DEPTH_OFFSET = 0.00005f;
     private static final float LIGHT_INTENSITY = 0.3f;
     private static final float AMBIENT = 0.3f;
 
-    private final SceneVertexShader parentShader = new SceneVertexShader();
+    private final GeneralVertexShader parentShader = new GeneralVertexShader();
 
     @Uniform(TEXTURE_SAMPLER)
     private final Sampler2D textureSampler = new Sampler2D();

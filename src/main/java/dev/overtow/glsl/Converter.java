@@ -13,6 +13,7 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import dev.overtow.core.shader.uniform.Uniform.Name;
 import dev.overtow.glsl.shader.Shader;
+import dev.overtow.glsl.shader.VertexShader;
 
 import java.io.*;
 import java.util.HashMap;
@@ -31,15 +32,16 @@ public class Converter {
     }
 
     public static void convert(List<Class<? extends Shader>> classes) throws IOException {
-        for (Class<?> clazz : classes) {
+        for (Class<? extends Shader> clazz : classes) {
             convertToGlsl(clazz);
         }
     }
 
-    private static void convertToGlsl(Class<?> clazz) throws IOException {
+    private static void convertToGlsl(Class<? extends Shader> clazz) throws IOException {
         File javaFile = classToFile(clazz);
         CompilationUnit compilationUnit = parseJava(javaFile);
-        String filename = "data/shader/target/" + clazz.getSimpleName() + ".glsl";
+        String fileExtension = clazz.isAssignableFrom(VertexShader.class) ? ".vert" : ".frag";
+        String filename = "data/shader/target/" + clazz.getSimpleName() + fileExtension;
 
 
         try (PrintStream os = new PrintStream(new FileOutputStream(filename))) {

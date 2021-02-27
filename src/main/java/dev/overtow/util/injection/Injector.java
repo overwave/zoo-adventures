@@ -41,6 +41,18 @@ public class Injector {
         return getInstance(interf, "");
     }
 
+    @SafeVarargs
+    public static <T extends Destroyable> void destroyInstance(T... objects) {
+        for (T object : objects) {
+            object.destroy();
+            for (Tuple<Class<?>, String> tuple : servicesMap.keySet()) {
+                if (tuple.getT().equals(object.getClass())) {
+                    servicesMap.remove(tuple, object);
+                }
+            }
+        }
+    }
+
     private static <T> T createInstance(Tuple<Class<?>, String> tuple) {
         Class<?> clazz = bindMap.get(tuple);
         if (clazz == null) {

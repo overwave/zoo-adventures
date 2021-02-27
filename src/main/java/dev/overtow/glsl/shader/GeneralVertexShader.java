@@ -11,7 +11,7 @@ import dev.overtow.glsl.type.Vec4;
 import static dev.overtow.core.shader.uniform.Uniform.Name.*;
 import static dev.overtow.glsl.GlslLibrary.*;
 
-public class SceneVertexShader implements Shader {
+public class GeneralVertexShader implements VertexShader {
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);

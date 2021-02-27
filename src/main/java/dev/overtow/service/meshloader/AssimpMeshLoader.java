@@ -31,7 +31,7 @@ public class AssimpMeshLoader implements MeshLoader {
     }
 
     @Override
-    public Mesh load(String modelFilename) throws IOException {
+    public Mesh load(String filename) {
         AIFileIO fileIo = AIFileIO.create().OpenProc((pFileIO, fileName, openMode) -> {
             ByteBuffer data;
             String fileNameUtf8 = memUTF8(fileName);
@@ -67,11 +67,11 @@ public class AssimpMeshLoader implements MeshLoader {
             aiFile.FileSizeProc().free();
         });
 
-        File file = new File(modelFilename);
-        AIScene aiScene = aiImportFileEx(modelFilename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, fileIo);
+        File file = new File(filename);
+        AIScene aiScene = aiImportFileEx(filename, aiProcess_JoinIdenticalVertices | aiProcess_Triangulate, fileIo);
 
         if (aiScene == null) {
-            throw new IOException("Error loading model:" + aiGetErrorString());
+            throw new RuntimeException("Error loading model:" + aiGetErrorString());
         }
 
         int numMaterials = aiScene.mNumMaterials();
@@ -87,14 +87,14 @@ public class AssimpMeshLoader implements MeshLoader {
         PointerBuffer aiMeshes = aiScene.mMeshes();
 
         if (numMeshes != 1 || aiMeshes == null) {
-            throw new RuntimeException(String.format("Model %s has not exactly one mesh", modelFilename));
+            throw new RuntimeException(String.format("Model %s has not exactly one mesh", filename));
         }
 
         AIMesh aiMesh = AIMesh.create(aiMeshes.get(0));
         return processMesh(aiMesh, materials);
     }
 
-    private static void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) throws IOException {
+    private static void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) {
         AIColor4D colour = AIColor4D.create();
 
         AIString path = AIString.calloc();
