@@ -15,7 +15,11 @@ import dev.overtow.core.shader.uniform.Uniform.Name;
 import dev.overtow.glsl.shader.Shader;
 import dev.overtow.glsl.shader.VertexShader;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,15 @@ public class Converter {
     private Converter(PrintStream os) {
         this.os = os;
         this.inOutMap = new HashMap<>();
+    }
+
+    public static List<Name> getUsedUniforms(List<Class<? extends Shader>> shaderClasses) {
+        return shaderClasses.stream()
+                .map(Class::getDeclaredFields)
+                .flatMap(Arrays::stream)
+                .filter(field -> field.isAnnotationPresent(Uniform.class))
+                .map(field -> field.getAnnotation(Uniform.class).value())
+                .collect(Collectors.toList());
     }
 
     public static String convert(Class<? extends Shader> classes) {

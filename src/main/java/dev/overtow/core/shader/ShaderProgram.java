@@ -16,6 +16,7 @@ import org.lwjglb.engine.graph.lights.SpotLight;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -27,8 +28,10 @@ public abstract class ShaderProgram {
     protected final Map<Uniform.Name, Uniform<?>> uniformMap = new HashMap<>();
 
     protected int compile(Class<? extends VertexShader> vsClassToken, Class<? extends FragmentShader> fsClassToken) {
-        if (uniformMap.isEmpty()) {
-            throw new IllegalStateException();
+        List<Uniform.Name> uninitializedUniforms = Converter.getUsedUniforms(List.of(vsClassToken, fsClassToken));
+        uninitializedUniforms.removeAll(uniformMap.keySet());
+        if (uninitializedUniforms.size() != 0) {
+            throw new IllegalStateException("Uniforms are not initialized: " + uninitializedUniforms);
         }
 
         int programId = glCreateProgram();

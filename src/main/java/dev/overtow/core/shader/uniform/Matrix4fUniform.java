@@ -1,6 +1,5 @@
 package dev.overtow.core.shader.uniform;
 
-import dev.overtow.core.DepthShader;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 

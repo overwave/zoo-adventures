@@ -1,8 +1,8 @@
 package org.lwjglb.engine.graph;
 
 import dev.overtow.core.Actor;
-import dev.overtow.core.DepthShader;
-import dev.overtow.core.GeneralShader;
+import dev.overtow.core.DepthShaderProgram;
+import dev.overtow.core.GeneralShaderProgram;
 import dev.overtow.core.Scene;
 import dev.overtow.core.shader.ShaderProgram;
 import dev.overtow.service.meshlibrary.MeshLibrary;
@@ -28,7 +28,25 @@ import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.opengl.GL11C.glEnable;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
+import static org.lwjgl.opengl.GL43C.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL43C.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL43C.GL_DEPTH_COMPONENT;
+import static org.lwjgl.opengl.GL43C.GL_LINEAR;
+import static org.lwjgl.opengl.GL43C.GL_NONE;
+import static org.lwjgl.opengl.GL43C.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL43C.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL43C.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL43C.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL43C.GL_TEXTURE_WRAP_T;
+import static org.lwjgl.opengl.GL43C.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL43C.glBindTexture;
+import static org.lwjgl.opengl.GL43C.glClear;
+import static org.lwjgl.opengl.GL43C.glDrawBuffer;
+import static org.lwjgl.opengl.GL43C.glGenTextures;
+import static org.lwjgl.opengl.GL43C.glReadBuffer;
+import static org.lwjgl.opengl.GL43C.glTexImage2D;
+import static org.lwjgl.opengl.GL43C.glTexParameteri;
+import static org.lwjgl.opengl.GL43C.glViewport;
 import static org.lwjgl.opengl.GL43C.*;
 
 public class Renderer {
@@ -75,8 +93,8 @@ public class Renderer {
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 
-        depthShader = new DepthShader();
-        generalShader = new GeneralShader();
+        depthShader = new DepthShaderProgram();
+        generalShader = new GeneralShaderProgram();
 
         createDepthTexture();
         createFbo();
