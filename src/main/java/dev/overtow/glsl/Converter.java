@@ -31,13 +31,15 @@ public class Converter {
         this.inOutMap = new HashMap<>();
     }
 
-    public static void convert(List<Class<? extends Shader>> classes) throws IOException {
-        for (Class<? extends Shader> clazz : classes) {
-            convertToGlsl(clazz);
-        }
+    public static String convert(Class<? extends Shader> classes) {
+        return Converter.convertToGlsl(classes);
     }
 
-    private static void convertToGlsl(Class<? extends Shader> clazz) throws IOException {
+    public static List<String> convert(List<Class<? extends Shader>> classes) {
+        return classes.stream().map(Converter::convertToGlsl).collect(Collectors.toList());
+    }
+
+    private static String convertToGlsl(Class<? extends Shader> clazz) {
         File javaFile = classToFile(clazz);
         CompilationUnit compilationUnit = parseJava(javaFile);
         String fileExtension = VertexShader.class.isAssignableFrom(clazz) ? ".vert" : ".frag";
@@ -47,7 +49,11 @@ public class Converter {
         try (PrintStream os = new PrintStream(new FileOutputStream(filename))) {
             Converter converter = new Converter(os);
             converter.doConvertToGlsl(compilationUnit);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
+
+        return filename;
     }
 
     private void doConvertToGlsl(CompilationUnit compilationUnit) {

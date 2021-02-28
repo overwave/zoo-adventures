@@ -10,6 +10,7 @@ public class DepthShader extends ShaderProgram {
 
     public DepthShader() {
         uniformMap.put(Uniform.Name.VIEW_PROJECTION_MATRIX, new Matrix4fUniform(Uniform.Name.VIEW_PROJECTION_MATRIX));
+        uniformMap.put(Uniform.Name.MODEL_MATRIX, new Matrix4fUniform(Uniform.Name.MODEL_MATRIX));
 
         programId = compile(DepthVertexShader.class, DepthFragmentShader.class);
     }

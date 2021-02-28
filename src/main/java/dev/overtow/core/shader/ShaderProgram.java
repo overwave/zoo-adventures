@@ -1,6 +1,7 @@
 package dev.overtow.core.shader;
 
 import dev.overtow.core.shader.uniform.*;
+import dev.overtow.glsl.Converter;
 import dev.overtow.glsl.shader.FragmentShader;
 import dev.overtow.glsl.shader.VertexShader;
 import dev.overtow.service.reader.Reader;
@@ -40,8 +41,8 @@ public abstract class ShaderProgram {
         String vertexShaderCode;
         String fragmentShaderCode;
         try {
-            vertexShaderCode = reader.read("data/shader/target/" + vsClassToken.getSimpleName() + ".vert");
-            fragmentShaderCode = reader.read("data/shader/target/" + fsClassToken.getSimpleName() + ".frag");
+            vertexShaderCode = reader.read(Converter.convert(vsClassToken));
+            fragmentShaderCode = reader.read(Converter.convert(fsClassToken));
         } catch (IOException e) {
             throw new RuntimeException("failed to load shader code", e);
         }
@@ -75,41 +76,50 @@ public abstract class ShaderProgram {
     }
 
     public void set(Uniform.Name name, int value) {
-        ((IntegerUniform) uniformMap.get(name)).setValue(value);
+        checkedGet(name, IntegerUniform.class).setValue(value);
     }
 
     public void set(Uniform.Name name, float value) {
-        ((FloatUniform) uniformMap.get(name)).setValue(value);
+        checkedGet(name, FloatUniform.class).setValue(value);
     }
 
     public void set(Uniform.Name name, Vector3f value) {
-        ((Vector3fUniform) uniformMap.get(name)).setValue(value);
+        checkedGet(name, Vector3fUniform.class).setValue(value);
     }
 
     public void set(Uniform.Name name, Vector4f value) {
-        ((Vector4fUniform) uniformMap.get(name)).setValue(value);
+        checkedGet(name, Vector4fUniform.class).setValue(value);
     }
 
     public void set(Uniform.Name name, Matrix4f value) {
-        ((Matrix4fUniform) uniformMap.get(name)).setValue(value);
+        checkedGet(name, Matrix4fUniform.class).setValue(value);
     }
 
     public void set(Uniform.Name name, Material value) {
-        ((MaterialUniform) uniformMap.get(name)).setValue(value);
+        checkedGet(name, MaterialUniform.class).setValue(value);
     }
 
     // TODO NOT TESTED
+
     public void set(Uniform.Name name, int index, PointLight value) {
         ((ArrayUniform<PointLight>) uniformMap.get(name)).setElement(value, index);
     }
-
     // TODO NOT TESTED
+
     public void set(Uniform.Name name, int index, SpotLight value) {
         ((ArrayUniform<SpotLight>) uniformMap.get(name)).setElement(value, index);
     }
 
     public void set(Uniform.Name name, DirectionalLight value) {
-        ((DirectionalLightUniform) uniformMap.get(name)).setValue(value);
+        checkedGet(name, DirectionalLightUniform.class).setValue(value);
+    }
+
+    private <T extends Uniform<?>> T checkedGet(Uniform.Name name, Class<T> uniformType) {
+        Uniform<?> value = uniformMap.get(name);
+        if (value == null) {
+            throw new IllegalStateException("Uniform " + name + " was not created!");
+        }
+        return uniformType.cast(value);
     }
 
     public void draw(Consumer<ShaderProgram> runnable) {

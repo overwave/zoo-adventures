@@ -98,15 +98,6 @@ public class Engine  {
 //    private final long startTime;
 
     public Engine() {
-
-        try {
-            Converter.convert(List.of(
-                    GeneralVertexShader.class, GeneralFragmentShader.class,
-                    DepthVertexShader.class, DepthFragmentShader.class
-            ));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         window = new Window();
         renderer = new Renderer();
         scene = new Scene();

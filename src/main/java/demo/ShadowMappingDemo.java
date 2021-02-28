@@ -539,14 +539,10 @@ public class ShadowMappingDemo {
     }
 
     public static void main(String[] args) {
-        try {
-            Converter.convert(List.of(
-                    GeneralVertexShader.class, GeneralFragmentShader.class,
-                    DepthVertexShader.class, DepthFragmentShader.class
-            ));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Converter.convert(List.of(
+                GeneralVertexShader.class, GeneralFragmentShader.class,
+                DepthVertexShader.class, DepthFragmentShader.class
+        ));
         new ShadowMappingDemo().run();
     }
 
