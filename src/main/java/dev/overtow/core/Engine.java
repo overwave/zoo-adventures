@@ -1,7 +1,5 @@
 package dev.overtow.core;
 
-import dev.overtow.service.window.Window;
-
 public class Engine  {
     private final Window window;
     private final Renderer renderer;
@@ -230,9 +228,9 @@ public class Engine  {
 //        window.update();
     }
 
-    private enum Sounds {
-        MUSIC, BEEP, FIRE
-    }
+//    private enum Sounds {
+//        MUSIC, BEEP, FIRE
+//    }
 
     private void setupSounds() throws Exception {
 //        SoundBuffer buffBack = new SoundBuffer("/sounds/background.ogg");

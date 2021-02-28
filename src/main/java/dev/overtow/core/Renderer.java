@@ -1,6 +1,7 @@
 package dev.overtow.core;
 
 import dev.overtow.core.shader.ShaderProgram;
+import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.service.meshlibrary.MeshLibrary;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
@@ -51,7 +52,6 @@ public class Renderer {
     private final ShaderProgram depthShader;
     private final MeshLibrary meshLibrary;
     GLDebugMessageCallback debugProc;
-    FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
     Matrix4f light = new Matrix4f();
 
 
@@ -91,10 +91,16 @@ public class Renderer {
 
         depthShader = new DepthShaderProgram();
         generalShader = new GeneralShaderProgram();
+        generalShader.draw(shader -> {
+            shader.set(Uniform.Name.DEPTH_TEXTURE, 0);
+            shader.set(Uniform.Name.TEXTURE_SAMPLER, 1);
+        });
 
         createDepthTexture();
         createFbo();
         meshLibrary = Injector.getInstance(MeshLibrary.class);
+        meshLibrary.get(Mesh.Id.CUBE);
+        meshLibrary.get(Mesh.Id.POOL);
     }
 
     void createDepthTexture() {
@@ -128,37 +134,43 @@ public class Renderer {
 
     public void render(Scene scene) {
         List<Actor> actors = scene.getActors();
-        for (Actor actor : actors) {
-            Mesh mesh = meshLibrary.get(actor.getMeshId());
 
-            drawDepthMap(actor, mesh);
-            drawScene(actor, mesh);
-        }
+        glClear(GL_DEPTH_BUFFER_BIT);
+
+        drawDepthMap(actors);
+
+        // TODO maybe i can skip color buffer clearance
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        drawScene(actors);
     }
 
-    private void drawDepthMap(Actor actor, Mesh mesh) {
+    private void drawDepthMap(List<Actor> actors) {
         depthShader.draw(shader -> {
             shader.set(VIEW_PROJECTION_MATRIX, light);
 
             glActiveTexture(GL_TEXTURE0);
             glBindFramebuffer(GL_FRAMEBUFFER, fbo);
             glViewport(0, 0, shadowMapSize, shadowMapSize);
-            glClear(GL_DEPTH_BUFFER_BIT);
-            glBindVertexArray(mesh.getVaoId());
 
-            Matrix4f matrix4f = new Matrix4f().translationRotateScale(
-                    actor.getPosition(),
-                    actor.getRotation(),
-                    new Vector3f(actor.getScale()));
-            shader.set(MODEL_MATRIX, matrix4f);
-            glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+            for (Actor actor : actors) {
+                Mesh mesh = meshLibrary.get(actor.getMeshId());
+                glBindVertexArray(mesh.getVaoId());
+
+                Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                        actor.getPosition(),
+                        actor.getRotation(),
+                        new Vector3f(actor.getScale()));
+                shader.set(MODEL_MATRIX, matrix4f);
+                glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+            }
 
             glBindVertexArray(0);
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         });
     }
 
-    private void drawScene(Actor actor, Mesh mesh) {
+    private void drawScene(List<Actor> actors) {
         Vector3f cameraPosition = new Vector3f(0f, 27, 00f);
         Vector3f cameraRotation = new Vector3f(90, 0, 0);
         Matrix4f camera = new Matrix4f();
@@ -182,24 +194,27 @@ public class Renderer {
             shader.set(LIGHT_POSITION, lightPosition);
 
             glViewport(0, 0, 1600, 900);
-            // TODO maybe i can skip color buffer clearance
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-            glBindVertexArray(mesh.getVaoId());
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, depthTexture);
-
-            glActiveTexture(GL_TEXTURE1);
-            mesh.getMaterial().getTexture().bind();
 
 
-            Matrix4f matrix4f = new Matrix4f().translationRotateScale(
-                    actor.getPosition(),
-                    actor.getRotation(),
-                    new Vector3f(actor.getScale()));
-            shader.set(MODEL_MATRIX, matrix4f);
-            glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+            for (Actor actor : actors) {
+                Mesh mesh = meshLibrary.get(actor.getMeshId());
+
+                glBindVertexArray(mesh.getVaoId());
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, depthTexture);
+
+                glActiveTexture(GL_TEXTURE1);
+                mesh.getMaterial().getTexture().bind();
+
+
+                Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                        actor.getPosition(),
+                        actor.getRotation(),
+                        new Vector3f(actor.getScale()));
+                shader.set(MODEL_MATRIX, matrix4f);
+                glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+            }
 
 
             glBindVertexArray(0);
@@ -209,8 +224,6 @@ public class Renderer {
 
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, 0);
-
-            glUseProgram(0);
         });
     }
 //    private static final int MAX_POINT_LIGHTS = 5;

@@ -161,11 +161,9 @@ public class Mesh {
         }
     }
 
-    private void calculateBoundingRadius(float positions[]) {
-        int length = positions.length;
+    private void calculateBoundingRadius(float[] positions) {
         boundingRadius = 0;
-        for (int i = 0; i < length; i++) {
-            float pos = positions[i];
+        for (float pos : positions) {
             boundingRadius = Math.max(Math.abs(pos), boundingRadius);
         }
     }

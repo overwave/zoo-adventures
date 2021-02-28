@@ -28,29 +28,33 @@ public class Material {
         this.reflectance = 0;
     }
 
-    public Material(Vector4f colour, float reflectance) {
-        this(colour, colour, colour, null, reflectance);
-    }
+//    public Material(Vector4f colour, float reflectance) {
+//        this(colour, colour, colour, null, reflectance);
+//    }
 
-    public Material(Texture texture) {
-        this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, 0);
-    }
+//    public Material(Texture texture) {
+//        this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, 0);
+//    }
 
-    public Material(Texture texture, float reflectance) {
-        this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, reflectance);
-    }
+//    public Material(Texture texture, float reflectance) {
+//        this(DEFAULT_COLOUR, DEFAULT_COLOUR, DEFAULT_COLOUR, texture, reflectance);
+//    }
 
     public Material(Vector4f ambientColour, Vector4f diffuseColour, Vector4f specularColour, float reflectance) {
-        this(ambientColour, diffuseColour, specularColour, null, reflectance);
-    }
-
-    public Material(Vector4f ambientColour, Vector4f diffuseColour, Vector4f specularColour, Texture texture, float reflectance) {
         this.ambientColour = ambientColour;
         this.diffuseColour = diffuseColour;
         this.specularColour = specularColour;
-        this.texture = texture;
+        this.texture = null;
         this.reflectance = reflectance;
     }
+
+//    public Material(Vector4f ambientColour, Vector4f diffuseColour, Vector4f specularColour, Texture texture, float reflectance) {
+//        this.ambientColour = ambientColour;
+//        this.diffuseColour = diffuseColour;
+//        this.specularColour = specularColour;
+//        this.texture = texture;
+//        this.reflectance = reflectance;
+//    }
 
     public Vector4f getAmbientColour() {
         return ambientColour;

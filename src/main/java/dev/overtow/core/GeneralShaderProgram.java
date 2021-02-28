@@ -18,9 +18,6 @@ public class GeneralShaderProgram extends ShaderProgram {
         uniformMap.put(Uniform.Name.TEXTURE_SAMPLER, new IntegerUniform(Uniform.Name.TEXTURE_SAMPLER));
         uniformMap.put(Uniform.Name.DEPTH_TEXTURE, new IntegerUniform(Uniform.Name.DEPTH_TEXTURE));
 
-//        uniformMap.put(Uniform.Name.POINT_LIGHTS, new ArrayUniform<>(Uniform.Name.POINT_LIGHTS, MAX_POINT_LIGHTS, PointLightUniform::new));
-//        uniformMap.put(Uniform.Name.SPOT_LIGHTS, new ArrayUniform<>(Uniform.Name.SPOT_LIGHTS, MAX_SPOT_LIGHTS, SpotLightUniform::new));
-
         programId = compile(GeneralVertexShader.class, GeneralFragmentShader.class);
     }
 }

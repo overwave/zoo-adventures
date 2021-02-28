@@ -5,7 +5,7 @@ import dev.overtow.graphics.hud.Rectangle;
 import dev.overtow.graphics.hud.Text;
 import dev.overtow.graphics.hud.TextAlign;
 import dev.overtow.service.memory.MemoryManager;
-import dev.overtow.service.window.Window;
+import dev.overtow.core.Window;
 import dev.overtow.util.injection.Bind;
 import org.joml.Vector2f;
 

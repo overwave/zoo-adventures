@@ -1,4 +1,4 @@
-package dev.overtow.service.window;
+package dev.overtow.core;
 
 import dev.overtow.service.config.Config;
 import dev.overtow.util.ErrorCallback;
