@@ -1,4 +1,4 @@
-package org.lwjglb.engine.graph;
+package dev.overtow.core;
 
 import java.awt.Color;
 import java.awt.Font;

@@ -3,7 +3,6 @@ package org.lwjglb.game;
 import org.joml.primitives.Intersectionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjglb.engine.graph.Camera;
 import org.lwjglb.engine.items.GameItem;
 
 public class CameraBoxSelectionDetector {
@@ -23,10 +22,10 @@ public class CameraBoxSelectionDetector {
         nearFar = new Vector2f();
     }
 
-    public void selectGameItem(GameItem[] gameItems, Camera camera) {        
-        dir = camera.getViewMatrix().positiveZ(dir).negate();
-        selectGameItem(gameItems, camera.getPosition(), dir);
-    }
+//    public void selectGameItem(GameItem[] gameItems, Camera camera) {
+//        dir = camera.getViewMatrix().positiveZ(dir).negate();
+//        selectGameItem(gameItems, camera.getPosition(), dir);
+//    }
     
     protected boolean selectGameItem(GameItem[] gameItems, Vector3f center, Vector3f dir) {
         boolean selected = false;

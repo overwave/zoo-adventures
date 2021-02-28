@@ -1,4 +1,4 @@
-package org.lwjglb.engine;
+package dev.overtow.util;
 
 import java.io.*;
 import java.nio.ByteBuffer;

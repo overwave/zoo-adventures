@@ -1,15 +1,14 @@
-package org.lwjglb.engine.graph;
+package dev.overtow.core;
 
-import java.nio.IntBuffer;
+import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.stb.STBImage.*;
-import org.lwjgl.system.MemoryStack;
-import static org.lwjgl.system.MemoryStack.*;
-import org.lwjglb.engine.Utils;
 
 public class Texture {
 
@@ -23,25 +22,6 @@ public class Texture {
 
     private int numCols = 1;
 
-    /**
-     * Creates an empty texture.
-     *
-     * @param width Width of the texture
-     * @param height Height of the texture
-     * @param pixelFormat Specifies the format of the pixel data (GL_RGBA, etc.)
-     */
-    public Texture(int width, int height, int pixelFormat) {
-        this.id = glGenTextures();
-        this.width = width;
-        this.height = height;
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, this.id);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, this.width, this.height, 0, pixelFormat, GL_FLOAT, (ByteBuffer) null);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    }
     public Texture(String fileName, int numCols, int numRows) throws Exception  {
         this(fileName);
         this.numCols = numCols;

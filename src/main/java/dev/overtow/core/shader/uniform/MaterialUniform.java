@@ -1,10 +1,7 @@
 package dev.overtow.core.shader.uniform;
 
-import org.lwjglb.engine.graph.Material;
-import org.lwjglb.engine.graph.lights.PointLight;
-import org.lwjglb.engine.graph.lights.SpotLight;
+import dev.overtow.core.Material;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static org.lwjgl.opengl.GL20.*;

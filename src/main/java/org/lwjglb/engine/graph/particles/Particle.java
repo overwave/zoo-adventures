@@ -1,8 +1,8 @@
 package org.lwjglb.engine.graph.particles;
 
 import org.joml.Vector3f;
-import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.Texture;
+import dev.overtow.core.Mesh;
+import dev.overtow.core.Texture;
 import org.lwjglb.engine.items.GameItem;
 
 public class Particle extends GameItem {

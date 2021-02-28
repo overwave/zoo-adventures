@@ -9,10 +9,7 @@ import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjglb.engine.graph.Material;
-import org.lwjglb.engine.graph.lights.DirectionalLight;
-import org.lwjglb.engine.graph.lights.PointLight;
-import org.lwjglb.engine.graph.lights.SpotLight;
+import dev.overtow.core.Material;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -102,20 +99,19 @@ public abstract class ShaderProgram {
         checkedGet(name, MaterialUniform.class).setValue(value);
     }
 
-    // TODO NOT TESTED
-
-    public void set(Uniform.Name name, int index, PointLight value) {
-        ((ArrayUniform<PointLight>) uniformMap.get(name)).setElement(value, index);
-    }
-    // TODO NOT TESTED
-
-    public void set(Uniform.Name name, int index, SpotLight value) {
-        ((ArrayUniform<SpotLight>) uniformMap.get(name)).setElement(value, index);
-    }
-
-    public void set(Uniform.Name name, DirectionalLight value) {
-        checkedGet(name, DirectionalLightUniform.class).setValue(value);
-    }
+//    // TODO NOT TESTED
+//    public void set(Uniform.Name name, int index, PointLight value) {
+//        ((ArrayUniform<PointLight>) uniformMap.get(name)).setElement(value, index);
+//    }
+//    // TODO NOT TESTED
+//
+//    public void set(Uniform.Name name, int index, SpotLight value) {
+//        ((ArrayUniform<SpotLight>) uniformMap.get(name)).setElement(value, index);
+//    }
+//
+//    public void set(Uniform.Name name, DirectionalLight value) {
+//        checkedGet(name, DirectionalLightUniform.class).setValue(value);
+//    }
 
     private <T extends Uniform<?>> T checkedGet(Uniform.Name name, Class<T> uniformType) {
         Uniform<?> value = uniformMap.get(name);

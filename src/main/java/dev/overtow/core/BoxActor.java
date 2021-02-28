@@ -1,11 +1,9 @@
 package dev.overtow.core;
 
-import dev.overtow.graphics.draw.BoxMesh;
 import dev.overtow.graphics.draw.BoxType;
 import org.joml.Quaternionf;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
-import org.lwjglb.engine.graph.Mesh;
 
 public class BoxActor implements Actor {
 //    private final BoxMesh mesh;

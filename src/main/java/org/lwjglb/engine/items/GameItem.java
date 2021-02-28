@@ -2,7 +2,7 @@ package org.lwjglb.engine.items;
 
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.lwjglb.engine.graph.Mesh;
+import dev.overtow.core.Mesh;
 
 public class GameItem {
 

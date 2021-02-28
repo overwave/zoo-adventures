@@ -1,4 +1,4 @@
-package org.lwjglb.engine.graph;
+package dev.overtow.core;
 
 import org.joml.Vector4f;
 

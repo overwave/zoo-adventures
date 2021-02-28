@@ -2,7 +2,7 @@ package dev.overtow.service.meshlibrary;
 
 import dev.overtow.service.meshloader.MeshLoader;
 import dev.overtow.util.injection.Bind;
-import org.lwjglb.engine.graph.Mesh;
+import dev.overtow.core.Mesh;
 
 import java.util.HashMap;
 import java.util.Map;

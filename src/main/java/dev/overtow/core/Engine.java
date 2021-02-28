@@ -1,62 +1,6 @@
-package dev.overtow.service.engine;
+package dev.overtow.core;
 
-import demo.ShadowMappingDemo;
-import dev.overtow.core.Scene;
-import dev.overtow.glsl.Converter;
-import dev.overtow.glsl.shader.DepthFragmentShader;
-import dev.overtow.glsl.shader.DepthVertexShader;
-import dev.overtow.glsl.shader.GeneralFragmentShader;
-import dev.overtow.glsl.shader.GeneralVertexShader;
-import dev.overtow.service.hud.Hud;
-import dev.overtow.service.meshlibrary.MeshLibrary;
-import dev.overtow.service.meshloader.MeshLoader;
 import dev.overtow.service.window.Window;
-import dev.overtow.util.ErrorCallback;
-import dev.overtow.util.injection.Bind;
-import dev.overtow.util.injection.Injector;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.openal.AL11;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLCapabilities;
-import org.lwjgl.opengl.GLDebugMessageCallback;
-import org.lwjgl.system.MemoryStack;
-import org.lwjglb.engine.MouseInput;
-import org.lwjglb.engine.SceneLight;
-import org.lwjglb.engine.Timer;
-import org.lwjglb.engine.graph.Camera;
-import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.Renderer;
-import org.lwjglb.engine.graph.lights.DirectionalLight;
-import org.lwjglb.engine.items.GameItem;
-import org.lwjglb.engine.sound.SoundBuffer;
-import org.lwjglb.engine.sound.SoundListener;
-import org.lwjglb.engine.sound.SoundManager;
-import org.lwjglb.engine.sound.SoundSource;
-import org.lwjglb.game.MouseBoxSelectionDetector;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11C.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11C.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11C.glClearColor;
-import static org.lwjgl.opengl.GL11C.glEnable;
-import static org.lwjgl.opengl.GL11C.glGetInteger;
-import static org.lwjgl.opengl.GL30C.GL_CONTEXT_FLAGS;
-import static org.lwjgl.opengl.GL43C.*;
-import static org.lwjgl.opengl.GL43C.GL_DEBUG_OUTPUT;
-import static org.lwjgl.system.APIUtil.apiLog;
-import static org.lwjgl.system.MemoryUtil.NULL;
-import static org.lwjgl.system.MemoryUtil.memAddress;
 
 public class Engine  {
     private final Window window;
@@ -314,23 +258,5 @@ public class Engine  {
 //        soundMgr.setListener(new SoundListener(new Vector3f()));
 
 //        sourceBack.play();
-    }
-
-    private SceneLight setupLights() {
-//        SceneLight sceneLight = new SceneLight();
-////        scene.setSceneLight(sceneLight);
-//
-//        // Ambient Light
-//        sceneLight.setAmbientLight(new Vector3f(0.3f, 0.3f, 0.3f));
-//
-//        // Directional Light
-//        float lightIntensity = 1.f;
-//        Vector3f lightDirection = new Vector3f(0, 1, 1);
-//        DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), lightDirection, lightIntensity);
-////        directionalLight.setShadowPosMult(10);
-////        directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
-//        sceneLight.setDirectionalLight(directionalLight);
-//
-        return null;
     }
 }

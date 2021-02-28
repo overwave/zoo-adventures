@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLDebugMessageCallback;
 import org.lwjgl.system.MemoryStack;
-import org.lwjglb.engine.graph.Mesh;
+import dev.overtow.core.Mesh;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -333,8 +333,8 @@ public class ShadowMappingDemo {
 
     void createShadowProgram() throws IOException {
         shadowProgram = glCreateProgram();
-        int vshader = createShader("data/shader/target/ShadowVertexShader.glsl", GL_VERTEX_SHADER);
-        int fshader = createShader("data/shader/target/ShadowFragmentShader.glsl", GL_FRAGMENT_SHADER);
+        int vshader = createShader("data/shader/target/DepthVertexShader.vert", GL_VERTEX_SHADER);
+        int fshader = createShader("data/shader/target/DepthFragmentShader.frag", GL_FRAGMENT_SHADER);
         glAttachShader(shadowProgram, vshader);
         glAttachShader(shadowProgram, fshader);
         // TODO IS IT IMPORTANT???
@@ -359,8 +359,8 @@ public class ShadowMappingDemo {
 
     void createNormalProgram() throws IOException {
         normalProgram = glCreateProgram();
-        int vshader = createShader("data/shader/target/SceneVertexShader.glsl", GL_VERTEX_SHADER);
-        int fshader = createShader("data/shader/target/SceneFragmentShader.glsl", GL_FRAGMENT_SHADER);
+        int vshader = createShader("data/shader/target/GeneralVertexShader.vert", GL_VERTEX_SHADER);
+        int fshader = createShader("data/shader/target/GeneralFragmentShader.frag", GL_FRAGMENT_SHADER);
         glAttachShader(normalProgram, vshader);
         glAttachShader(normalProgram, fshader);
         glBindAttribLocation(normalProgram, 0, "position");

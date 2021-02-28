@@ -1,8 +1,6 @@
 package dev.overtow.service.meshlibrary;
 
-import org.lwjglb.engine.graph.Mesh;
-
-import java.io.IOException;
+import dev.overtow.core.Mesh;
 
 public interface MeshLibrary {
     Mesh get(Mesh.Id id);

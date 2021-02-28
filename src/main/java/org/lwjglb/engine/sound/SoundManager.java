@@ -14,8 +14,6 @@ import org.lwjgl.openal.ALC;
 import static org.lwjgl.openal.ALC10.*;
 import org.lwjgl.openal.ALCCapabilities;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import org.lwjglb.engine.graph.Camera;
-import org.lwjglb.engine.graph.Transformation;
 
 public class SoundManager {
 
@@ -82,17 +80,17 @@ public class SoundManager {
         this.listener = listener;
     }
 
-    public void updateListenerPosition(Camera camera) {
-        // Update camera matrix with camera data
-        Transformation.updateGenericViewMatrix(camera.getPosition(), camera.getRotation(), cameraMatrix);
-        
-        listener.setPosition(camera.getPosition());
-        Vector3f at = new Vector3f();
-        cameraMatrix.positiveZ(at).negate();
-        Vector3f up = new Vector3f();
-        cameraMatrix.positiveY(up);
-        listener.setOrientation(at, up);
-    }
+//    public void updateListenerPosition(Camera camera) {
+//        // Update camera matrix with camera data
+//        Transformation.updateGenericViewMatrix(camera.getPosition(), camera.getRotation(), cameraMatrix);
+//
+//        listener.setPosition(camera.getPosition());
+//        Vector3f at = new Vector3f();
+//        cameraMatrix.positiveZ(at).negate();
+//        Vector3f up = new Vector3f();
+//        cameraMatrix.positiveY(up);
+//        listener.setOrientation(at, up);
+//    }
 
     public void setAttenuationModel(int model) {
         alDistanceModel(model);

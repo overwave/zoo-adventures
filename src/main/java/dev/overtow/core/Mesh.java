@@ -1,4 +1,4 @@
-package org.lwjglb.engine.graph;
+package dev.overtow.core;
 
 import org.lwjgl.system.MemoryUtil;
 import org.lwjglb.engine.items.GameItem;
@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glBindTexture;
 import static org.lwjgl.opengl.GL11.glDrawElements;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL13C.GL_TEXTURE2;

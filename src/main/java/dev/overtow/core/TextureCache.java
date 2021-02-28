@@ -1,8 +1,7 @@
-package org.lwjglb.engine.loaders.assimp;
+package dev.overtow.core;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.lwjglb.engine.graph.Texture;
 
 public class TextureCache {
 

@@ -9,7 +9,7 @@ import static org.lwjgl.stb.STBVorbis.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import static org.lwjgl.system.MemoryUtil.*;
-import org.lwjglb.engine.Utils;
+import dev.overtow.util.Utils;
 
 public class SoundBuffer {
 

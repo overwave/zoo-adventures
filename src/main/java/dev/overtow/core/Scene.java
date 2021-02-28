@@ -27,6 +27,7 @@ public class Scene {
 //
         actors = new ArrayList<>();
         actors.add(new BoxActor(new Vector2i(2, 3)));
+        actors.add(new PoolActor());
 //        meshMap = new HashMap<>();
 //
 //        transformation = new Transformation();

@@ -1,15 +1,15 @@
 package dev.overtow.service.meshloader;
 
+import dev.overtow.core.Material;
+import dev.overtow.core.Mesh;
+import dev.overtow.core.Texture;
+import dev.overtow.core.TextureCache;
 import dev.overtow.service.memory.MemoryManager;
+import dev.overtow.util.Utils;
 import dev.overtow.util.injection.Bind;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
-import org.lwjglb.engine.Utils;
-import org.lwjglb.engine.graph.Material;
-import org.lwjglb.engine.graph.Mesh;
-import org.lwjglb.engine.graph.Texture;
-import org.lwjglb.engine.loaders.assimp.TextureCache;
 
 import java.io.File;
 import java.io.IOException;
