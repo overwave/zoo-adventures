@@ -1,6 +1,8 @@
 package dev.overtow.core;
 
+import org.joml.Matrix4f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +14,8 @@ public class Scene {
 //
 //    private final Map<Mesh, List<GameItem>> meshMap;
     private final ArrayList<Actor> actors;
+    Matrix4f light = new Matrix4f();
+    private Vector3f lightPosition;
 //
 //    private final Window window;
 //    private final Camera camera;
@@ -28,6 +32,7 @@ public class Scene {
         actors = new ArrayList<>();
         actors.add(new BoxActor(new Vector2i(2, 3)));
         actors.add(new PoolActor());
+        lightPosition = new Vector3f();
 //        meshMap = new HashMap<>();
 //
 //        transformation = new Transformation();
@@ -38,8 +43,26 @@ public class Scene {
 ////        this.shadowMap = new ShadowMap();
     }
 
-    public void update() {
+    public Matrix4f getLight() {
+        return light;
+    }
 
+    public Vector3f getLightPosition() {
+        return lightPosition;
+    }
+
+    public void update() {
+        float lightHeight = 15.0f;
+        float lightDistance = 25.0f;
+        lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
+        Vector3f lightLookAt = new Vector3f(0.5f, 0.0f, 0.5f);
+        Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
+        double alpha = System.currentTimeMillis() / 1000.0 * 0.5;
+        float x = (float) Math.sin(alpha);
+        float z = (float) Math.cos(alpha);
+        lightPosition.set(lightDistance * x, lightHeight + (float) Math.sin(alpha), lightDistance * z);
+        light.setPerspective((float) Math.toRadians(45.0f), 1.0f, 0.1f, 60.0f)
+                .lookAt(lightPosition, lightLookAt, UP);
     }
 
     public List<Actor> getActors() {

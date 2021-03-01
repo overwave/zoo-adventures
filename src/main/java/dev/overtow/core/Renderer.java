@@ -52,7 +52,6 @@ public class Renderer {
     private final ShaderProgram depthShader;
     private final MeshLibrary meshLibrary;
     GLDebugMessageCallback debugProc;
-    Matrix4f light = new Matrix4f();
 
 
     int fbo;
@@ -135,22 +134,20 @@ public class Renderer {
     public void render(Scene scene) {
         List<Actor> actors = scene.getActors();
 
-        glClear(GL_DEPTH_BUFFER_BIT);
+        drawDepthMap(actors, scene);
 
-        drawDepthMap(actors);
-
-        // TODO maybe i can skip color buffer clearance
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        drawScene(actors);
+        drawScene(actors, scene);
     }
 
-    private void drawDepthMap(List<Actor> actors) {
+    private void drawDepthMap(List<Actor> actors, Scene scene) {
         depthShader.draw(shader -> {
-            shader.set(VIEW_PROJECTION_MATRIX, light);
+            shader.set(VIEW_PROJECTION_MATRIX, scene.getLight());
 
             glActiveTexture(GL_TEXTURE0);
             glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+            glBindTexture(GL_TEXTURE_2D, depthTexture);
             glViewport(0, 0, shadowMapSize, shadowMapSize);
+            glClear(GL_DEPTH_BUFFER_BIT);
 
 
             for (Actor actor : actors) {
@@ -170,7 +167,9 @@ public class Renderer {
         });
     }
 
-    private void drawScene(List<Actor> actors) {
+    private void drawScene(List<Actor> actors, Scene scene) {
+        // TODO maybe i can skip color buffer clearance
+
         Vector3f cameraPosition = new Vector3f(0f, 27, 00f);
         Vector3f cameraRotation = new Vector3f(90, 0, 0);
         Matrix4f camera = new Matrix4f();
@@ -184,16 +183,15 @@ public class Renderer {
                 0.0f, 0.0f, 0.5f, 0.0f,
                 0.5f, 0.5f, 0.5f, 1.0f
         );
-        float lightHeight = 15.0f;
-        Vector3f lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
 
         generalShader.draw(shader -> {
             shader.set(VIEW_PROJECTION_MATRIX, camera);
-            shader.set(LIGHT_VIEW_PROJECTION_MATRIX, light);
+            shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
             shader.set(BIAS_MATRIX, biasMatrix);
-            shader.set(LIGHT_POSITION, lightPosition);
+            shader.set(LIGHT_POSITION, scene.getLightPosition());
 
             glViewport(0, 0, 1600, 900);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
             for (Actor actor : actors) {
