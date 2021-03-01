@@ -56,7 +56,7 @@ public class Renderer {
 
     int fbo;
     int depthTexture;
-    int shadowMapSize = 1024;
+    int shadowMapSize = 2048;
 
     public Renderer() {
         capabilities = GL.createCapabilities();
@@ -134,8 +134,10 @@ public class Renderer {
     public void render(Scene scene) {
         List<Actor> actors = scene.getActors();
 
+//        glDisable (GL_CULL_FACE);
         drawDepthMap(actors, scene);
 
+//        glEnable(GL_CULL_FACE);
         drawScene(actors, scene);
     }
 
@@ -168,12 +170,10 @@ public class Renderer {
     }
 
     private void drawScene(List<Actor> actors, Scene scene) {
-        // TODO maybe i can skip color buffer clearance
-
         Vector3f cameraPosition = new Vector3f(0f, 27, 00f);
         Vector3f cameraRotation = new Vector3f(90, 0, 0);
         Matrix4f camera = new Matrix4f();
-        camera.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 30.0f)
+        camera.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
                 .rotateX((float) Math.toRadians(cameraRotation.x))
                 .rotateY((float) Math.toRadians(cameraRotation.y))
                 .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
@@ -191,6 +191,7 @@ public class Renderer {
             shader.set(LIGHT_POSITION, scene.getLightPosition());
 
             glViewport(0, 0, 1600, 900);
+            // TODO maybe i can skip color buffer clearance
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 

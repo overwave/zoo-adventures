@@ -14,6 +14,7 @@ public class Scene {
 //
 //    private final Map<Mesh, List<GameItem>> meshMap;
     private final ArrayList<Actor> actors;
+    private final BoxActor lightBox;
     Matrix4f light = new Matrix4f();
     private Vector3f lightPosition;
 //
@@ -30,7 +31,9 @@ public class Scene {
 //        sceneShader = new SceneShader();
 //
         actors = new ArrayList<>();
-        actors.add(new BoxActor(new Vector2i(2, 3)));
+        actors.add(new BoxActor(new Vector2i(0, 0)));
+        lightBox = new BoxActor(new Vector2i(0, 0));
+        actors.add(lightBox);
         actors.add(new PoolActor());
         lightPosition = new Vector3f();
 //        meshMap = new HashMap<>();
@@ -52,8 +55,8 @@ public class Scene {
     }
 
     public void update() {
-        float lightHeight = 15.0f;
-        float lightDistance = 25.0f;
+        float lightHeight = 15;
+        float lightDistance = 17;
         lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
         Vector3f lightLookAt = new Vector3f(0.5f, 0.0f, 0.5f);
         Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -61,7 +64,8 @@ public class Scene {
         float x = (float) Math.sin(alpha);
         float z = (float) Math.cos(alpha);
         lightPosition.set(lightDistance * x, lightHeight + (float) Math.sin(alpha), lightDistance * z);
-        light.setPerspective((float) Math.toRadians(45.0f), 1.0f, 0.1f, 60.0f)
+        lightBox.setPosition(lightPosition);
+        light.setPerspective((float) Math.toRadians(90), 1.0f, 0.1f, 40.0f)
                 .lookAt(lightPosition, lightLookAt, UP);
     }
 

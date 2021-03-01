@@ -6,15 +6,15 @@ import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 public class BoxActor implements Actor {
-//    private final BoxMesh mesh;
+    //    private final BoxMesh mesh;
     private final BoxType boxType;
-    private final Vector2i position;
+    private final Vector3f position;
     private float scale;
     private final Quaternionf rotation;
 
     public BoxActor(/*BoxMesh mesh,*/ Vector2i position) {
 //        this.mesh = mesh;
-        this.position = new Vector2i(position);
+        this.position = new Vector3f(position.x(), 0, position.y());
         this.boxType = BoxType.BANANA;
         this.scale = 1;
         this.rotation = new Quaternionf();
@@ -27,7 +27,11 @@ public class BoxActor implements Actor {
 
     @Override
     public Vector3f getPosition() {
-        return new Vector3f(position.x(), 0, position.y());
+        return new Vector3f(position);
+    }
+
+    public void setPosition(Vector3f position) {
+        this.position.set(position);
     }
 
     @Override
