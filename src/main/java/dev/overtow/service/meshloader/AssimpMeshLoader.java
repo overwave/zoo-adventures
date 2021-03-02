@@ -3,11 +3,9 @@ package dev.overtow.service.meshloader;
 import dev.overtow.core.Material;
 import dev.overtow.core.Mesh;
 import dev.overtow.core.Texture;
-import dev.overtow.core.TextureCache;
 import dev.overtow.service.memory.MemoryManager;
 import dev.overtow.util.Utils;
 import dev.overtow.util.injection.Bind;
-import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
@@ -16,7 +14,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.assimp.Assimp.*;
 import static org.lwjgl.system.MemoryUtil.*;
@@ -25,9 +25,11 @@ import static org.lwjgl.system.MemoryUtil.*;
 public class AssimpMeshLoader implements MeshLoader {
 
     private final MemoryManager memoryManager;
+    private final Map<String, Texture> texturesCache;
 
     public AssimpMeshLoader(MemoryManager memoryManager) {
         this.memoryManager = memoryManager;
+        this.texturesCache = new HashMap<>();
     }
 
     @Override
@@ -94,45 +96,17 @@ public class AssimpMeshLoader implements MeshLoader {
         return processMesh(aiMesh, materials);
     }
 
-    private static void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) {
-        AIColor4D colour = AIColor4D.create();
-
+    private void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) {
         AIString path = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null, null, null);
-        String textPath = path.dataString();
+        String texturePath = path.dataString();
+
         Texture texture = null;
-        if (textPath.length() > 0) {
-            TextureCache textCache = TextureCache.getInstance();
-            String textureFile = "";
-            if (texturesDir != null && texturesDir.length() > 0) {
-                textureFile += texturesDir + "/";
-            }
-            textureFile += textPath;
-            textureFile = textureFile.replace("//", "/");
-            texture = textCache.getTexture(textureFile);
+        if (texturePath.length() > 0) {
+            texture = texturesCache.computeIfAbsent(texturesDir + "/" + texturePath, Texture::new);
         }
 
-        Vector4f ambient = Material.DEFAULT_COLOUR;
-        int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, colour);
-        if (result == 0) {
-            ambient = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
-        }
-
-        Vector4f diffuse = Material.DEFAULT_COLOUR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, colour);
-        if (result == 0) {
-            diffuse = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
-        }
-
-        Vector4f specular = Material.DEFAULT_COLOUR;
-        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, colour);
-        if (result == 0) {
-            specular = new Vector4f(colour.r(), colour.g(), colour.b(), colour.a());
-        }
-
-        Material material = new Material(ambient, diffuse, specular, 1.0f);
-        material.setTexture(texture);
-        materials.add(material);
+        materials.add(new Material(texture));
     }
 
     private static Mesh processMesh(AIMesh aiMesh, List<Material> materials) {
@@ -164,7 +138,8 @@ public class AssimpMeshLoader implements MeshLoader {
         if (materialIdx >= 0 && materialIdx < materials.size()) {
             material = materials.get(materialIdx);
         } else {
-            material = new Material();
+//            throw new IllegalStateException("no texture present");
+            material = null;
         }
         mesh.setMaterial(material);
 

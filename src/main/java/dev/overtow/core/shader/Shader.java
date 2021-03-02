@@ -34,10 +34,6 @@ public class Shader {
         }
     }
 
-    public void execute(Runnable runnable) {
-
-    }
-
     public int getShaderId() {
         return shaderId;
     }

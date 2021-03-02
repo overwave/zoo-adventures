@@ -12,10 +12,6 @@ public class Vector4fUniform extends SingleValueUniform<Vector4f> {
 
     @Override
     public void setValue(Vector4f value) {
-//        if (value.equals(this.value)) {
-//            return;
-//        }
-//        this.value = new Vector3f(value);
         glUniform4f(id, value.x(), value.y(), value.z(), value.w());
     }
 }

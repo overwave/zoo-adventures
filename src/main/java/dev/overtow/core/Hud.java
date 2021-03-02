@@ -18,6 +18,8 @@ import java.util.Date;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 import static org.lwjgl.nanovg.NanoVGGL3.*;
+import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL11C.GL_BACK;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Hud {
@@ -41,6 +43,7 @@ public class Hud {
 
     private int counter;
     private final int fontHandler;
+    // CANNOT BE FREED WHILE FONT IS USED
     private final ByteBuffer fontBuffer;
 
     private final Rectangle upperRibbon;
@@ -108,11 +111,13 @@ public class Hud {
         clockText.draw(contextHandler);
 
         nvgEndFrame(contextHandler);
-        window.restoreState();
-    }
 
-    public void incCounter() {
-        counter = (counter + 1) % 100;
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     public void cleanup() {

@@ -21,7 +21,7 @@ public class Texture {
 
     private int numCols = 1;
 
-    public Texture(String fileName, int numCols, int numRows) throws Exception  {
+    public Texture(String fileName, int numCols, int numRows) {
         this(fileName);
         this.numCols = numCols;
         this.numRows = numRows;
@@ -36,29 +36,7 @@ public class Texture {
 
             buf = stbi_load(fileName, w, h, channels, 4);
             if (buf == null) {
-                throw new RuntimeException("Image file [" + fileName  + "] not loaded: " + stbi_failure_reason());
-            }
-
-            width = w.get();
-            height = h.get();
-        }
-
-        this.id = createTexture(buf);
-
-        stbi_image_free(buf);
-    }
-
-    public Texture(ByteBuffer imageBuffer) throws Exception {
-        ByteBuffer buf;
-        // Load Texture file
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer w = stack.mallocInt(1);
-            IntBuffer h = stack.mallocInt(1);
-            IntBuffer channels = stack.mallocInt(1);
-
-            buf = stbi_load_from_memory(imageBuffer, w, h, channels, 4);
-            if (buf == null) {
-                throw new Exception("Image file not loaded: " + stbi_failure_reason());
+                throw new RuntimeException("Image file [" + fileName + "] not loaded: " + stbi_failure_reason());
             }
 
             width = w.get();
@@ -71,9 +49,8 @@ public class Texture {
     }
 
     private int createTexture(ByteBuffer buf) {
-        // Create a new OpenGL texture
         int textureId = glGenTextures();
-        // Bind the texture
+
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, textureId);
 
@@ -83,10 +60,7 @@ public class Texture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-        // Upload the texture data
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, buf);
-        // Generate Mip Map
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         return textureId;
@@ -98,14 +72,6 @@ public class Texture {
 
     public int getNumRows() {
         return numRows;
-    }
-
-    public int getWidth() {
-        return this.width;
-    }
-
-    public int getHeight() {
-        return this.height;
     }
 
     public void bind() {

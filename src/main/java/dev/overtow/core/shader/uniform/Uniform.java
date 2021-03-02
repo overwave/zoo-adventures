@@ -13,10 +13,7 @@ public interface Uniform<T> {
         LIGHT_VIEW_PROJECTION_MATRIX("lightViewProjectionMatrix"),
         BIAS_MATRIX("biasMatrix"),
         MODEL_MATRIX("modelMatrix"),
-
         ;
-
-
 
         private final String name;
 

@@ -9,7 +9,6 @@ import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import dev.overtow.core.Material;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -95,24 +94,6 @@ public abstract class ShaderProgram {
         checkedGet(name, Matrix4fUniform.class).setValue(value);
     }
 
-    public void set(Uniform.Name name, Material value) {
-        checkedGet(name, MaterialUniform.class).setValue(value);
-    }
-
-//    // TODO NOT TESTED
-//    public void set(Uniform.Name name, int index, PointLight value) {
-//        ((ArrayUniform<PointLight>) uniformMap.get(name)).setElement(value, index);
-//    }
-//    // TODO NOT TESTED
-//
-//    public void set(Uniform.Name name, int index, SpotLight value) {
-//        ((ArrayUniform<SpotLight>) uniformMap.get(name)).setElement(value, index);
-//    }
-//
-//    public void set(Uniform.Name name, DirectionalLight value) {
-//        checkedGet(name, DirectionalLightUniform.class).setValue(value);
-//    }
-
     private <T extends Uniform<?>> T checkedGet(Uniform.Name name, Class<T> uniformType) {
         Uniform<?> value = uniformMap.get(name);
         if (value == null) {
@@ -121,7 +102,7 @@ public abstract class ShaderProgram {
         return uniformType.cast(value);
     }
 
-    public void draw(Consumer<ShaderProgram> runnable) {
+    public void executeWithProgram(Consumer<ShaderProgram> runnable) {
         glUseProgram(programId);
         runnable.accept(this);
         glUseProgram(0);

@@ -48,10 +48,6 @@ public class Converter {
         return Converter.convertToGlsl(classes);
     }
 
-    public static List<String> convert(List<Class<? extends Shader>> classes) {
-        return classes.stream().map(Converter::convertToGlsl).collect(Collectors.toList());
-    }
-
     private static String convertToGlsl(Class<? extends Shader> clazz) {
         File javaFile = classToFile(clazz);
         CompilationUnit compilationUnit = parseJava(javaFile);
