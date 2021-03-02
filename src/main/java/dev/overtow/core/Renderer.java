@@ -2,6 +2,7 @@ package dev.overtow.core;
 
 import dev.overtow.core.shader.ShaderProgram;
 import dev.overtow.core.shader.uniform.Uniform;
+import dev.overtow.service.memory.MemoryManager;
 import dev.overtow.service.meshlibrary.MeshLibrary;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
@@ -51,6 +52,8 @@ public class Renderer {
     private final ShaderProgram generalShader;
     private final ShaderProgram depthShader;
     private final MeshLibrary meshLibrary;
+    private final Hud hud;
+    private final Window window;
     GLDebugMessageCallback debugProc;
 
 
@@ -58,8 +61,9 @@ public class Renderer {
     int depthTexture;
     int shadowMapSize = 2048;
 
-    public Renderer() {
+    public Renderer(Window window) {
         capabilities = GL.createCapabilities();
+        this.window = window;
 
         // TODO CREATE PROPER LOGGER
 //        if (capabilities.OpenGL43) {
@@ -85,6 +89,7 @@ public class Renderer {
 //        }
 
         glEnable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
         glClearColor(0.2f, 0.3f, 0.4f, 1.0f);
 
@@ -100,6 +105,8 @@ public class Renderer {
         meshLibrary = Injector.getInstance(MeshLibrary.class);
         meshLibrary.get(Mesh.Id.CUBE);
         meshLibrary.get(Mesh.Id.POOL);
+
+        hud = new Hud(Injector.getInstance(MemoryManager.class), window);
     }
 
     void createDepthTexture() {
@@ -134,11 +141,11 @@ public class Renderer {
     public void render(Scene scene) {
         List<Actor> actors = scene.getActors();
 
-//        glDisable (GL_CULL_FACE);
         drawDepthMap(actors, scene);
 
-//        glEnable(GL_CULL_FACE);
         drawScene(actors, scene);
+
+        drawHud(window);
     }
 
     private void drawDepthMap(List<Actor> actors, Scene scene) {
@@ -192,7 +199,7 @@ public class Renderer {
 
             glViewport(0, 0, 1600, 900);
             // TODO maybe i can skip color buffer clearance
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 
             for (Actor actor : actors) {
@@ -224,6 +231,17 @@ public class Renderer {
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, 0);
         });
+    }
+
+    private void drawHud(Window window) {
+        hud.render();
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 //    private static final int MAX_POINT_LIGHTS = 5;
 //

@@ -5,6 +5,8 @@ import dev.overtow.util.injection.Injector;
 import org.joml.Vector2f;
 
 import java.awt.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.nanovg.NanoVG.*;
 

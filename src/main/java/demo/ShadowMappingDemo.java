@@ -144,6 +144,7 @@ public class ShadowMappingDemo {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         window = glfwCreateWindow(width, height, "Shadow Mapping Demo", NULL, NULL);
         if (window == NULL) {

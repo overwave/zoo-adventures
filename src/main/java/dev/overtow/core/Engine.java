@@ -41,7 +41,7 @@ public class Engine  {
 
     public Engine() {
         window = new Window();
-        renderer = new Renderer();
+        renderer = new Renderer(window);
         scene = new Scene();
 
 

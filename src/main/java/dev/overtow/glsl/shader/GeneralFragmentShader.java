@@ -56,15 +56,17 @@ public class GeneralFragmentShader implements FragmentShader {
         double noise = 1.0 - rand(round(textureCoord.multiply(50))) / 10.0;
         Vec4 background = texture(textureSampler, textureCoord);
         background.rgb = mix(backColor.rgb.multiply(noise), background.rgb, background.a).multiply(0.7);
-        fragColor = background;
+        fragColor = vec4(background.rgb, backColor.a);
 //        fragColor = vec4(AMBIENT, AMBIENT, AMBIENT, 1.0);
 
         /* "in shadow" test... */
+        double alpha = fragColor.a;
         if (depth.z < lightNDCPosition.z - DEPTH_OFFSET) {
             fragColor = fragColor.minus(vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0).multiply(dot));
         } else {
             fragColor = fragColor.plus(vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0).multiply(dot));
         }
+        fragColor.a = alpha;
     }
 
 }
