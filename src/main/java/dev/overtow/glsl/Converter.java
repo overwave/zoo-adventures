@@ -55,9 +55,13 @@ public class Converter {
     private static String convertToGlsl(Class<? extends Shader> clazz) {
         File javaFile = classToFile(clazz);
         CompilationUnit compilationUnit = parseJava(javaFile);
-        String fileExtension = VertexShader.class.isAssignableFrom(clazz) ? ".vert" : ".frag";
-        String filename = "data/shader/target/" + clazz.getSimpleName() + fileExtension;
-
+        String filename;
+        try {
+            String fileExtension = (String) clazz.getField("extension").get(null);
+            filename = "data/shader/target/%s.%s".formatted(clazz.getSimpleName(), fileExtension);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         try (PrintStream os = new PrintStream(new FileOutputStream(filename))) {
             Converter converter = new Converter(os);
