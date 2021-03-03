@@ -2,7 +2,6 @@ package dev.overtow.core;
 
 import dev.overtow.core.shader.ShaderProgram;
 import dev.overtow.core.shader.uniform.Uniform;
-import dev.overtow.service.memory.MemoryManager;
 import dev.overtow.service.meshlibrary.MeshLibrary;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
@@ -23,13 +22,17 @@ import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.opengl.GL11C.glEnable;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL43C.GL_BACK;
 import static org.lwjgl.opengl.GL43C.GL_BLEND;
 import static org.lwjgl.opengl.GL43C.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL43C.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL43C.GL_DEPTH_COMPONENT;
 import static org.lwjgl.opengl.GL43C.GL_LINEAR;
 import static org.lwjgl.opengl.GL43C.GL_NONE;
+import static org.lwjgl.opengl.GL43C.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL43C.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL43C.GL_STENCIL_BUFFER_BIT;
+import static org.lwjgl.opengl.GL43C.GL_STENCIL_TEST;
 import static org.lwjgl.opengl.GL43C.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL43C.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL43C.GL_TEXTURE_MIN_FILTER;
@@ -37,7 +40,9 @@ import static org.lwjgl.opengl.GL43C.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL43C.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL43C.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL43C.glBindTexture;
+import static org.lwjgl.opengl.GL43C.glBlendFunc;
 import static org.lwjgl.opengl.GL43C.glClear;
+import static org.lwjgl.opengl.GL43C.glCullFace;
 import static org.lwjgl.opengl.GL43C.glDrawBuffer;
 import static org.lwjgl.opengl.GL43C.glGenTextures;
 import static org.lwjgl.opengl.GL43C.glReadBuffer;
@@ -51,8 +56,7 @@ public class Renderer {
     private final ShaderProgram generalShader;
     private final ShaderProgram depthShader;
     private final MeshLibrary meshLibrary;
-    private final Hud hud;
-    private final Window window;
+    private final HudRenderer hudRenderer;
 //    GLDebugMessageCallback debugProc;
 
 
@@ -60,9 +64,8 @@ public class Renderer {
     int depthTexture;
     int shadowMapSize = 2048;
 
-    public Renderer(Window window) {
+    public Renderer() {
         capabilities = GL.createCapabilities();
-        this.window = window;
 
         // TODO CREATE PROPER LOGGER
 //        if (capabilities.OpenGL43) {
@@ -105,7 +108,7 @@ public class Renderer {
         meshLibrary.get(Mesh.Id.CUBE);
         meshLibrary.get(Mesh.Id.POOL);
 
-        hud = new Hud(Injector.getInstance(MemoryManager.class), window);
+        hudRenderer = new HudRenderer();
     }
 
     void createDepthTexture() {
@@ -138,13 +141,24 @@ public class Renderer {
     }
 
     public void render(Scene scene) {
+        restoreState();
+
         List<Actor> actors = scene.getActors();
 
         drawDepthMap(actors, scene);
 
         drawScene(actors, scene);
 
-        hud.render();
+        hudRenderer.render(scene.getHudElements());
+    }
+
+    private void restoreState() {
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_STENCIL_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
     }
 
     private void drawDepthMap(List<Actor> actors, Scene scene) {

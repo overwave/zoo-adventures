@@ -1,5 +1,8 @@
 package dev.overtow.core;
 
+import dev.overtow.service.window.Window;
+import dev.overtow.util.injection.Injector;
+
 public class Engine {
     private final Window window;
     private final Renderer renderer;
@@ -10,8 +13,8 @@ public class Engine {
 //    private final MouseInput mouseInput;
 
     public Engine() {
-        window = new Window();
-        renderer = new Renderer(window);
+        window = Injector.getInstance(Window.class);
+        renderer = new Renderer();
         scene = new Scene();
 
 

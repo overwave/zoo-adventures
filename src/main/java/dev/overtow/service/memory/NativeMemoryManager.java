@@ -4,7 +4,7 @@ import dev.overtow.util.injection.Bind;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.nanovg.NVGColor;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;

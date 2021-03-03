@@ -1,5 +1,6 @@
 package dev.overtow.core;
 
+import dev.overtow.graphics.hud.HudElement;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
@@ -10,8 +11,9 @@ import java.util.List;
 
 public class Scene {
     private final ArrayList<Actor> actors;
+    private final HudLayout hudLayout;
     private final BoxActor lightBox;
-    Matrix4f light = new Matrix4f();
+    private final Matrix4f light = new Matrix4f();
     private Vector3f lightPosition;
 
     public Scene() {
@@ -20,6 +22,9 @@ public class Scene {
         lightBox = new BoxActor(new Vector2i(0, 0));
         actors.add(lightBox);
         actors.add(new PoolActor());
+
+        hudLayout = new HudLayout();
+
         lightPosition = new Vector3f();
     }
 
@@ -44,10 +49,16 @@ public class Scene {
         lightBox.setPosition(lightPosition);
         light.setPerspective((float) Math.toRadians(90), 1.0f, 0.1f, 40.0f)
                 .lookAt(lightPosition, lightLookAt, UP);
+
+        hudLayout.update();
     }
 
     public List<Actor> getActors() {
         return Collections.unmodifiableList(actors);
+    }
+
+    public List<HudElement> getHudElements() {
+        return Collections.unmodifiableList(hudLayout.getHudElements());
     }
 
     public void addActor(Actor actor) {

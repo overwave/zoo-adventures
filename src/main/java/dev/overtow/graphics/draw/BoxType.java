@@ -1,6 +1,6 @@
 package dev.overtow.graphics.draw;
 
-import java.awt.*;
+import java.awt.Color;
 
 public enum BoxType {
     BANANA(new Color(230, 255, 45, 255)),

@@ -2,7 +2,7 @@ package dev.overtow.service.memory;
 
 import org.lwjgl.nanovg.NVGColor;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;

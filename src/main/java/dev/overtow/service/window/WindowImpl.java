@@ -1,9 +1,9 @@
-package dev.overtow.core;
+package dev.overtow.service.window;
 
 import dev.overtow.service.config.Config;
 import dev.overtow.util.ErrorCallback;
 import dev.overtow.util.injection.Bind;
-import dev.overtow.util.injection.Injector;
+import dev.overtow.util.injection.Destroyable;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
@@ -18,9 +18,9 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 @Bind
-public class Window implements AutoCloseable {
+public class WindowImpl implements Window, Destroyable {
 
-    private long windowHandle;
+    private final long windowHandle;
     //    private boolean resized;
     private String title;
     private int height;
@@ -29,8 +29,7 @@ public class Window implements AutoCloseable {
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
 
-    public Window() {
-        Config config = Injector.getInstance(Config.class);
+    public WindowImpl(Config config) {
         title = config.getString("window.title");
         width = config.getInteger("window.width");
         height = config.getInteger("window.height");
@@ -66,9 +65,9 @@ public class Window implements AutoCloseable {
 //        });
         glfwSetFramebufferSizeCallback(windowHandle, fbCallback = new GLFWFramebufferSizeCallback() {
             public void invoke(long window, int width, int height) {
-                if (width > 0 && height > 0 && (Window.this.width != width || Window.this.height != height)) {
-                    Window.this.width = width;
-                    Window.this.height = height;
+                if (width > 0 && height > 0 && (WindowImpl.this.width != width || WindowImpl.this.height != height)) {
+                    WindowImpl.this.width = width;
+                    WindowImpl.this.height = height;
                 }
             }
         });
@@ -93,18 +92,27 @@ public class Window implements AutoCloseable {
 //        });
 //            glfwMaximizeWindow(windowHandle);
 
+    @Override
     public int getWidth() {
         return width;
     }
 
+    @Override
     public int getHeight() {
         return height;
     }
 
+    @Override
+    public float getAspectRatio() {
+        return (float) (width) / height;
+    }
+
+    @Override
     public long getWindowHandle() {
         return windowHandle;
     }
 
+    @Override
     public Vector2f getMousePosition() {
         try (MemoryStack frame = MemoryStack.stackPush()) {
             DoubleBuffer posX = frame.mallocDouble(1);
@@ -116,16 +124,18 @@ public class Window implements AutoCloseable {
         }
     }
 
+    @Override
     public boolean windowShouldClose() {
         return glfwWindowShouldClose(windowHandle);
     }
 
+    @Override
     public boolean isKeyPressed(int keyCode) {
         return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
     }
 
     @Override
-    public void close() {
+    public void destroy() {
         errCallback.free();
         keyCallback.free();
         fbCallback.free();
@@ -133,10 +143,12 @@ public class Window implements AutoCloseable {
         glfwTerminate();
     }
 
+    @Override
     public void pollEvents() {
         glfwPollEvents();
     }
 
+    @Override
     public void swapBuffers() {
         glfwSwapBuffers(windowHandle);
     }

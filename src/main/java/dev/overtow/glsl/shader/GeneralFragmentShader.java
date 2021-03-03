@@ -59,9 +59,9 @@ public class GeneralFragmentShader implements FragmentShader {
 
         /* "in shadow" test... */
         if (depth.z < lightNDCPosition.z - DEPTH_OFFSET) {
-            fragColor = fragColor.minus(vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0).multiply(dot));
+            fragColor.rgb = fragColor.rgb.minus(vec3(LIGHT_INTENSITY).multiply(dot));
         } else {
-            fragColor = fragColor.plus(vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0).multiply(dot));
+            fragColor.rgb = fragColor.rgb.plus(vec3(LIGHT_INTENSITY).multiply(dot));
         }
     }
 

@@ -5,10 +5,12 @@ import dev.overtow.util.injection.Injector;
 import org.joml.Vector2f;
 import org.joml.primitives.Intersectionf;
 
-import java.awt.*;
+import java.awt.Color;
 
-import static org.lwjgl.nanovg.NanoVG.*;
+import static org.lwjgl.nanovg.NanoVG.nvgBeginPath;
+import static org.lwjgl.nanovg.NanoVG.nvgCircle;
 import static org.lwjgl.nanovg.NanoVG.nvgFill;
+import static org.lwjgl.nanovg.NanoVG.nvgFillColor;
 
 public class Circle implements HudElement {
     private float x;
