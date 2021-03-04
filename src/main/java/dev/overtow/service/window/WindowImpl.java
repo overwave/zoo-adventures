@@ -52,18 +52,20 @@ public class WindowImpl implements Window, Destroyable {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-//        glfwSetKeyCallback(windowHandle, keyCallback = new GLFWKeyCallback() {
-//            @Override
-//            public void invoke(long window, int key, int scancode, int action, int mods) {
-//                if (action != GLFW_RELEASE)
-//                    return;
-//
-//                if (key == GLFW_KEY_ESCAPE) {
-//                    glfwSetWindowShouldClose(window, true);
-//                }
-//            }
-//        });
+        glfwSetKeyCallback(windowHandle, keyCallback = new GLFWKeyCallback() {
+            @Override
+            public void invoke(long window, int key, int scancode, int action, int mods) {
+                if (action != GLFW_RELEASE) {
+                    return;
+                }
+
+                if (key == GLFW_KEY_ESCAPE) {
+                    glfwSetWindowShouldClose(window, true);
+                }
+            }
+        });
         glfwSetFramebufferSizeCallback(windowHandle, fbCallback = new GLFWFramebufferSizeCallback() {
+            @Override
             public void invoke(long window, int width, int height) {
                 if (width > 0 && height > 0 && (WindowImpl.this.width != width || WindowImpl.this.height != height)) {
                     WindowImpl.this.width = width;
