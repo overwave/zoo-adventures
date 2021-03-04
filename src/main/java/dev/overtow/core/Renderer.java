@@ -119,7 +119,7 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-        cameraPosition = new Vector3f(0f, 7, 7);
+        cameraPosition = new Vector3f(0f, 14, 15);
         cameraRotation = new Vector3f(45, 0, 0);
 //        cameraPosition = new Vector3f(0f, 27, 0);
 //        cameraRotation = new Vector3f(90, 0, 0);
@@ -163,7 +163,7 @@ public class Renderer {
     public void render(Scene scene) {
         restoreState();
 
-        Matrix4f viewMatrix = createViewMatrix(cameraPosition, cameraRotation);
+        Matrix4f viewMatrix = createViewMatrix(scene);
 
         List<Actor> usualActors = scene.getUsualActors();
         drawDepthMap(usualActors, scene);
@@ -175,12 +175,16 @@ public class Renderer {
         hudRenderer.render(scene.getHudElements());
     }
 
-    private Matrix4f createViewMatrix(Vector3f cameraPosition, Vector3f cameraRotation) {
+    private Matrix4f createViewMatrix(Scene scene) {
         Matrix4f viewMatrix = new Matrix4f();
         viewMatrix.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
                 .rotateX((float) Math.toRadians(cameraRotation.x))
                 .rotateY((float) Math.toRadians(cameraRotation.y))
                 .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
+
+//        Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
+//        viewMatrix.setPerspective((float) Math.toRadians(45), 1.0f, 0.1f, 40.0f)
+//                .lookAt(scene.getLightPosition(), new Vector3f(0), UP);
         return viewMatrix;
     }
 

@@ -1,6 +1,10 @@
 package dev.overtow.glsl;
 
-import dev.overtow.glsl.type.*;
+import dev.overtow.glsl.type.Mat4;
+import dev.overtow.glsl.type.Sampler2D;
+import dev.overtow.glsl.type.Vec2;
+import dev.overtow.glsl.type.Vec3;
+import dev.overtow.glsl.type.Vec4;
 
 public interface GlslLibrary {
 
@@ -57,6 +61,10 @@ public interface GlslLibrary {
     }
 
     static Vec3 vec3(double c) {
+        return Vec3.STUB;
+    }
+
+    static Vec3 vec3(Vec3 v) {
         return Vec3.STUB;
     }
 

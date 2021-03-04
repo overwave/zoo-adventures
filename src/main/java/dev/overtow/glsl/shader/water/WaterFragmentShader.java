@@ -53,7 +53,6 @@ public class WaterFragmentShader implements FragmentShader {
         /* Additionally, do standard lambertian/diffuse lighting */
         double dot = max(0.0, dot(normalize(lightPosition.minus(worldPosition)), worldNormal));
 
-
         Vec4 backColor = vec4(0.9019608, 1.0, 0.1764706, 1);
         double noise = 1.0 - rand(round(textureCoordinate.multiply(50))) / 10.0;
         Vec4 background = texture(textureSampler, textureCoordinate);
