@@ -48,19 +48,20 @@ public class WaterVertexShader implements VertexShader {
         double waveLength = 2;
         double waveSpeed = 0.1;
         double steepness = 0.5;
-        Vec3 waveDirection = vec3(2, 0, 0);
+        Vec2 waveDirection = vec2(2, 0);
 
         double omega = 2 / waveLength;
         double steepnessNormalized = clamp(steepness, 0, 1 / (omega * waveAmplitude));
         double phi = waveSpeed * (2 / waveLength);
 
-        Vec2 pos2 = position.xz.plus(vec2(2.5)).divide(5);
-        pos2 = position.xz;
+        Vec2 pos2 = position.xz;
 
-        double dottedPosition = dot(waveDirection.xz, pos2);
-        position.x = position.x + steepnessNormalized * waveAmplitude * waveDirection.x * cos(omega * dottedPosition + phi * time);
+        double dottedPosition = dot(waveDirection, pos2);
+        double positionShift = cos(omega * dottedPosition + phi * time);
+
+        position.xz = position.xz.plus(waveDirection.multiply(positionShift * steepnessNormalized * waveAmplitude));
         position.y = waveAmplitude * sin(dottedPosition * omega + time * phi);
-        position.z = position.z + steepnessNormalized * waveAmplitude * waveDirection.y * cos(omega * dottedPosition + phi * time);
+
         return position;
     }
 
