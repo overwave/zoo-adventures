@@ -1,8 +1,9 @@
-package dev.overtow.glsl.shader;
+package dev.overtow.glsl.shader.depth;
 
 import dev.overtow.glsl.Input;
 import dev.overtow.glsl.Output;
 import dev.overtow.glsl.Uniform;
+import dev.overtow.glsl.shader.VertexShader;
 import dev.overtow.glsl.type.Mat4;
 import dev.overtow.glsl.type.Vec3;
 import dev.overtow.glsl.type.Vec4;

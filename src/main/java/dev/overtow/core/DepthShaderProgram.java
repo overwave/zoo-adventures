@@ -3,8 +3,8 @@ package dev.overtow.core;
 import dev.overtow.core.shader.ShaderProgram;
 import dev.overtow.core.shader.uniform.Matrix4fUniform;
 import dev.overtow.core.shader.uniform.Uniform;
-import dev.overtow.glsl.shader.DepthFragmentShader;
-import dev.overtow.glsl.shader.DepthVertexShader;
+import dev.overtow.glsl.shader.depth.DepthFragmentShader;
+import dev.overtow.glsl.shader.depth.DepthVertexShader;
 
 public class DepthShaderProgram extends ShaderProgram {
     public DepthShaderProgram() {

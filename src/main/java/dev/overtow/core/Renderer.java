@@ -54,6 +54,7 @@ import static org.lwjgl.opengl.GL43C.*;
 public class Renderer {
     private final GLCapabilities capabilities;
     private final ShaderProgram generalShader;
+    private final ShaderProgram waterShader;
     private final ShaderProgram depthShader;
     private final MeshLibrary meshLibrary;
     private final HudRenderer hudRenderer;
@@ -63,6 +64,9 @@ public class Renderer {
     int fbo;
     int depthTexture;
     int shadowMapSize = 2048;
+    private Vector3f cameraPosition;
+    private Vector3f cameraRotation;
+    private Matrix4f biasMatrix;
 
     public Renderer() {
         capabilities = GL.createCapabilities();
@@ -101,6 +105,11 @@ public class Renderer {
             shader.set(Uniform.Name.DEPTH_TEXTURE, 0);
             shader.set(Uniform.Name.TEXTURE_SAMPLER, 1);
         });
+        waterShader = new WaterShaderProgram();
+        waterShader.executeWithProgram(shader -> {
+            shader.set(Uniform.Name.DEPTH_TEXTURE, 0);
+            shader.set(Uniform.Name.TEXTURE_SAMPLER, 1);
+        });
 
         createDepthTexture();
         createFbo();
@@ -109,6 +118,17 @@ public class Renderer {
         meshLibrary.get(Mesh.Id.POOL);
 
         hudRenderer = new HudRenderer();
+
+//        cameraPosition = new Vector3f(0f, 7, 7);
+//        cameraRotation = new Vector3f(45, 0, 0);
+        cameraPosition = new Vector3f(0f, 27, 0);
+        cameraRotation = new Vector3f(90, 0, 0);
+        biasMatrix = new Matrix4f(
+                0.5f, 0.0f, 0.0f, 0.0f,
+                0.0f, 0.5f, 0.0f, 0.0f,
+                0.0f, 0.0f, 0.5f, 0.0f,
+                0.5f, 0.5f, 0.5f, 1.0f
+        );
     }
 
     void createDepthTexture() {
@@ -143,11 +163,13 @@ public class Renderer {
     public void render(Scene scene) {
         restoreState();
 
-        List<Actor> actors = scene.getActors();
+//        List<Actor> actors = scene.getActors();
+        List<Actor> usualActors = scene.getUsualActors();
+        drawDepthMap(usualActors, scene);
+        drawScene(usualActors, scene);
 
-        drawDepthMap(actors, scene);
-
-        drawScene(actors, scene);
+        List<Actor> waterActors = scene.getWaterActors();
+        drawWater(waterActors, scene);
 
         hudRenderer.render(scene.getHudElements());
     }
@@ -190,19 +212,11 @@ public class Renderer {
     }
 
     private void drawScene(List<Actor> actors, Scene scene) {
-        Vector3f cameraPosition = new Vector3f(0f, 27, 00f);
-        Vector3f cameraRotation = new Vector3f(90, 0, 0);
         Matrix4f camera = new Matrix4f();
         camera.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
                 .rotateX((float) Math.toRadians(cameraRotation.x))
                 .rotateY((float) Math.toRadians(cameraRotation.y))
                 .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-        Matrix4f biasMatrix = new Matrix4f(
-                0.5f, 0.0f, 0.0f, 0.0f,
-                0.0f, 0.5f, 0.0f, 0.0f,
-                0.0f, 0.0f, 0.5f, 0.0f,
-                0.5f, 0.5f, 0.5f, 1.0f
-        );
 
         generalShader.executeWithProgram(shader -> {
             shader.set(VIEW_PROJECTION_MATRIX, camera);
@@ -213,6 +227,56 @@ public class Renderer {
             glViewport(0, 0, 1600, 900);
             // TODO maybe i can skip color buffer clearance
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+
+            for (Actor actor : actors) {
+                Mesh mesh = meshLibrary.get(actor.getMeshId());
+
+                glBindVertexArray(mesh.getVaoId());
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, depthTexture);
+
+                glActiveTexture(GL_TEXTURE1);
+                mesh.getMaterial().getTexture().bind();
+
+
+                Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                        actor.getPosition(),
+                        actor.getRotation(),
+                        new Vector3f(actor.getScale()));
+                shader.set(MODEL_MATRIX, matrix4f);
+                glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
+            }
+
+
+            glBindVertexArray(0);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        });
+    }
+
+    private void drawWater(List<Actor> actors, Scene scene) {
+        Matrix4f camera = new Matrix4f();
+        camera.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
+                .rotateX((float) Math.toRadians(cameraRotation.x))
+                .rotateY((float) Math.toRadians(cameraRotation.y))
+                .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
+
+        waterShader.executeWithProgram(shader -> {
+            shader.set(VIEW_PROJECTION_MATRIX, camera);
+            shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
+            shader.set(BIAS_MATRIX, biasMatrix);
+            shader.set(LIGHT_POSITION, scene.getLightPosition());
+            shader.set(TIME, (float) (System.currentTimeMillis() % 1_000_000));
+
+            glViewport(0, 0, 1600, 900);
+            // TODO maybe i can skip color buffer clearance
+//            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 
             for (Actor actor : actors) {

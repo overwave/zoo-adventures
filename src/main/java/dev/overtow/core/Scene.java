@@ -10,7 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class Scene {
-    private final ArrayList<Actor> actors;
+    private final List<Actor> actors;
+    private final List<Actor> usualActors;
+    private final List<Actor> waterActors;
+
     private final HudLayout hudLayout;
     //    private final BoxActor lightBox;
     private final Matrix4f light = new Matrix4f();
@@ -18,16 +21,21 @@ public class Scene {
 
     public Scene() {
         actors = new ArrayList<>();
+        usualActors = new ArrayList<>();
+        waterActors = new ArrayList<>();
         for (int i = 0; i < 30; i++) {
-            actors.add(new BoxActor(new Vector2i(-7 + i / 10, -4 + i % 10)));   // left
-            actors.add(new BoxActor(new Vector2i(-4 + i % 10, -7 + i / 10)));   // top
-            actors.add(new BoxActor(new Vector2i(6 + i / 10, -4 + i % 10)));    // right
-            actors.add(new BoxActor(new Vector2i(-4 + i % 10, 6 + i / 10)));   // bottom
+            usualActors.add(new BoxActor(new Vector2i(-7 + i / 10, -4 + i % 10)));   // left
+            usualActors.add(new BoxActor(new Vector2i(-4 + i % 10, -7 + i / 10)));   // top
+            usualActors.add(new BoxActor(new Vector2i(6 + i / 10, -4 + i % 10)));    // right
+            usualActors.add(new BoxActor(new Vector2i(-4 + i % 10, 6 + i / 10)));   // bottom
         }
 //        lightBox = new BoxActor(new Vector2i(0, 0));
 //        actors.add(lightBox);
-        actors.add(new PoolActor());
-        actors.add(new WaterActor());
+        usualActors.add(new PoolActor());
+        waterActors.add(new WaterActor());
+
+        actors.addAll(usualActors);
+        actors.addAll(waterActors);
 
         hudLayout = new HudLayout();
 
@@ -59,15 +67,23 @@ public class Scene {
         hudLayout.update();
     }
 
-    public List<Actor> getActors() {
-        return Collections.unmodifiableList(actors);
-    }
+//    public List<Actor> getActors() {
+//        return Collections.unmodifiableList(actors);
+//    }
 
     public List<HudElement> getHudElements() {
         return Collections.unmodifiableList(hudLayout.getHudElements());
     }
 
-    public void addActor(Actor actor) {
-        actors.add(actor);
+//    public void addActor(Actor actor) {
+//        actors.add(actor);
+//    }
+
+    public List<Actor> getUsualActors() {
+        return Collections.unmodifiableList(usualActors);
+    }
+
+    public List<Actor> getWaterActors() {
+        return Collections.unmodifiableList(waterActors);
     }
 }

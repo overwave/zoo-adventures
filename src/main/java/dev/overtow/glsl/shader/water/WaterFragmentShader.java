@@ -1,21 +1,24 @@
-package dev.overtow.glsl.shader;
+package dev.overtow.glsl.shader.water;
 
 import dev.overtow.glsl.Input;
 import dev.overtow.glsl.Output;
 import dev.overtow.glsl.Uniform;
+import dev.overtow.glsl.shader.FragmentShader;
 import dev.overtow.glsl.type.Sampler2D;
 import dev.overtow.glsl.type.Vec2;
 import dev.overtow.glsl.type.Vec3;
 import dev.overtow.glsl.type.Vec4;
 
-import static dev.overtow.core.shader.uniform.Uniform.Name.*;
+import static dev.overtow.core.shader.uniform.Uniform.Name.DEPTH_TEXTURE;
+import static dev.overtow.core.shader.uniform.Uniform.Name.LIGHT_POSITION;
+import static dev.overtow.core.shader.uniform.Uniform.Name.TEXTURE_SAMPLER;
 import static dev.overtow.glsl.GlslLibrary.*;
 
-public class GeneralFragmentShader implements FragmentShader {
+public class WaterFragmentShader implements FragmentShader {
     private static final float DEPTH_OFFSET = 0.00005f;
     private static final float LIGHT_INTENSITY = 0.3f;
 
-    private final GeneralVertexShader parentShader = new GeneralVertexShader();
+    private final WaterVertexShader parentShader = new WaterVertexShader();
 
     @Uniform(TEXTURE_SAMPLER)
     private final Sampler2D textureSampler = new Sampler2D();
@@ -31,7 +34,7 @@ public class GeneralFragmentShader implements FragmentShader {
     @Input
     private final Vec3 worldNormal = parentShader.worldNormal;
     @Input
-    private final Vec2 textureCoord = parentShader.textureCoord;
+    private final Vec2 textureCoordinate = parentShader.textureCoordinate;
 
     @Output
     private Vec4 fragColor;
@@ -52,8 +55,8 @@ public class GeneralFragmentShader implements FragmentShader {
 
 
         Vec4 backColor = vec4(0.9019608, 1.0, 0.1764706, 1);
-        double noise = 1.0 - rand(round(textureCoord.multiply(50))) / 10.0;
-        Vec4 background = texture(textureSampler, textureCoord);
+        double noise = 1.0 - rand(round(textureCoordinate.multiply(50))) / 10.0;
+        Vec4 background = texture(textureSampler, textureCoordinate);
         background.rgb = mix(backColor.rgb.multiply(noise), background.rgb, background.a).multiply(0.7);
         fragColor = vec4(background.rgb, backColor.a);
 

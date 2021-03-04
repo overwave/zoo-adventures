@@ -4,21 +4,26 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import dev.overtow.core.shader.uniform.Uniform.Name;
 import dev.overtow.glsl.shader.Shader;
-import dev.overtow.glsl.shader.VertexShader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -91,6 +96,14 @@ public class Converter {
     private void convertFields(CompilationUnit compilationUnit) {
         final boolean[] hasParentShader = {false};
 
+        List<String> packages = new ArrayList<>();
+        new VoidVisitorAdapter<List<String>>() {
+            @Override
+            public void visit(PackageDeclaration pd, List<String> accumulator) {
+                accumulator.add(pd.getNameAsString());
+            }
+        }.visit(compilationUnit, packages);
+
         new VoidVisitorAdapter<Map<String, String>>() {
             @Override
             public void visit(FieldDeclaration fd, Map<String, String> inOutMap) {
@@ -105,7 +118,7 @@ public class Converter {
                     return;
                 }
 
-                boolean isParentShaderLink = isParentShaderLink(fd.getVariable(0));
+                boolean isParentShaderLink = isParentShaderLink(fd.getVariable(0), packages);
                 if (isParentShaderLink) {
                     hasParentShader[0] = true;
                     return;
@@ -183,15 +196,21 @@ public class Converter {
         }.visit(compilationUnit, inOutMap);
     }
 
-    private boolean isParentShaderLink(VariableDeclarator variable) {
-        String shaderPackageName = Shader.class.getPackageName();
+    private boolean isParentShaderLink(VariableDeclarator variable, List<String> packages) {
+        String shaderRootPackage = Shader.class.getPackageName();
+        List<String> shaderLookUpPackages = new ArrayList<>(packages);
+        shaderLookUpPackages.add(shaderRootPackage);
 
-        try {
-            Class<?> clazz = Class.forName(shaderPackageName + "." + variable.getTypeAsString());
-            return Shader.class.isAssignableFrom(clazz);
-        } catch (ClassNotFoundException e) {
-            return false;
+        for (String lookUpPackage : shaderLookUpPackages) {
+            try {
+                Class<?> clazz = Class.forName(lookUpPackage + "." + variable.getTypeAsString());
+                if (Shader.class.isAssignableFrom(clazz)) {
+                    return true;
+                }
+            } catch (ClassNotFoundException ignored) {
+            }
         }
+        return false;
     }
 
     private void convertMethods(CompilationUnit compilationUnit) {
@@ -212,6 +231,8 @@ public class Converter {
             returnType = type.asString().replace("double", "float");
         } else if (type.isVoidType()) {
             returnType = "void";
+        } else if (type.isClassOrInterfaceType()) {
+            returnType = uncapitalize(type.asString());
         } else {
             throw new IllegalArgumentException();
         }

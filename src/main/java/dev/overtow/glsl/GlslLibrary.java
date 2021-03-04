@@ -44,7 +44,15 @@ public interface GlslLibrary {
         return Mat4.STUB;
     }
 
+    static float float_(double c) {
+        return 0;
+    }
+
     static Vec3 vec3(double c) {
+        return Vec3.STUB;
+    }
+
+    static Vec3 vec3(double x, double y, double z) {
         return Vec3.STUB;
     }
 
