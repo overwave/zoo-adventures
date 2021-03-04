@@ -27,6 +27,7 @@ public class Scene {
 //        lightBox = new BoxActor(new Vector2i(0, 0));
 //        actors.add(lightBox);
         actors.add(new PoolActor());
+        actors.add(new WaterActor());
 
         hudLayout = new HudLayout();
 
