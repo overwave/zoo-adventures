@@ -12,15 +12,20 @@ import java.util.List;
 public class Scene {
     private final ArrayList<Actor> actors;
     private final HudLayout hudLayout;
-    private final BoxActor lightBox;
+    //    private final BoxActor lightBox;
     private final Matrix4f light = new Matrix4f();
     private Vector3f lightPosition;
 
     public Scene() {
         actors = new ArrayList<>();
-        actors.add(new BoxActor(new Vector2i(0, 0)));
-        lightBox = new BoxActor(new Vector2i(0, 0));
-        actors.add(lightBox);
+        for (int i = 0; i < 30; i++) {
+            actors.add(new BoxActor(new Vector2i(-7 + i / 10, -4 + i % 10)));   // left
+            actors.add(new BoxActor(new Vector2i(-4 + i % 10, -7 + i / 10)));   // top
+            actors.add(new BoxActor(new Vector2i(6 + i / 10, -4 + i % 10)));    // right
+            actors.add(new BoxActor(new Vector2i(-4 + i % 10, 6 + i / 10)));   // bottom
+        }
+//        lightBox = new BoxActor(new Vector2i(0, 0));
+//        actors.add(lightBox);
         actors.add(new PoolActor());
 
         hudLayout = new HudLayout();
@@ -46,7 +51,7 @@ public class Scene {
         float x = (float) Math.sin(alpha);
         float z = (float) Math.cos(alpha);
         lightPosition.set(lightDistance * x, lightHeight + (float) Math.sin(alpha), lightDistance * z);
-        lightBox.setPosition(lightPosition);
+//        lightBox.setPosition(lightPosition);
         light.setPerspective((float) Math.toRadians(90), 1.0f, 0.1f, 40.0f)
                 .lookAt(lightPosition, lightLookAt, UP);
 

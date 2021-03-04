@@ -14,7 +14,7 @@ public class BoxActor implements Actor {
 
     public BoxActor(/*BoxMesh mesh,*/ Vector2i position) {
 //        this.mesh = mesh;
-        this.position = new Vector3f(position.x(), 0, position.y());
+        this.position = new Vector3f(position.x() - 0.5f, 0, position.y() - 0.5f);
         this.boxType = BoxType.BANANA;
         this.scale = 1;
         this.rotation = new Quaternionf();
