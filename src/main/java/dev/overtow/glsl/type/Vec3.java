@@ -6,6 +6,7 @@ public final class Vec3 {
     public double x;
     public double y;
     public double z;
+    public Vec2 xz;
 
     private Vec3() {
     }

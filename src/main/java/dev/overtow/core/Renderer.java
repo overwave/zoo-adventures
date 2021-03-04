@@ -119,10 +119,10 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-//        cameraPosition = new Vector3f(0f, 7, 7);
-//        cameraRotation = new Vector3f(45, 0, 0);
-        cameraPosition = new Vector3f(0f, 27, 0);
-        cameraRotation = new Vector3f(90, 0, 0);
+        cameraPosition = new Vector3f(0f, 7, 7);
+        cameraRotation = new Vector3f(45, 0, 0);
+//        cameraPosition = new Vector3f(0f, 27, 0);
+//        cameraRotation = new Vector3f(90, 0, 0);
         biasMatrix = new Matrix4f(
                 0.5f, 0.0f, 0.0f, 0.0f,
                 0.0f, 0.5f, 0.0f, 0.0f,
@@ -163,15 +163,25 @@ public class Renderer {
     public void render(Scene scene) {
         restoreState();
 
-//        List<Actor> actors = scene.getActors();
+        Matrix4f viewMatrix = createViewMatrix(cameraPosition, cameraRotation);
+
         List<Actor> usualActors = scene.getUsualActors();
         drawDepthMap(usualActors, scene);
-        drawScene(usualActors, scene);
+        drawScene(viewMatrix, usualActors, scene);
 
         List<Actor> waterActors = scene.getWaterActors();
-        drawWater(waterActors, scene);
+        drawWater(viewMatrix, waterActors, scene);
 
         hudRenderer.render(scene.getHudElements());
+    }
+
+    private Matrix4f createViewMatrix(Vector3f cameraPosition, Vector3f cameraRotation) {
+        Matrix4f viewMatrix = new Matrix4f();
+        viewMatrix.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
+                .rotateX((float) Math.toRadians(cameraRotation.x))
+                .rotateY((float) Math.toRadians(cameraRotation.y))
+                .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
+        return viewMatrix;
     }
 
     private void restoreState() {
@@ -211,15 +221,9 @@ public class Renderer {
         });
     }
 
-    private void drawScene(List<Actor> actors, Scene scene) {
-        Matrix4f camera = new Matrix4f();
-        camera.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
-                .rotateX((float) Math.toRadians(cameraRotation.x))
-                .rotateY((float) Math.toRadians(cameraRotation.y))
-                .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-
+    private void drawScene(Matrix4f viewMatrix, List<Actor> actors, Scene scene) {
         generalShader.executeWithProgram(shader -> {
-            shader.set(VIEW_PROJECTION_MATRIX, camera);
+            shader.set(VIEW_PROJECTION_MATRIX, viewMatrix);
             shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
@@ -260,24 +264,15 @@ public class Renderer {
         });
     }
 
-    private void drawWater(List<Actor> actors, Scene scene) {
-        Matrix4f camera = new Matrix4f();
-        camera.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
-                .rotateX((float) Math.toRadians(cameraRotation.x))
-                .rotateY((float) Math.toRadians(cameraRotation.y))
-                .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-
+    private void drawWater(Matrix4f viewMatrix, List<Actor> actors, Scene scene) {
         waterShader.executeWithProgram(shader -> {
-            shader.set(VIEW_PROJECTION_MATRIX, camera);
+            shader.set(VIEW_PROJECTION_MATRIX, viewMatrix);
             shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
-            shader.set(TIME, (float) (System.currentTimeMillis() % 1_000_000));
+            shader.set(TIME, (System.currentTimeMillis() % 1_000_000) / 500f);
 
             glViewport(0, 0, 1600, 900);
-            // TODO maybe i can skip color buffer clearance
-//            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
 
             for (Actor actor : actors) {
                 Mesh mesh = meshLibrary.get(actor.getMeshId());

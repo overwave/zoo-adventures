@@ -56,7 +56,7 @@ public class Scene {
         lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
         Vector3f lightLookAt = new Vector3f(0.5f, 0.0f, 0.5f);
         Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
-        double alpha = System.currentTimeMillis() / 1000.0 * 0.5;
+        double alpha = System.currentTimeMillis() / 2000.0;
         float x = (float) Math.sin(alpha);
         float z = (float) Math.cos(alpha);
         lightPosition.set(lightDistance * x, lightHeight + (float) Math.sin(alpha), lightDistance * z);

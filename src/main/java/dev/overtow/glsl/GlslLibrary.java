@@ -8,6 +8,14 @@ public interface GlslLibrary {
         return 0;
     }
 
+    static double cos(double v) {
+        return 0;
+    }
+
+    static double clamp(double x, double a, double b) {
+        return 0;
+    }
+
     static double dot(Vec2 a, Vec2 b) {
         return 0;
     }

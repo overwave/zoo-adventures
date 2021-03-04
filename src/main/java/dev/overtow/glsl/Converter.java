@@ -332,6 +332,9 @@ public class Converter {
             return convertExpression(binaryExpr.getLeft()) + " " + binaryExpr.getOperator().asString() + " " + convertExpression(binaryExpr.getRight());
         } else if (expression.isDoubleLiteralExpr() || expression.isIntegerLiteralExpr() || expression.isBooleanLiteralExpr()) {
             return expression.toString();
+        } else if (expression.isUnaryExpr()) {
+            UnaryExpr unaryExpr = expression.asUnaryExpr();
+            return unaryExpr.getOperator().asString() + convertExpression(unaryExpr.getExpression());
         } else {
             throw new IllegalStateException();
         }

@@ -14,8 +14,6 @@ import static dev.overtow.glsl.GlslLibrary.*;
 
 public class WaterVertexShader implements VertexShader {
 
-    private static final double WAVE_AMPLITUDE = 0.05;
-
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);
     @Uniform(LIGHT_VIEW_PROJECTION_MATRIX)
@@ -45,14 +43,27 @@ public class WaterVertexShader implements VertexShader {
     @Output(shown = false)
     Vec4 gl_Position;
 
-    Vec3 sinWave(Vec3 position) {
-        position.y += sin(position.x * 4 + position.z * 1.5 + time / 500f) * WAVE_AMPLITUDE;
+    Vec3 gerstnerWave(Vec3 position) {
+        double waveAmplitude = 0.5;
+        double waveLength = 3;
+        double waveSpeed = 0.1;
+        double steepness = 10;
+        Vec3 waveDirection = vec3(2, 0, 4);
+
+        double omega = 2 / waveLength;
+        double steepnessNormalized = clamp(steepness, 0, 1 / (omega * waveAmplitude));
+        double phi = waveSpeed * (2 / waveLength);
+
+        double dottedPosition = dot(waveDirection.xz, position.xz);
+        position.x = steepnessNormalized * waveAmplitude * waveDirection.x * cos(omega * dottedPosition + phi * time);
+        position.y = waveAmplitude * sin(dottedPosition * omega + time * phi);
+        position.z = steepnessNormalized * waveAmplitude * waveDirection.y * cos(omega * dottedPosition + phi * time);
         return position;
     }
 
     @Override
     public void main() {
-        Vec4 modelPosition = modelMatrix.multiply(vec4(sinWave(position), 1));
+        Vec4 modelPosition = modelMatrix.multiply(vec4(gerstnerWave(position), 1));
 
         worldPosition = modelPosition.xyz;
         worldNormal = normal;
