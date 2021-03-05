@@ -2,7 +2,6 @@ package dev.overtow.glsl;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -18,26 +17,39 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import dev.overtow.core.shader.uniform.Uniform.Name;
 import dev.overtow.glsl.shader.Shader;
+import dev.overtow.glsl.type.Mat4;
+import dev.overtow.glsl.type.Sampler2D;
+import dev.overtow.glsl.type.Vec2;
+import dev.overtow.glsl.type.Vec3;
+import dev.overtow.glsl.type.Vec4;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Converter {
+    private static final Set<Class<?>> GLSL_TYPE_TOKENS = Set.of(float.class, Vec2.class, Vec3.class, Vec4.class, Mat4.class, Sampler2D.class);
+    private static final Set<String> FLOAT_TYPE = Set.of("double", "float");
+    private static final Set<String> GLSL_COMPLEX_TYPES = Set.of("Vec2", "Vec3", "Vec4", "Mat4", "Sampler2D");
 
     private final PrintStream os;
-    private final Map<String, String> inOutMap;
+    private final Map<String, String> shaderInOutMap;
+    private final Map<String, Class<?>> usedStructs;
 
     private Converter(PrintStream os) {
         this.os = os;
-        this.inOutMap = new HashMap<>();
+        this.shaderInOutMap = new HashMap<>();
+        this.usedStructs = new HashMap<>();
     }
 
     public static List<Name> getUsedUniforms(List<Class<? extends Shader>> shaderClasses) {
@@ -49,8 +61,8 @@ public class Converter {
                 .collect(Collectors.toList());
     }
 
-    public static String convert(Class<? extends Shader> classes) {
-        return Converter.convertToGlsl(classes);
+    public static String convert(Class<? extends Shader> clazz) {
+        return Converter.convertToGlsl(clazz);
     }
 
     private static String convertToGlsl(Class<? extends Shader> clazz) {
@@ -66,7 +78,7 @@ public class Converter {
 
         try (PrintStream os = new PrintStream(new FileOutputStream(filename))) {
             Converter converter = new Converter(os);
-            converter.doConvertToGlsl(compilationUnit);
+            converter.doConvertToGlsl(compilationUnit, clazz);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -74,15 +86,53 @@ public class Converter {
         return filename;
     }
 
-    private void doConvertToGlsl(CompilationUnit compilationUnit) {
+    private static File classToFile(Class<?> clazz) {
+        return new File("src\\main\\java\\" + clazz.getCanonicalName().replace('.', '\\') + ".java");
+    }
+
+    public static Map<String, Class<?>> getUsedStructs(Class<? extends Shader> shaderClass) {
+        Map<String, Class<?>> resultMap = new HashMap<>();
+
+        for (Field field : shaderClass.getDeclaredFields()) {
+            Class<?> fieldType = field.getType();
+            if (Shader.class.isAssignableFrom(fieldType) ||     // link to parent shader
+                    Modifier.isStatic(field.getModifiers()) ||  // static definitions
+                    GLSL_TYPE_TOKENS.contains(fieldType)) {     // glsl types
+                continue;
+            }
+
+            resultMap.put(fieldType.getSimpleName(), fieldType);
+        }
+        return resultMap;
+    }
+
+    private void doConvertToGlsl(CompilationUnit compilationUnit, Class<? extends Shader> clazz) {
         os.println("#version 330");
 
+        convertStructs(clazz);
         convertFields(compilationUnit);
         convertMethods(compilationUnit);
     }
 
-    private static File classToFile(Class<?> clazz) {
-        return new File("src\\main\\java\\" + clazz.getCanonicalName().replace('.', '\\') + ".java");
+    private void convertStructs(Class<? extends Shader> clazz) {
+        usedStructs.putAll(getUsedStructs(clazz));
+
+        for (Map.Entry<String, Class<?>> entry : usedStructs.entrySet()) {
+            Class<?> struct = entry.getValue();
+            os.println("struct " + struct.getSimpleName() + " {");
+
+            for (Field field : struct.getDeclaredFields()) {
+                Class<?> fieldType = field.getType();
+                if (field.isAnnotationPresent(GlslType.class)) {
+                    fieldType = field.getAnnotation(GlslType.class).value();
+                }
+
+                String typeName = javaTypeToGlslType(fieldType.getSimpleName());
+                os.println(typeName + " " + field.getName() + ";");
+            }
+
+            os.println("};");
+        }
     }
 
     private static CompilationUnit parseJava(File javaFile) {
@@ -108,7 +158,7 @@ public class Converter {
             @Override
             public void visit(FieldDeclaration fd, Map<String, String> inOutMap) {
 
-                boolean isDefinition = fd.hasModifier(Modifier.Keyword.FINAL) && fd.hasModifier(Modifier.Keyword.STATIC);
+                boolean isDefinition = fd.hasModifier(com.github.javaparser.ast.Modifier.Keyword.FINAL) && fd.hasModifier(com.github.javaparser.ast.Modifier.Keyword.STATIC);
                 if (isDefinition) {
                     VariableDeclarator variable = fd.getVariable(0);
                     String variableName = variable.getNameAsString();
@@ -126,7 +176,7 @@ public class Converter {
 
                 boolean isUniform = fd.getAnnotationByClass(Uniform.class).isPresent();
                 if (isUniform) {
-                    String type = uncapitalize(fd.getVariable(0).getTypeAsString());
+                    String type = javaTypeToGlslType(fd.getVariable(0).getTypeAsString());
 
                     SingleMemberAnnotationExpr annotationExpr = fd.getAnnotationByClass(Uniform.class)
                             .orElseThrow()
@@ -142,7 +192,7 @@ public class Converter {
                 if (isInput) {
                     VariableDeclarator variable = fd.getVariable(0);
 
-                    String type = uncapitalize(variable.getTypeAsString());
+                    String type = javaTypeToGlslType(variable.getTypeAsString());
 
                     if (hasParentShader[0]) {
                         String parentShaderLinkName = variable.getInitializer().orElseThrow().asFieldAccessExpr().getNameAsString();
@@ -184,7 +234,7 @@ public class Converter {
 
                     VariableDeclarator variable = fd.getVariable(0);
 
-                    String type = uncapitalize(variable.getTypeAsString());
+                    String type = javaTypeToGlslType(variable.getTypeAsString());
                     String name = variable.getNameAsString();
 
                     os.printf("out %s %s;%n", type, name);
@@ -193,7 +243,7 @@ public class Converter {
 
                 throw new IllegalArgumentException();
             }
-        }.visit(compilationUnit, inOutMap);
+        }.visit(compilationUnit, shaderInOutMap);
     }
 
     private boolean isParentShaderLink(VariableDeclarator variable, List<String> packages) {
@@ -232,7 +282,7 @@ public class Converter {
         } else if (type.isVoidType()) {
             returnType = "void";
         } else if (type.isClassOrInterfaceType()) {
-            returnType = uncapitalize(type.asString());
+            returnType = javaTypeToGlslType(type.asString());
         } else {
             throw new IllegalArgumentException();
         }
@@ -240,7 +290,7 @@ public class Converter {
         String name = md.getNameAsString();
         String args = md.getParameters()
                 .stream()
-                .map(par -> uncapitalize(par.getTypeAsString()) + " " + par.getNameAsString())
+                .map(par -> javaTypeToGlslType(par.getTypeAsString()) + " " + par.getNameAsString())
                 .collect(Collectors.joining(", "));
 
         os.printf("%s %s(%s) {%n", returnType, name, args);
@@ -321,10 +371,10 @@ public class Converter {
             return convertExpression(fieldAccessExpr.getScope()) + "." + fieldAccessExpr.getNameAsString();
         } else if (expression.isNameExpr()) {
             String name = expression.asNameExpr().getNameAsString();
-            return inOutMap.getOrDefault(name, name);
+            return shaderInOutMap.getOrDefault(name, name);
         } else if (expression.isVariableDeclarationExpr()) {
             return expression.asVariableDeclarationExpr().getVariables().stream()
-                    .map(variable -> uncapitalize(variable.getTypeAsString().replace("double", "float")) + " " + variable.getNameAsString() +
+                    .map(variable -> javaTypeToGlslType(variable.getTypeAsString()) + " " + variable.getNameAsString() +
                             variable.getInitializer().map(ex -> " = " + convertExpression(ex)).orElse(""))
                     .collect(Collectors.joining("; "));
         } else if (expression.isBinaryExpr()) {
@@ -340,7 +390,15 @@ public class Converter {
         }
     }
 
-    private String uncapitalize(String word) {
-        return word.substring(0, 1).toLowerCase() + word.substring(1);
+    private String javaTypeToGlslType(String type) {
+        if (FLOAT_TYPE.contains(type)) {
+            return "float";
+        } else if (GLSL_COMPLEX_TYPES.contains(type)) {
+            return type.substring(0, 1).toLowerCase() + type.substring(1);
+        } else if (usedStructs.containsKey(type)) {
+            return type;
+        } else {
+            throw new IllegalArgumentException("Passed illegal type: " + type);
+        }
     }
 }

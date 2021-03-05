@@ -275,6 +275,7 @@ public class Renderer {
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
             shader.set(TIME, (System.currentTimeMillis() % 1_000_000) / 500f);
+//            shader.set(WAVES, (Matrix4f) null);
 
             glViewport(0, 0, 1600, 900);
 

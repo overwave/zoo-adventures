@@ -19,6 +19,7 @@ public class WaterShaderProgram extends ShaderProgram {
         uniformMap.put(Uniform.Name.TEXTURE_SAMPLER, new IntegerUniform(Uniform.Name.TEXTURE_SAMPLER));
         uniformMap.put(Uniform.Name.DEPTH_TEXTURE, new IntegerUniform(Uniform.Name.DEPTH_TEXTURE));
         uniformMap.put(Uniform.Name.TIME, new FloatUniform(Uniform.Name.TIME));
+        uniformMap.put(Uniform.Name.WAVES, new Matrix4fUniform(Uniform.Name.TIME));    // TODO
 
         programId = compile(WaterVertexShader.class, WaterFragmentShader.class);
     }

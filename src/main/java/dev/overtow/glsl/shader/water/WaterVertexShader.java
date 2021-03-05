@@ -8,11 +8,14 @@ import dev.overtow.glsl.type.Mat4;
 import dev.overtow.glsl.type.Vec2;
 import dev.overtow.glsl.type.Vec3;
 import dev.overtow.glsl.type.Vec4;
+import dev.overtow.glsl.type.struct.Wave;
 
 import static dev.overtow.core.shader.uniform.Uniform.Name.*;
 import static dev.overtow.glsl.GlslLibrary.*;
 
 public class WaterVertexShader implements VertexShader {
+
+    public static final int WAVES_AMOUNT = 1;
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);
@@ -24,6 +27,8 @@ public class WaterVertexShader implements VertexShader {
     private final Mat4 modelMatrix = mat4(0);
     @Uniform(TIME)
     private final float time = float_(0);
+    @Uniform(WAVES)
+    private final Wave waves = new Wave();
 
     @Input(location = 0)
     private final Vec3 position = vec3(0);

@@ -14,6 +14,7 @@ public interface Uniform<T> {
         BIAS_MATRIX("biasMatrix"),
         MODEL_MATRIX("modelMatrix"),
         TIME("time"),
+        WAVES("waves"),
         ;
 
         private final String name;
