@@ -1,5 +1,6 @@
 package dev.overtow.core.shader;
 
+import dev.overtow.core.Wave;
 import dev.overtow.core.shader.uniform.*;
 import dev.overtow.glsl.Converter;
 import dev.overtow.glsl.shader.FragmentShader;
@@ -92,6 +93,10 @@ public abstract class ShaderProgram {
 
     public void set(Uniform.Name name, Matrix4f value) {
         checkedGet(name, Matrix4fUniform.class).setValue(value);
+    }
+
+    public void set(Uniform.Name name, Wave value) {
+        checkedGet(name, WaveUniform.class).setValue(value);
     }
 
     private <T extends Uniform<?>> T checkedGet(Uniform.Name name, Class<T> uniformType) {

@@ -5,6 +5,7 @@ import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.service.meshlibrary.MeshLibrary;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
@@ -22,33 +23,6 @@ import static org.lwjgl.opengl.GL11C.glClearColor;
 import static org.lwjgl.opengl.GL11C.glEnable;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL43C.GL_BACK;
-import static org.lwjgl.opengl.GL43C.GL_BLEND;
-import static org.lwjgl.opengl.GL43C.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL43C.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL43C.GL_DEPTH_COMPONENT;
-import static org.lwjgl.opengl.GL43C.GL_LINEAR;
-import static org.lwjgl.opengl.GL43C.GL_NONE;
-import static org.lwjgl.opengl.GL43C.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL43C.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL43C.GL_STENCIL_BUFFER_BIT;
-import static org.lwjgl.opengl.GL43C.GL_STENCIL_TEST;
-import static org.lwjgl.opengl.GL43C.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL43C.GL_TEXTURE_MAG_FILTER;
-import static org.lwjgl.opengl.GL43C.GL_TEXTURE_MIN_FILTER;
-import static org.lwjgl.opengl.GL43C.GL_TEXTURE_WRAP_S;
-import static org.lwjgl.opengl.GL43C.GL_TEXTURE_WRAP_T;
-import static org.lwjgl.opengl.GL43C.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL43C.glBindTexture;
-import static org.lwjgl.opengl.GL43C.glBlendFunc;
-import static org.lwjgl.opengl.GL43C.glClear;
-import static org.lwjgl.opengl.GL43C.glCullFace;
-import static org.lwjgl.opengl.GL43C.glDrawBuffer;
-import static org.lwjgl.opengl.GL43C.glGenTextures;
-import static org.lwjgl.opengl.GL43C.glReadBuffer;
-import static org.lwjgl.opengl.GL43C.glTexImage2D;
-import static org.lwjgl.opengl.GL43C.glTexParameteri;
-import static org.lwjgl.opengl.GL43C.glViewport;
 import static org.lwjgl.opengl.GL43C.*;
 
 public class Renderer {
@@ -269,13 +243,15 @@ public class Renderer {
     }
 
     private void drawWater(Matrix4f viewMatrix, List<Actor> actors, Scene scene) {
+        Wave wave = new Wave(0.2f, 2f, 0.1f, 0.5f, new Vector2f(2, 0));
+
         waterShader.executeWithProgram(shader -> {
             shader.set(VIEW_PROJECTION_MATRIX, viewMatrix);
             shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
             shader.set(TIME, (System.currentTimeMillis() % 1_000_000) / 500f);
-//            shader.set(WAVES, (Matrix4f) null);
+            shader.set(WAVES, wave);
 
             glViewport(0, 0, 1600, 900);
 

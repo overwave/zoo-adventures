@@ -6,6 +6,7 @@ import dev.overtow.core.shader.uniform.IntegerUniform;
 import dev.overtow.core.shader.uniform.Matrix4fUniform;
 import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.core.shader.uniform.Vector3fUniform;
+import dev.overtow.core.shader.uniform.WaveUniform;
 import dev.overtow.glsl.shader.water.WaterFragmentShader;
 import dev.overtow.glsl.shader.water.WaterVertexShader;
 
@@ -19,7 +20,7 @@ public class WaterShaderProgram extends ShaderProgram {
         uniformMap.put(Uniform.Name.TEXTURE_SAMPLER, new IntegerUniform(Uniform.Name.TEXTURE_SAMPLER));
         uniformMap.put(Uniform.Name.DEPTH_TEXTURE, new IntegerUniform(Uniform.Name.DEPTH_TEXTURE));
         uniformMap.put(Uniform.Name.TIME, new FloatUniform(Uniform.Name.TIME));
-        uniformMap.put(Uniform.Name.WAVES, new Matrix4fUniform(Uniform.Name.TIME));    // TODO
+        uniformMap.put(Uniform.Name.WAVES, new WaveUniform(Uniform.Name.WAVES));
 
         programId = compile(WaterVertexShader.class, WaterFragmentShader.class);
     }

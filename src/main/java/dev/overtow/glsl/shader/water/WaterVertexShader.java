@@ -49,23 +49,17 @@ public class WaterVertexShader implements VertexShader {
     Vec4 gl_Position;
 
     Vec3 gerstnerWave(Vec3 position) {
-        double waveAmplitude = 0.2;
-        double waveLength = 2;
-        double waveSpeed = 0.1;
-        double steepness = 0.5;
-        Vec2 waveDirection = vec2(2, 0);
-
-        double omega = 2 / waveLength;
-        double steepnessNormalized = clamp(steepness, 0, 1 / (omega * waveAmplitude));
-        double phi = waveSpeed * (2 / waveLength);
+        double omega = 2 / waves.length;
+        double steepnessNormalized = clamp(waves.steepness, 0, 1 / (omega * waves.amplitude));
+        double phi = waves.speed * (2 / waves.length);
 
         Vec2 pos2 = position.xz;
 
-        double dottedPosition = dot(waveDirection, pos2);
+        double dottedPosition = dot(waves.direction, pos2);
         double positionShift = cos(omega * dottedPosition + phi * time);
 
-        position.xz = position.xz.plus(waveDirection.multiply(positionShift * steepnessNormalized * waveAmplitude));
-        position.y = waveAmplitude * sin(dottedPosition * omega + time * phi);
+        position.xz = position.xz.plus(waves.direction.multiply(positionShift * steepnessNormalized * waves.amplitude));
+        position.y = waves.amplitude * sin(dottedPosition * omega + time * phi);
 
         return position;
     }
