@@ -38,9 +38,10 @@ public class Renderer {
     int fbo;
     int depthTexture;
     int shadowMapSize = 2048;
-    private Vector3f cameraPosition;
-    private Vector3f cameraRotation;
-    private Matrix4f biasMatrix;
+    private final Vector3f cameraPosition;
+    private final Vector3f cameraRotation;
+    private final Matrix4f biasMatrix;
+    private final List<Wave> waves;
 
     public Renderer() {
         capabilities = GL.createCapabilities();
@@ -93,8 +94,8 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-        cameraPosition = new Vector3f(0f, 14, 15);
-        cameraRotation = new Vector3f(45, 0, 0);
+        cameraPosition = new Vector3f(0f, 5, 15);
+        cameraRotation = new Vector3f(15, 0, 0);
 //        cameraPosition = new Vector3f(0f, 27, 0);
 //        cameraRotation = new Vector3f(90, 0, 0);
         biasMatrix = new Matrix4f(
@@ -102,6 +103,14 @@ public class Renderer {
                 0.0f, 0.5f, 0.0f, 0.0f,
                 0.0f, 0.0f, 0.5f, 0.0f,
                 0.5f, 0.5f, 0.5f, 1.0f
+        );
+        waves = List.of(
+//                new Vector2f(0.707f, 0.707f)
+//        new Vector2f(0.5f, -0.2f)
+//        new Vector2f(-1f, -0.3f)
+//                new Wave(0.02f, 2f, 0.3f, 0.5f, new Vector2f(1, 0))
+                new Wave(0.5f, 2f, 0.3f, 0.00005f, new Vector2f(0.2f, 0))
+//                new Wave(0.01, 3f, 0.1f, 0.1f, new Vector2f(1, 0))
         );
     }
 
@@ -243,15 +252,13 @@ public class Renderer {
     }
 
     private void drawWater(Matrix4f viewMatrix, List<Actor> actors, Scene scene) {
-        Wave wave = new Wave(0.2f, 2f, 0.1f, 0.5f, new Vector2f(2, 0));
-
         waterShader.executeWithProgram(shader -> {
             shader.set(VIEW_PROJECTION_MATRIX, viewMatrix);
             shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
             shader.set(TIME, (System.currentTimeMillis() % 1_000_000) / 500f);
-            shader.set(WAVES, wave);
+            shader.set(WAVES, waves);
 
             glViewport(0, 0, 1600, 900);
 

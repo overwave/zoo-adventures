@@ -17,7 +17,7 @@ public class Mesh {
     public enum Id {
         CUBE("data/model/cube2/c10.obj"),
         POOL("data/model/pool/pool_solid_2.obj"),
-        WATER("data/model/water/water.obj");
+        WATER("data/model/water/water_hipoly.obj");
 
         private final String path;
 

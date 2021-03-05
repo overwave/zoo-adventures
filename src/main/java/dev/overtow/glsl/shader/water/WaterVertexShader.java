@@ -1,5 +1,6 @@
 package dev.overtow.glsl.shader.water;
 
+import dev.overtow.glsl.Array;
 import dev.overtow.glsl.Input;
 import dev.overtow.glsl.Output;
 import dev.overtow.glsl.Uniform;
@@ -27,8 +28,9 @@ public class WaterVertexShader implements VertexShader {
     private final Mat4 modelMatrix = mat4(0);
     @Uniform(TIME)
     private final float time = float_(0);
+    @Array(WAVES_AMOUNT)
     @Uniform(WAVES)
-    private final Wave waves = new Wave();
+    private final Wave[] waves = new Wave[]{};
 
     @Input(location = 0)
     private final Vec3 position = vec3(0);
@@ -49,17 +51,17 @@ public class WaterVertexShader implements VertexShader {
     Vec4 gl_Position;
 
     Vec3 gerstnerWave(Vec3 position) {
-        double omega = 2 / waves.length;
-        double steepnessNormalized = clamp(waves.steepness, 0, 1 / (omega * waves.amplitude));
-        double phi = waves.speed * (2 / waves.length);
+        for (int i = 0; i < WAVES_AMOUNT; i++) {
+            double omega = 2 / waves[i].length;
+            double steepnessNormalized = clamp(waves[i].steepness, 0, 1 / (omega * waves[i].amplitude));
+            double phi = waves[i].speed * (2 / waves[i].length);
 
-        Vec2 pos2 = position.xz;
+            double dottedPosition = dot(waves[i].direction, position.xz.multiply(100));
+            double positionShift = cos(omega * dottedPosition + phi * time);
 
-        double dottedPosition = dot(waves.direction, pos2);
-        double positionShift = cos(omega * dottedPosition + phi * time);
-
-        position.xz = position.xz.plus(waves.direction.multiply(positionShift * steepnessNormalized * waves.amplitude));
-        position.y = waves.amplitude * sin(dottedPosition * omega + time * phi);
+            position.xz = position.xz.minus(waves[i].direction.multiply(positionShift * steepnessNormalized * waves[i].amplitude));
+            position.y += waves[i].amplitude * sin(dottedPosition * omega + time * phi);
+        }
 
         return position;
     }

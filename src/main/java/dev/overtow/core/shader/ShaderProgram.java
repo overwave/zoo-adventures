@@ -95,8 +95,10 @@ public abstract class ShaderProgram {
         checkedGet(name, Matrix4fUniform.class).setValue(value);
     }
 
-    public void set(Uniform.Name name, Wave value) {
-        checkedGet(name, WaveUniform.class).setValue(value);
+    @SuppressWarnings("unchecked")
+    public void set(Uniform.Name name, List<Wave> values) {
+        ArrayUniform<Wave> uniform = (ArrayUniform<Wave>) uniformMap.get(name);
+        uniform.setElements(values);
     }
 
     private <T extends Uniform<?>> T checkedGet(Uniform.Name name, Class<T> uniformType) {

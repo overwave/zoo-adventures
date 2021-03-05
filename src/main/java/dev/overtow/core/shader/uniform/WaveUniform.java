@@ -12,14 +12,14 @@ public class WaveUniform implements ValueUniform<Wave> {
 
     private final String namePrefix;
 
-    int amplitude;
-    int length;
-    int speed;
-    int steepness;
-    int direction;
+    private int amplitude;
+    private int length;
+    private int speed;
+    private int steepness;
+    private int direction;
 
-    public WaveUniform(Name name) {
-        this.namePrefix = name.get();
+    public WaveUniform(String name) {
+        this.namePrefix = name;
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.*;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
+import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
@@ -29,12 +30,7 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Converter {
@@ -95,6 +91,10 @@ public class Converter {
 
         for (Field field : shaderClass.getDeclaredFields()) {
             Class<?> fieldType = field.getType();
+            if (fieldType.isArray()) {
+                fieldType = fieldType.componentType();
+            }
+
             if (Shader.class.isAssignableFrom(fieldType) ||     // link to parent shader
                     Modifier.isStatic(field.getModifiers()) ||  // static definitions
                     GLSL_TYPE_TOKENS.contains(fieldType)) {     // glsl types
@@ -123,10 +123,6 @@ public class Converter {
 
             for (Field field : struct.getDeclaredFields()) {
                 Class<?> fieldType = field.getType();
-                if (field.isAnnotationPresent(GlslType.class)) {
-                    fieldType = field.getAnnotation(GlslType.class).value();
-                }
-
                 String typeName = javaTypeToGlslType(fieldType.getSimpleName());
                 os.println(typeName + " " + field.getName() + ";");
             }
@@ -177,6 +173,10 @@ public class Converter {
                 boolean isUniform = fd.getAnnotationByClass(Uniform.class).isPresent();
                 if (isUniform) {
                     String type = javaTypeToGlslType(fd.getVariable(0).getTypeAsString());
+                    Optional<AnnotationExpr> arrayAnnotation = fd.getAnnotationByClass(Array.class);
+
+                    String arrayQualifier = arrayAnnotation.isEmpty() ? "" :
+                            "[" + convertExpression(arrayAnnotation.get().asSingleMemberAnnotationExpr().getMemberValue()) + "]";
 
                     SingleMemberAnnotationExpr annotationExpr = fd.getAnnotationByClass(Uniform.class)
                             .orElseThrow()
@@ -184,7 +184,7 @@ public class Converter {
 
                     Name name = Name.valueOf(annotationExpr.getMemberValue().toString());
 
-                    os.printf("uniform %s %s;%n", type, name.get());
+                    os.printf("uniform %s %s;%n", type + arrayQualifier, name.get());
                     return;
                 }
 
@@ -330,6 +330,21 @@ public class Converter {
                     .map(this::convertStatement)
                     .collect(Collectors.joining(";\n"));
             return String.format("{%n%s%n}", body);
+        } else if (statement.isForStmt()) {
+            ForStmt forStmt = statement.asForStmt();
+
+            String initialization = forStmt.getInitialization().stream()
+                    .map(this::convertExpression)
+                    .collect(Collectors.joining(", "));
+            String compare = forStmt.getCompare()
+                    .map(this::convertExpression)
+                    .orElse("");
+            String update = forStmt.getUpdate().stream()
+                    .map(this::convertExpression)
+                    .collect(Collectors.joining(", "));
+            String body = convertStatement(forStmt.getBody());
+
+            return String.format("for(%s; %s; %s) %s", initialization, compare, update, body);
         }
 
         throw new IllegalStateException();
@@ -384,15 +399,29 @@ public class Converter {
             return expression.toString();
         } else if (expression.isUnaryExpr()) {
             UnaryExpr unaryExpr = expression.asUnaryExpr();
-            return unaryExpr.getOperator().asString() + convertExpression(unaryExpr.getExpression());
+            String nestedExpr = convertExpression(unaryExpr.getExpression());
+            String operator = unaryExpr.getOperator().asString();
+
+            if (unaryExpr.isPostfix()) {
+                return nestedExpr + operator;
+            } else {
+                return operator + nestedExpr;
+            }
+        } else if (expression.isArrayAccessExpr()) {
+            ArrayAccessExpr arrAccExpr = expression.asArrayAccessExpr();
+            return "%s[%s]".formatted(convertExpression(arrAccExpr.getName()), convertExpression(arrAccExpr.getIndex()));
         } else {
             throw new IllegalStateException();
         }
     }
 
     private String javaTypeToGlslType(String type) {
+        type = type.replace("[]", "");
+
         if (FLOAT_TYPE.contains(type)) {
             return "float";
+        } else if ("int".equals(type)) {
+            return "int";
         } else if (GLSL_COMPLEX_TYPES.contains(type)) {
             return type.substring(0, 1).toLowerCase() + type.substring(1);
         } else if (usedStructs.containsKey(type)) {

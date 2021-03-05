@@ -21,4 +21,8 @@ public final class Vec2 {
     public Vec2 plus(Vec2 vec) {
         return STUB;
     }
+
+    public Vec2 minus(Vec2 vec) {
+        return STUB;
+    }
 }

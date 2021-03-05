@@ -17,12 +17,12 @@ public class WaterActor implements Actor {
 
     @Override
     public Vector3f getPosition() {
-        return new Vector3f(0, 5f, 0);
+        return new Vector3f(0, 3.2f, 0);
     }
 
     @Override
-    public float getScale() {
-        return 2;
+    public Vector3f getScale() {
+        return new Vector3f(2.5f, 1f, 2.5f);
     }
 
     @Override

@@ -35,8 +35,8 @@ public class BoxActor implements Actor {
     }
 
     @Override
-    public float getScale() {
-        return scale;
+    public Vector3f getScale() {
+        return new Vector3f(scale);
     }
 
     @Override

@@ -15,6 +15,11 @@ public class Wave {
         this.speed = speed;
         this.steepness = steepness;
         this.direction = direction;
+
+        float clamped = 1 / ((2 / length) * amplitude);
+        if (clamped < steepness) {
+            System.out.println("steepness clamped from " + steepness + " to " + clamped);
+        }
     }
 
     public float getAmplitude() {

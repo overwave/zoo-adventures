@@ -8,7 +8,7 @@ public interface Actor {
 
     Vector3f getPosition();
 
-    float getScale();
+    Vector3f getScale();
 
     Quaternionf getRotation();
 

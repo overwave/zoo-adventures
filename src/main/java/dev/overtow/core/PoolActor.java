@@ -21,8 +21,8 @@ public class PoolActor implements Actor {
     }
 
     @Override
-    public float getScale() {
-        return 1;
+    public Vector3f getScale() {
+        return new Vector3f(1);
     }
 
     @Override
