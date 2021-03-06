@@ -17,7 +17,7 @@ public class WaterActor implements Actor {
 
     @Override
     public Vector3f getPosition() {
-        return new Vector3f(0, 3.2f, 0);
+        return new Vector3f(0, 0.2f, 0);
     }
 
     @Override

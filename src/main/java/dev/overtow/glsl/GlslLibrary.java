@@ -36,8 +36,12 @@ public interface GlslLibrary {
         return Vec2.STUB;
     }
 
-    static Vec3 normalize(Vec3 vec3) {
+    static Vec3 normalize(Vec3 vec) {
         return Vec3.STUB;
+    }
+
+    static Vec2 normalize(Vec2 vec) {
+        return Vec2.STUB;
     }
 
     static Vec4 texture(Sampler2D sampler, Vec2 coordinate) {
@@ -89,6 +93,14 @@ public interface GlslLibrary {
     }
 
     static Vec3 mix(Vec3 a, Vec3 b, double x) {
+        return Vec3.STUB;
+    }
+
+    static double sqrt(double x) {
+        return 0;
+    }
+
+    static Vec3 cross(Vec3 a, Vec3 b) {
         return Vec3.STUB;
     }
 }

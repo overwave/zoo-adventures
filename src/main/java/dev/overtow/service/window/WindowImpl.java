@@ -46,7 +46,6 @@ public class WindowImpl implements Window, Destroyable {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-//        setSwapInterval(0);
 
         windowHandle = glfwCreateWindow(width, height, "Shadow Mapping Demo", NULL, NULL);
         if (windowHandle == NULL) {
@@ -79,7 +78,7 @@ public class WindowImpl implements Window, Destroyable {
         assert videoMode != null;
         glfwSetWindowPos(windowHandle, (videoMode.width() - width) / 2, (videoMode.height() - height) / 2);
         glfwMakeContextCurrent(windowHandle);
-        glfwSwapInterval(0);
+        glfwSwapInterval(1);
         glfwShowWindow(windowHandle);
 
         try (MemoryStack frame = MemoryStack.stackPush()) {

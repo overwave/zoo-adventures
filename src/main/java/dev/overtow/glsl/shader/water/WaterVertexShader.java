@@ -16,7 +16,7 @@ import static dev.overtow.glsl.GlslLibrary.*;
 
 public class WaterVertexShader implements VertexShader {
 
-    public static final int WAVES_AMOUNT = 1;
+    public static final int WAVES_AMOUNT = 3;
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);
@@ -50,28 +50,88 @@ public class WaterVertexShader implements VertexShader {
     @Output(shown = false)
     Vec4 gl_Position;
 
-    Vec3 gerstnerWave(Vec3 position) {
-        for (int i = 0; i < WAVES_AMOUNT; i++) {
-            double omega = 2 / waves[i].length;
-            double steepnessNormalized = clamp(waves[i].steepness, 0, 1 / (omega * waves[i].amplitude));
-            double phi = waves[i].speed * (2 / waves[i].length);
-
-            double dottedPosition = dot(waves[i].direction, position.xz.multiply(100));
-            double positionShift = cos(omega * dottedPosition + phi * time);
-
-            position.xz = position.xz.minus(waves[i].direction.multiply(positionShift * steepnessNormalized * waves[i].amplitude));
-            position.y += waves[i].amplitude * sin(dottedPosition * omega + time * phi);
-        }
-
-        return position;
-    }
+//    Vec3 gerstnerWave(Vec3 position) {
+//        Vec3 gridPoint = position;
+//        Vec3 tangent = vec3(0);
+//        Vec3 binormal = vec3(0);
+//        Vec3 p = gridPoint;
+//
+//
+//
+//        for (int i = 0; i < WAVES_AMOUNT; i++) {
+//            double omega = 2 / waves[i].length;
+//            double steepnessNormalized = clamp(waves[i].steepness, 0, 1 / (omega * waves[i].amplitude));
+//            double phi = waves[i].speed * (2 / waves[i].length);
+//
+//            double dottedPosition = dot(waves[i].direction, position.xz.multiply(1000));
+//            double positionShift = cos(omega * dottedPosition + phi * time);
+//
+//            position.xz = position.xz.plus(waves[i].direction.multiply(positionShift * steepnessNormalized * waves[i].amplitude));
+//            position.y += waves[i].amplitude * sin(dottedPosition * omega + time * phi);
+//        }
+//
+//
+//        p += GerstnerWave(_WaveA, gridPoint, tangent, binormal);
+//        p += GerstnerWave(_WaveB, gridPoint, tangent, binormal);
+//        p += GerstnerWave(_WaveC, gridPoint, tangent, binormal);
+//        Vec3 normal = normalize(cross(binormal, tangent));
+//        vertexData.vertex.xyz = p;
+//        vertexData.normal = normal;
+//
+////        for (int i = 0; i < WAVES_AMOUNT; i++) {
+////            double omega = 2 / waves[i].length;
+////            double steepnessNormalized = clamp(waves[i].steepness, 0, 1 / (omega * waves[i].amplitude));
+////            double phi = waves[i].speed * (2 / waves[i].length);
+////
+////            double dottedPosition = dot(waves[i].direction, position.xz.multiply(1000));
+////            double positionShift = cos(omega * dottedPosition + phi * time);
+////
+////            position.xz = position.xz.plus(waves[i].direction.multiply(positionShift * steepnessNormalized * waves[i].amplitude));
+////            position.y += waves[i].amplitude * sin(dottedPosition * omega + time * phi);
+////        }
+////
+////        return position;
+//    }
 
     @Override
     public void main() {
-        Vec4 modelPosition = modelMatrix.multiply(vec4(gerstnerWave(position), 1));
+        Vec3 p = position;
+        Vec3 tangent = vec3(0);
+        Vec3 binormal = vec3(0);
+
+        for (int i = 0; i < WAVES_AMOUNT; i++) {
+            double steepness = waves[i].steepness;
+            double wavelength = waves[i].length / 10;
+            double k = waves[i].amplitude / wavelength;
+            double c = sqrt(waves[i].speed / k);
+            Vec2 d = waves[i].direction;
+            double f = k * (dot(d, position.xz) - c * time / 5);
+            double a = steepness / k;
+
+            double v = steepness * sin(f);
+
+            tangent = tangent.plus(vec3(
+                    -d.x * d.x * v,
+                    d.x * (steepness * cos(f)),
+                    -d.x * d.y * v
+            ));
+            binormal = binormal.plus(vec3(
+                    -d.x * d.y * v,
+                    d.y * (steepness * cos(f)),
+                    -d.y * d.y * v
+            ));
+            p = p.plus(vec3(
+                    d.x * (a * cos(f)),
+                    a * sin(f),
+                    d.y * (a * cos(f))
+            ));
+        }
+
+        Vec4 modelPosition = modelMatrix.multiply(vec4(p, 1));
 
         worldPosition = modelPosition.xyz;
-        worldNormal = normal;
+        worldNormal = normalize(cross(binormal, tangent));
+//        worldNormal = normal;
         textureCoordinate = texture;
 
         /* Compute vertex position as seen from
