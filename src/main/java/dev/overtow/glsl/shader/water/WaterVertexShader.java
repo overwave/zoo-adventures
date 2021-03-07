@@ -16,7 +16,7 @@ import static dev.overtow.glsl.GlslLibrary.*;
 
 public class WaterVertexShader implements VertexShader {
 
-    public static final int WAVES_AMOUNT = 3;
+    public static final int WAVES_AMOUNT = 4;
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);
@@ -40,8 +40,6 @@ public class WaterVertexShader implements VertexShader {
     private final Vec3 normal = vec3(0);
 
     @Output
-    Vec4 lightBiasedClipPosition;
-    @Output
     Vec3 worldPosition;
     @Output
     Vec3 worldNormal;
@@ -52,14 +50,16 @@ public class WaterVertexShader implements VertexShader {
 
     @Override
     public void main() {
+        double scale = 100;
+
         Vec3 resultPosition = inputPosition;
-        Vec3 resultNormal = vec3(0, 1, 0);
+        Vec3 resultNormal = normal;
 
         for (int i = 0; i < WAVES_AMOUNT; i++) {
             Wave wave = waves[i];
             double reducedSteepness = wave.steepness / (wave.amplitude * wave.length);
-            double xDelta = reducedSteepness * wave.amplitude * wave.direction.x * cos(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time);
-            double zDelta = reducedSteepness * wave.amplitude * wave.direction.y * cos(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time);
+            double xDelta = reducedSteepness * wave.amplitude * wave.direction.x * cos(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time) / scale;
+            double zDelta = reducedSteepness * wave.amplitude * wave.direction.y * cos(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time) / scale;
             double yDelta = wave.amplitude * sin(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time);
 
             resultPosition = resultPosition.plus(vec3(xDelta, yDelta, zDelta));
@@ -70,8 +70,8 @@ public class WaterVertexShader implements VertexShader {
             double reducedSteepness = wave.steepness / (wave.amplitude * wave.length);
 
             Vec3 direction2 = vec3(wave.direction.x, 0, wave.direction.y);
-            double normalDeltaX = wave.direction.x * wave.length * wave.amplitude * cos(wave.length * dot(direction2, resultPosition) + wave.speed * time);
-            double normalDeltaZ = wave.direction.y * wave.length * wave.amplitude * cos(wave.length * dot(direction2, resultPosition) + wave.speed * time);
+            double normalDeltaX = wave.direction.x * wave.length * wave.amplitude * cos(wave.length * dot(direction2, resultPosition) + wave.speed * time) / scale;
+            double normalDeltaZ = wave.direction.y * wave.length * wave.amplitude * cos(wave.length * dot(direction2, resultPosition) + wave.speed * time) / scale;
             double normalDeltaY = reducedSteepness * wave.length * wave.amplitude * sin(wave.length * dot(direction2, resultPosition) + wave.speed * time);
             resultNormal = resultNormal.minus(vec3(normalDeltaX, normalDeltaY, normalDeltaZ));
         }
@@ -79,14 +79,8 @@ public class WaterVertexShader implements VertexShader {
         Vec4 modelPosition = modelMatrix.multiply(vec4(resultPosition, 1));
 
         worldPosition = modelPosition.xyz;
-        worldNormal = (modelMatrix.multiply(vec4(resultNormal, 1))).xyz;
+        worldNormal = modelMatrix.multiply(vec4(resultNormal, 1)).xyz;
         textureCoordinate = texture;
-
-        /* Compute vertex position as seen from
-           the light and use linear interpolation when passing it
-           to the fragment shader
-        */
-        lightBiasedClipPosition = biasMatrix.multiply(lightViewProjectionMatrix).multiply(modelPosition);
 
         /* Normally transform the vertex */
         gl_Position = viewProjectionMatrix.multiply(modelPosition);

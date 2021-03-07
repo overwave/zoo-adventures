@@ -94,10 +94,10 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-        cameraPosition = new Vector3f(0f, 5, 15);
-        cameraRotation = new Vector3f(15, 0, 0);
-//        cameraPosition = new Vector3f(0f, 27, 0);
-//        cameraRotation = new Vector3f(90, 0, 0);
+//        cameraPosition = new Vector3f(0f, 5, 15);
+//        cameraRotation = new Vector3f(15, 0, 0);
+        cameraPosition = new Vector3f(0f, 27, 0);
+        cameraRotation = new Vector3f(90, 0, 0);
         biasMatrix = new Matrix4f(
                 0.5f, 0.0f, 0.0f, 0.0f,
                 0.0f, 0.5f, 0.0f, 0.0f,
@@ -107,9 +107,10 @@ public class Renderer {
 
         // TODO fix time period tearing
         waves = List.of(
-                new Wave(0.06f, 6f,0.5f,0.4f, new Vector2f(10,10).normalize()),
-                new Wave(0.06f, 3.1f,0.5f,0.3f, new Vector2f(10,6).normalize()),
-                new Wave(0.06f, 1.8f,0.5f,0.35f, new Vector2f(10,13).normalize())
+                new Wave(0.07f, 6 * 10f,0.5f,0.6f, new Vector2f(10,4).normalize()),
+                new Wave(0.05f, 5 * 10f,0.3f,0.5f, new Vector2f(4,10).normalize()),
+                new Wave(0.03f, 3 * 10f,0.5f,0.2f, new Vector2f(9,5).normalize()),
+                new Wave(0.02f, 0.3f * 10f,0.1f,0.2f, new Vector2f(5,13).normalize())
         );
     }
 

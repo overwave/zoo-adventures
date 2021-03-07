@@ -394,7 +394,7 @@ public class Converter {
                     .collect(Collectors.joining("; "));
         } else if (expression.isBinaryExpr()) {
             BinaryExpr binaryExpr = expression.asBinaryExpr();
-            return convertExpression(binaryExpr.getLeft()) + " " + binaryExpr.getOperator().asString() + " " + convertExpression(binaryExpr.getRight());
+            return "(" + convertExpression(binaryExpr.getLeft()) + " " + binaryExpr.getOperator().asString() + " " + convertExpression(binaryExpr.getRight()) + ")";
         } else if (expression.isDoubleLiteralExpr() || expression.isIntegerLiteralExpr() || expression.isBooleanLiteralExpr()) {
             return expression.toString();
         } else if (expression.isUnaryExpr()) {
