@@ -16,7 +16,7 @@ import static dev.overtow.glsl.GlslLibrary.*;
 
 public class WaterFragmentShader implements FragmentShader {
     private static final float DEPTH_OFFSET = 0.00005f;
-    private static final float LIGHT_INTENSITY = 0.3f;
+    private static final float LIGHT_INTENSITY = 0.1f;
 
     private final WaterVertexShader parentShader = new WaterVertexShader();
 
@@ -57,13 +57,14 @@ public class WaterFragmentShader implements FragmentShader {
         double noise = 1.0 - rand(round(textureCoordinate.multiply(50))) / 10.0;
         Vec4 background = texture(textureSampler, textureCoordinate);
         background.rgb = mix(backColor.rgb.multiply(noise), background.rgb, background.a).multiply(0.7);
-        fragColor = vec4(background.rgb, backColor.a);
+        fragColor = vec4(background.rgb, 0.7);
 
+        fragColor.rgb = fragColor.rgb.plus(vec3(LIGHT_INTENSITY).multiply(dot));
         /* "in shadow" test... */
         if (depth.z < lightNDCPosition.z - DEPTH_OFFSET) {
-            fragColor.rgb = fragColor.rgb.minus(vec3(LIGHT_INTENSITY).multiply(dot));
+//            fragColor.rgb = fragColor.rgb.minus(vec3(LIGHT_INTENSITY).multiply(dot));
         } else {
-            fragColor.rgb = fragColor.rgb.plus(vec3(LIGHT_INTENSITY).multiply(dot));
+//            fragColor.rgb = fragColor.rgb.plus(vec3(LIGHT_INTENSITY).multiply(dot));
         }
     }
 

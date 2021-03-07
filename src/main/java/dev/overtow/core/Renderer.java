@@ -107,12 +107,9 @@ public class Renderer {
 
         // TODO fix time period tearing
         waves = List.of(
-//                new Vector2f(0.707f, 0.707f)
-//        new Vector2f(0.5f, -0.2f)
-//        new Vector2f(-1f, -0.3f)
-                new Wave(2 * 3.14159f, 10,9.8f,0.5f, new Vector2f(2,1).normalize()),
-                new Wave(2 * 3.14159f, 20, 9.8f, 0.25f, new Vector2f(-1,2).normalize()),
-                new Wave(2 * 3.14159f, 10, 9.8f, 0.15f, new Vector2f(1, 1).normalize())
+                new Wave(0.06f, 6f,0.5f,0.4f, new Vector2f(10,10).normalize()),
+                new Wave(0.06f, 3.1f,0.5f,0.3f, new Vector2f(10,6).normalize()),
+                new Wave(0.06f, 1.8f,0.5f,0.35f, new Vector2f(10,13).normalize())
         );
     }
 
