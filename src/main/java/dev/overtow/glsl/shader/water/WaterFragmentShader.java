@@ -14,8 +14,6 @@ import static dev.overtow.core.shader.uniform.Uniform.Name.TEXTURE_SAMPLER;
 import static dev.overtow.glsl.GlslLibrary.*;
 
 public class WaterFragmentShader implements FragmentShader {
-    private static final float LIGHT_INTENSITY = 0.1f;
-
     private final WaterVertexShader parentShader = new WaterVertexShader();
 
     @Uniform(TEXTURE_SAMPLER)
@@ -35,11 +33,11 @@ public class WaterFragmentShader implements FragmentShader {
 
     public void main() {
         /* do standard lambertian/diffuse lighting */
-        double dot = max(0.0, dot(normalize(lightPosition.minus(worldPosition)), worldNormal));
+        double diffuse = max(0.0, dot(normalize(lightPosition.minus(worldPosition)), worldNormal));
 
         Vec4 background = texture(textureSampler, textureCoordinate);
 
-        fragColor.rgb = background.rgb.plus(vec3(LIGHT_INTENSITY).multiply(dot));
-        fragColor.a = 0.6;
+        Vec3 shadowColor = vec3(-0.15, -0.15, 0);
+        fragColor = vec4(background.rgb.plus(shadowColor.multiply(diffuse)), 0.6);
     }
 }

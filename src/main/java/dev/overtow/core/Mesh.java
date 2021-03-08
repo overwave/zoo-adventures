@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL30.*;
 public class Mesh {
 
     public enum Id {
-        CUBE("data/model/cube2/c10.obj"),
+        CUBE("data/model/cube/cube.obj"),
         POOL("data/model/pool/pool_2.obj"),
         WATER("data/model/water/water_1x1_1024quads.obj");
 

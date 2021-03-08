@@ -20,10 +20,6 @@ public class WaterVertexShader implements VertexShader {
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);
-    @Uniform(LIGHT_VIEW_PROJECTION_MATRIX)
-    private final Mat4 lightViewProjectionMatrix = mat4(0);
-    @Uniform(BIAS_MATRIX)
-    private final Mat4 biasMatrix = mat4(0);
     @Uniform(MODEL_MATRIX)
     private final Mat4 modelMatrix = mat4(0);
     @Uniform(TIME)

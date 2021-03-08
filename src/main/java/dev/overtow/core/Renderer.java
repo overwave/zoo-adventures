@@ -81,10 +81,7 @@ public class Renderer {
             shader.set(Uniform.Name.TEXTURE_SAMPLER, 1);
         });
         waterShader = new WaterShaderProgram();
-        waterShader.executeWithProgram(shader -> {
-            shader.set(Uniform.Name.DEPTH_TEXTURE, 0);
-            shader.set(Uniform.Name.TEXTURE_SAMPLER, 1);
-        });
+        waterShader.executeWithProgram(shader -> shader.set(Uniform.Name.TEXTURE_SAMPLER, 1));
 
         createDepthTexture();
         createFbo();
@@ -96,7 +93,7 @@ public class Renderer {
 
 //        cameraPosition = new Vector3f(0f, 5, 15);
 //        cameraRotation = new Vector3f(15, 0, 0);
-        cameraPosition = new Vector3f(0f, 27, 0);
+        cameraPosition = new Vector3f(0f, 25, 0);
         cameraRotation = new Vector3f(90, 0, 0);
         biasMatrix = new Matrix4f(
                 0.5f, 0.0f, 0.0f, 0.0f,
@@ -107,10 +104,10 @@ public class Renderer {
 
         // TODO fix time period tearing
         waves = List.of(
-                new Wave(0.07f, 6 * 10f,0.5f,0.6f, new Vector2f(10,4).normalize()),
-                new Wave(0.05f, 5 * 10f,0.3f,0.5f, new Vector2f(4,10).normalize()),
-                new Wave(0.03f, 3 * 10f,0.5f,0.2f, new Vector2f(9,5).normalize()),
-                new Wave(0.02f, 0.3f * 10f,0.1f,0.2f, new Vector2f(5,13).normalize())
+                new Wave(0.07f, 6 * 10f, 0.5f, 0.6f, new Vector2f(10, 4).normalize()),
+                new Wave(0.05f, 5 * 10f, 0.3f, 0.5f, new Vector2f(4, 10).normalize()),
+                new Wave(0.03f, 3 * 10f, 0.5f, 0.2f, new Vector2f(9, 5).normalize()),
+                new Wave(0.02f, 0.3f * 10f, 0.1f, 0.2f, new Vector2f(5, 13).normalize())
         );
     }
 
@@ -254,8 +251,6 @@ public class Renderer {
     private void drawWater(Matrix4f viewMatrix, List<Actor> actors, Scene scene) {
         waterShader.executeWithProgram(shader -> {
             shader.set(VIEW_PROJECTION_MATRIX, viewMatrix);
-            shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
-            shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
             shader.set(TIME, (System.currentTimeMillis() % 1_000_000) / 500f);
             shader.set(WAVES, waves);
@@ -266,9 +261,6 @@ public class Renderer {
                 Mesh mesh = meshLibrary.get(actor.getMeshId());
 
                 glBindVertexArray(mesh.getVaoId());
-
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, depthTexture);
 
                 glActiveTexture(GL_TEXTURE1);
                 mesh.getMaterial().getTexture().bind();
@@ -284,9 +276,6 @@ public class Renderer {
 
 
             glBindVertexArray(0);
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, 0);
 
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, 0);
