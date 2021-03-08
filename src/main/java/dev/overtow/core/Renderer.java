@@ -93,7 +93,7 @@ public class Renderer {
 
 //        cameraPosition = new Vector3f(0f, 5, 15);
 //        cameraRotation = new Vector3f(15, 0, 0);
-        cameraPosition = new Vector3f(0f, 25, 0);
+        cameraPosition = new Vector3f(0, 21, 0);
         cameraRotation = new Vector3f(90, 0, 0);
         biasMatrix = new Matrix4f(
                 0.5f, 0.0f, 0.0f, 0.0f,

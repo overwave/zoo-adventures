@@ -52,7 +52,7 @@ public class GeneralFragmentShader implements FragmentShader {
         double dot = max(0.0, dot(normalize(lightPosition.minus(worldPosition)), worldNormal));
 
 
-        Vec4 backColor = vec4(211/255f, 1, 216/255f, 1);
+        Vec4 backColor = vec4(249/255f, 161/255f, 149/255f, 1);
 //        double noise = 1.0 - rand(round(textureCoordinate.multiply(15))) / 10.0;
         Vec4 background = texture(textureSampler, textureCoordinate);
         background.rgb = mix(backColor.rgb.multiply(/*noise*/1), background.rgb, background.a).multiply(0.7);
