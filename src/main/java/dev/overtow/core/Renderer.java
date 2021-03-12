@@ -161,6 +161,7 @@ public class Renderer {
                 .rotateX((float) Math.toRadians(cameraRotation.x))
                 .rotateY((float) Math.toRadians(cameraRotation.y))
                 .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
+        viewMatrix = new Matrix4f().setTranslation(0.3f, 0, 0).mul(viewMatrix);
 
 //        Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
 //        viewMatrix.setPerspective((float) Math.toRadians(45), 1.0f, 0.1f, 40.0f)
