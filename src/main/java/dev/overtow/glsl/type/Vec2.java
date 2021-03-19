@@ -18,7 +18,15 @@ public final class Vec2 {
         return STUB;
     }
 
+    public Vec2 divide(Vec2 vec2) {
+        return STUB;
+    }
+
     public Vec2 plus(Vec2 vec) {
+        return STUB;
+    }
+
+    public Vec2 plus(double c) {
         return STUB;
     }
 

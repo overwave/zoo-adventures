@@ -1,10 +1,10 @@
 package org.lwjglb.engine.graph.particles;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import org.joml.Vector3f;
 import org.lwjglb.engine.items.GameItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlowParticleEmitter implements IParticleEmitter {
 
@@ -100,25 +100,25 @@ public class FlowParticleEmitter implements IParticleEmitter {
     }
 
     public void update(long elapsedTime) {
-        long now = System.currentTimeMillis();
-        if (lastCreationTime == 0) {
-            lastCreationTime = now;
-        }
-        Iterator<? extends GameItem> it = particles.iterator();
-        while (it.hasNext()) {
-            Particle particle = (Particle) it.next();
-            if (particle.updateTtl(elapsedTime) < 0) {
-                it.remove();
-            } else {
-                updatePosition(particle, elapsedTime);
-            }
-        }
-
-        int length = this.getParticles().size();
-        if (now - lastCreationTime >= this.creationPeriodMillis && length < maxParticles) {
-            createParticle();
-            this.lastCreationTime = now;
-        }
+//        long now = System.currentTimeMillis();
+//        if (lastCreationTime == 0) {
+//            lastCreationTime = now;
+//        }
+//        Iterator<? extends GameItem> it = particles.iterator();
+//        while (it.hasNext()) {
+//            Particle particle = (Particle) it.next();
+//            if (particle.updateTtl(elapsedTime) < 0) {
+//                it.remove();
+//            } else {
+//                updatePosition(particle, elapsedTime);
+//            }
+//        }
+//
+//        int length = this.getParticles().size();
+//        if (now - lastCreationTime >= this.creationPeriodMillis && length < maxParticles) {
+//            createParticle();
+//            this.lastCreationTime = now;
+//        }
     }
 
     private void createParticle() {

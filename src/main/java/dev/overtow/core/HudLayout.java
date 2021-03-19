@@ -6,6 +6,7 @@ import dev.overtow.graphics.hud.Rectangle;
 import dev.overtow.graphics.hud.Text;
 import dev.overtow.graphics.hud.TextAlign;
 import dev.overtow.service.window.Window;
+import dev.overtow.util.Utils;
 import dev.overtow.util.injection.Injector;
 import org.joml.Vector2f;
 
@@ -57,7 +58,7 @@ public class HudLayout {
     }
 
     public void update() {
-        scoreText.setText("Счёт: " + System.currentTimeMillis() / 1000 % 1000);
+        scoreText.setText("Счёт: " + Utils.getTime());
     }
 
     public List<HudElement> getHudElements() {

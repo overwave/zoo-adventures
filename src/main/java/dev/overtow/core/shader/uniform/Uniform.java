@@ -10,11 +10,13 @@ public interface Uniform<T> {
         DEPTH_TEXTURE("depthTexture"),
         LIGHT_POSITION("lightPosition"),
         VIEW_PROJECTION_MATRIX("viewProjectionMatrix"),
+        NORMAL_MATRIX("normalMatrix"),
         LIGHT_VIEW_PROJECTION_MATRIX("lightViewProjectionMatrix"),
         BIAS_MATRIX("biasMatrix"),
         MODEL_MATRIX("modelMatrix"),
         TIME("time"),
         WAVES("waves"),
+        TEXTURE_MOVING_DIRECTION("textureMovingDirection"),
         ;
 
         private final String name;

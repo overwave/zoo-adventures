@@ -12,6 +12,10 @@ public interface GlslLibrary {
         return 0;
     }
 
+    static Vec2 sin(Vec2 v) {
+        return Vec2.STUB;
+    }
+
     static double cos(double v) {
         return 0;
     }
@@ -32,12 +36,28 @@ public interface GlslLibrary {
         return 0;
     }
 
+    static Vec2 fract(Vec2 v) {
+        return Vec2.STUB;
+    }
+
+    static double length(Vec2 v) {
+        return 0;
+    }
+
+    static Vec2 floor(Vec2 v) {
+        return Vec2.STUB;
+    }
+
     static Vec2 round(Vec2 v) {
         return Vec2.STUB;
     }
 
     static Vec3 normalize(Vec3 vec) {
         return Vec3.STUB;
+    }
+
+    static Vec4 normalize(Vec4 vec) {
+        return Vec4.STUB;
     }
 
     static Vec2 normalize(Vec2 vec) {
@@ -97,6 +117,10 @@ public interface GlslLibrary {
     }
 
     static double sqrt(double x) {
+        return 0;
+    }
+
+    static double abs(double x) {
         return 0;
     }
 

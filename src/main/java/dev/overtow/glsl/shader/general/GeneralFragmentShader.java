@@ -42,28 +42,23 @@ public class GeneralFragmentShader implements FragmentShader {
     }
 
     public void main() {
-        /* Convert the linearly interpolated clip-space position to NDC */
         Vec4 lightNDCPosition = lightBiasedClipPosition.divide(lightBiasedClipPosition.w);
 
-        /* Sample the depth from the depth texture */
         Vec4 depth = texture(depthTexture, lightNDCPosition.xy);
 
-        /* Additionally, do standard lambertian/diffuse lighting */
+        /* standard lambertian/diffuse lighting */
         double dot = max(0.0, dot(normalize(lightPosition.minus(worldPosition)), worldNormal));
 
-
         Vec4 backColor = vec4(249/255f, 161/255f, 149/255f, 1);
-//        double noise = 1.0 - rand(round(textureCoordinate.multiply(15))) / 10.0;
         Vec4 background = texture(textureSampler, textureCoordinate);
-        background.rgb = mix(backColor.rgb.multiply(/*noise*/1), background.rgb, background.a).multiply(0.7);
-        fragColor = vec4(background.rgb, backColor.a);
+
+        background.rgb = mix(backColor.rgb, background.rgb, background.a);
+        fragColor = vec4(background.rgb.multiply(0.7), backColor.a);
 
         /* "in shadow" test... */
-        if (depth.z < lightNDCPosition.z - DEPTH_OFFSET) {
-            fragColor.rgb = fragColor.rgb.minus(vec3(LIGHT_INTENSITY).multiply(dot));
-        } else {
-            fragColor.rgb = fragColor.rgb.plus(vec3(LIGHT_INTENSITY).multiply(dot));
+        if (depth.z >= lightNDCPosition.z - DEPTH_OFFSET) {
+            /* lit */
+            fragColor = fragColor.plus(vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0).multiply(dot));
         }
     }
-
 }

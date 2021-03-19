@@ -8,6 +8,7 @@ import dev.overtow.glsl.shader.VertexShader;
 import dev.overtow.service.reader.Reader;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -81,6 +82,10 @@ public abstract class ShaderProgram {
 
     public void set(Uniform.Name name, float value) {
         checkedGet(name, FloatUniform.class).setValue(value);
+    }
+
+    public void set(Uniform.Name name, Vector2f value) {
+        checkedGet(name, Vector2fUniform.class).setValue(value);
     }
 
     public void set(Uniform.Name name, Vector3f value) {

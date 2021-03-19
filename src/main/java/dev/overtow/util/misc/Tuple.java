@@ -6,6 +6,10 @@ public class Tuple<T, U> {
     private final T t;
     private final U v;
 
+    public static <T, U> Tuple<T, U> of(T t, U u) {
+        return new Tuple<>(t, u);
+    }
+
     public Tuple(T t, U v) {
         this.t = Objects.requireNonNull(t);
         this.v = Objects.requireNonNull(v);

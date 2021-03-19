@@ -22,6 +22,8 @@ public class GeneralVertexShader implements VertexShader {
     private final Mat4 biasMatrix = mat4(0);
     @Uniform(MODEL_MATRIX)
     private final Mat4 modelMatrix = mat4(0);
+    @Uniform(NORMAL_MATRIX)
+    private final Mat4 normalMatrix = mat4(0);
 
     @Input(location = 0)
     private final Vec3 position = vec3(0);
@@ -46,7 +48,7 @@ public class GeneralVertexShader implements VertexShader {
         Vec4 modelPosition = modelMatrix.multiply(vec4(position, 1));
 
         worldPosition = modelPosition.xyz;
-        worldNormal = normal;
+        worldNormal = normalize(normalMatrix.multiply(vec4(normal, 1)).xyz);
         textureCoordinate = texture;
 
         /* Compute vertex position as seen from

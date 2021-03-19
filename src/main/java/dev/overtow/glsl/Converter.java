@@ -347,7 +347,7 @@ public class Converter {
             return String.format("for(%s; %s; %s) %s", initialization, compare, update, body);
         }
 
-        throw new IllegalStateException();
+        throw new IllegalStateException("unexpected statement: " + statement);
     }
 
     private String convertExpression(Expression expression) {
@@ -378,7 +378,7 @@ public class Converter {
             return callExpr.getNameAsString() + "(" + arguments + ")";
         } else if (expression.isAssignExpr()) {
             AssignExpr assignExpr = expression.asAssignExpr();
-            return assignExpr.getTarget().toString() + " = " + convertExpression(assignExpr.getValue());
+            return assignExpr.getTarget().toString() + " " + assignExpr.getOperator().asString() + " " + convertExpression(assignExpr.getValue());
         } else if (expression.isEnclosedExpr()) {
             return "(" + convertExpression(expression.asEnclosedExpr().getInner()) + ")";
         } else if (expression.isFieldAccessExpr()) {

@@ -11,13 +11,22 @@ public class BoxActor implements Actor {
     private final Vector3f position;
     private float scale;
     private final Quaternionf rotation;
+    private Vector3f temporaryPositionOffset;
+    private Quaternionf temporaryRotation;
 
     public BoxActor(/*BoxMesh mesh,*/ Vector2i position) {
 //        this.mesh = mesh;
         this.position = new Vector3f(position.x() - 0.5f, 0, position.y() - 0.5f);
+        this.temporaryPositionOffset = new Vector3f(0);
         this.boxType = BoxType.BANANA;
         this.scale = 1;
         this.rotation = new Quaternionf();
+        this.temporaryRotation = new Quaternionf();
+    }
+
+    public void setTemporaryTilt(Vector3f tempPositionOffset, Quaternionf tempRotation) {
+        temporaryPositionOffset = new Vector3f(tempPositionOffset)/*.min(new Vector3f(0,-0.05f,0))*/;
+        temporaryRotation = tempRotation;
     }
 
     @Override
@@ -27,7 +36,7 @@ public class BoxActor implements Actor {
 
     @Override
     public Vector3f getPosition() {
-        return new Vector3f(position);
+        return new Vector3f(position).add(temporaryPositionOffset);
     }
 
     public void setPosition(Vector3f position) {
@@ -41,7 +50,8 @@ public class BoxActor implements Actor {
 
     @Override
     public Quaternionf getRotation() {
-        return rotation;
+        Quaternionf quaternion = new Quaternionf(rotation);
+        return quaternion.mul(temporaryRotation);
     }
 
     @Override

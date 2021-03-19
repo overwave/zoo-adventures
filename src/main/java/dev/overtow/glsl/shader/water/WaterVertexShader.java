@@ -20,6 +20,8 @@ public class WaterVertexShader implements VertexShader {
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);
+    @Uniform(NORMAL_MATRIX)
+    private final Mat4 normalMatrix = mat4(0);
     @Uniform(MODEL_MATRIX)
     private final Mat4 modelMatrix = mat4(0);
     @Uniform(TIME)
@@ -46,36 +48,51 @@ public class WaterVertexShader implements VertexShader {
 
     @Override
     public void main() {
-        double scale = 100;
-
         Vec3 resultPosition = inputPosition;
-        Vec3 resultNormal = normal;
+        Vec3 bitangent = vec3(0);
+        Vec3 tangent = vec3(0);
 
         for (int i = 0; i < WAVES_AMOUNT; i++) {
             Wave wave = waves[i];
-            double reducedSteepness = wave.steepness / (wave.amplitude * wave.length);
-            double xDelta = reducedSteepness * wave.amplitude * wave.direction.x * cos(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time) / scale;
-            double zDelta = reducedSteepness * wave.amplitude * wave.direction.y * cos(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time) / scale;
-            double yDelta = wave.amplitude * sin(dot(wave.direction.multiply(wave.length), inputPosition.xz) + wave.speed * time);
 
-            resultPosition = resultPosition.plus(vec3(xDelta, yDelta, zDelta));
+            double k = 2.0 * 3.1416 / wave.length; // wave length
+            double kA = k * wave.amplitude;
+            Vec2 D = normalize(wave.direction); // normalized direction
+            Vec2 K = D.multiply(k); // wave vector and magnitude (direction)
+
+
+            // peak/crest steepness high means steeper, but too much
+            // can cause the wave to become inside out at the top
+            //  float Q = steepness; //max(steepness, 0.1);
+
+            double S = wave.speed;
+            double w = S * k; // Phase/frequency
+            double wT = w * time;
+
+            // Calculate once instead of 4 times
+            double KPwT = dot(K, inputPosition.xz) - wT;
+            double S0 = sin(KPwT);
+            double C0 = cos(KPwT);
+
+            resultPosition.xz = resultPosition.xz.minus(D.multiply(wave.steepness * wave.amplitude * S0));
+            resultPosition.y += wave.amplitude * C0;
+
+            bitangent = bitangent.plus(normalize(vec3(
+                    1 - (wave.steepness * D.x * D.x * kA * C0),
+                    D.x * kA * S0,
+                    -(wave.steepness * D.x * D.y * kA * C0)
+            )));
+            tangent = tangent.plus(normalize(vec3(
+                    -(wave.steepness * D.x * D.y * kA * C0),
+                    D.y * kA * S0,
+                    1 - (wave.steepness * D.y * D.y * kA * C0)
+            )));
         }
-
-        for (int i = 0; i < WAVES_AMOUNT; i++) {
-            Wave wave = waves[i];
-            double reducedSteepness = wave.steepness / (wave.amplitude * wave.length);
-
-            Vec3 direction2 = vec3(wave.direction.x, 0, wave.direction.y);
-            double normalDeltaX = wave.direction.x * wave.length * wave.amplitude * cos(wave.length * dot(direction2, resultPosition) + wave.speed * time) / scale;
-            double normalDeltaZ = wave.direction.y * wave.length * wave.amplitude * cos(wave.length * dot(direction2, resultPosition) + wave.speed * time) / scale;
-            double normalDeltaY = reducedSteepness * wave.length * wave.amplitude * sin(wave.length * dot(direction2, resultPosition) + wave.speed * time);
-            resultNormal = resultNormal.minus(vec3(normalDeltaX, normalDeltaY, normalDeltaZ));
-        }
+        Vec3 resultNormal = normalize(cross(tangent, bitangent));
 
         Vec4 modelPosition = modelMatrix.multiply(vec4(resultPosition, 1));
-
         worldPosition = modelPosition.xyz;
-        worldNormal = modelMatrix.multiply(vec4(resultNormal, 1)).xyz;
+        worldNormal = normalize(normalMatrix.multiply(vec4(resultNormal, 1)).xyz);
         textureCoordinate = texture;
 
         /* Normally transform the vertex */

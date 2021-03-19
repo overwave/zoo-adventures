@@ -1,6 +1,13 @@
 package dev.overtow.util;
 
-import java.io.*;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryUtil;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -11,10 +18,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.system.MemoryUtil;
 
 public class Utils {
+
+    private static final long START_TIME = System.currentTimeMillis();
+
+    public static float getTime() {
+        return (System.currentTimeMillis() - START_TIME) / 1000.f;
+    }
 
     public static String loadResource(String fileName) throws Exception {
         String result;

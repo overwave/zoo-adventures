@@ -3,9 +3,9 @@ package dev.overtow.core;
 import dev.overtow.core.shader.ShaderProgram;
 import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.service.meshlibrary.MeshLibrary;
+import dev.overtow.util.Utils;
 import dev.overtow.util.injection.Injector;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
@@ -41,7 +41,6 @@ public class Renderer {
     private final Vector3f cameraPosition;
     private final Vector3f cameraRotation;
     private final Matrix4f biasMatrix;
-    private final List<Wave> waves;
 
     public Renderer() {
         capabilities = GL.createCapabilities();
@@ -91,7 +90,7 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-//        cameraPosition = new Vector3f(0f, 5, 15);
+//        cameraPosition = new Vector3f(0f, 5, 10);
 //        cameraRotation = new Vector3f(15, 0, 0);
         cameraPosition = new Vector3f(0, 21, 0);
         cameraRotation = new Vector3f(90, 0, 0);
@@ -100,14 +99,6 @@ public class Renderer {
                 0.0f, 0.5f, 0.0f, 0.0f,
                 0.0f, 0.0f, 0.5f, 0.0f,
                 0.5f, 0.5f, 0.5f, 1.0f
-        );
-
-        // TODO fix time period tearing
-        waves = List.of(
-                new Wave(0.07f, 6 * 10f, 0.5f, 0.6f, new Vector2f(10, 4).normalize()),
-                new Wave(0.05f, 5 * 10f, 0.3f, 0.5f, new Vector2f(4, 10).normalize()),
-                new Wave(0.03f, 3 * 10f, 0.5f, 0.2f, new Vector2f(9, 5).normalize()),
-                new Wave(0.02f, 0.3f * 10f, 0.1f, 0.2f, new Vector2f(5, 13).normalize())
         );
     }
 
@@ -143,30 +134,30 @@ public class Renderer {
     public void render(Scene scene) {
         restoreState();
 
-        Matrix4f viewMatrix = createViewMatrix(scene);
+        Matrix4f viewProjectionMatrix = createViewProjectionMatrix(scene);
 
         List<Actor> usualActors = scene.getUsualActors();
         drawDepthMap(usualActors, scene);
-        drawScene(viewMatrix, usualActors, scene);
+        drawScene(viewProjectionMatrix, usualActors, scene);
 
-        List<Actor> waterActors = scene.getWaterActors();
-        drawWater(viewMatrix, waterActors, scene);
+        List<WaterActor> waterActors = scene.getWaterActors();
+        drawWater(viewProjectionMatrix, waterActors, scene);
 
         hudRenderer.render(scene.getHudElements());
     }
 
-    private Matrix4f createViewMatrix(Scene scene) {
-        Matrix4f viewMatrix = new Matrix4f();
-        viewMatrix.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
+    private Matrix4f createViewProjectionMatrix(Scene scene) {
+        Matrix4f viewProjectionMatrix = new Matrix4f();
+        viewProjectionMatrix.setPerspective((float) Math.toRadians(45.0f), (float) 1600 / 900, 0.1f, 50.0f)
                 .rotateX((float) Math.toRadians(cameraRotation.x))
                 .rotateY((float) Math.toRadians(cameraRotation.y))
                 .translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-        viewMatrix = new Matrix4f().setTranslation(0.3f, 0, 0).mul(viewMatrix);
+//        viewProjectionMatrix = new Matrix4f().setTranslation(0.3f, 0, 0).mul(viewProjectionMatrix);
 
 //        Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
-//        viewMatrix.setPerspective((float) Math.toRadians(45), 1.0f, 0.1f, 40.0f)
+//        viewProjectionMatrix.setPerspective((float) Math.toRadians(45), 1.0f, 0.1f, 40.0f)
 //                .lookAt(scene.getLightPosition(), new Vector3f(0), UP);
-        return viewMatrix;
+        return viewProjectionMatrix;
     }
 
     private void restoreState() {
@@ -206,9 +197,9 @@ public class Renderer {
         });
     }
 
-    private void drawScene(Matrix4f viewMatrix, List<Actor> actors, Scene scene) {
+    private void drawScene(Matrix4f viewProjectionMatrix, List<Actor> actors, Scene scene) {
         generalShader.executeWithProgram(shader -> {
-            shader.set(VIEW_PROJECTION_MATRIX, viewMatrix);
+            shader.set(VIEW_PROJECTION_MATRIX, viewProjectionMatrix);
             shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLight());
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
@@ -230,11 +221,13 @@ public class Renderer {
                 mesh.getMaterial().getTexture().bind();
 
 
-                Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                Matrix4f modelMatrix = new Matrix4f().translationRotateScale(
                         actor.getPosition(),
                         actor.getRotation(),
                         new Vector3f(actor.getScale()));
-                shader.set(MODEL_MATRIX, matrix4f);
+                shader.set(MODEL_MATRIX, modelMatrix);
+                Matrix4f normalMatrix = new Matrix4f(modelMatrix).invert().transpose();
+                shader.set(NORMAL_MATRIX, normalMatrix);
                 glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
             }
 
@@ -249,16 +242,17 @@ public class Renderer {
         });
     }
 
-    private void drawWater(Matrix4f viewMatrix, List<Actor> actors, Scene scene) {
+    private void drawWater(Matrix4f viewProjectionMatrix, List<WaterActor> actors, Scene scene) {
         waterShader.executeWithProgram(shader -> {
-            shader.set(VIEW_PROJECTION_MATRIX, viewMatrix);
+            shader.set(VIEW_PROJECTION_MATRIX, viewProjectionMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
-            shader.set(TIME, (System.currentTimeMillis() % 1_000_000) / 500f);
-            shader.set(WAVES, waves);
+            shader.set(TIME, Utils.getTime());
 
             glViewport(0, 0, 1600, 900);
 
-            for (Actor actor : actors) {
+            for (WaterActor actor : actors) {
+                shader.set(WAVES, actor.getWaves());
+
                 Mesh mesh = meshLibrary.get(actor.getMeshId());
 
                 glBindVertexArray(mesh.getVaoId());
@@ -266,12 +260,15 @@ public class Renderer {
                 glActiveTexture(GL_TEXTURE1);
                 mesh.getMaterial().getTexture().bind();
 
+                shader.set(TEXTURE_MOVING_DIRECTION, actor.getWavesDirection());
 
-                Matrix4f matrix4f = new Matrix4f().translationRotateScale(
+                Matrix4f modelMatrix = new Matrix4f().translationRotateScale(
                         actor.getPosition(),
                         actor.getRotation(),
                         new Vector3f(actor.getScale()));
-                shader.set(MODEL_MATRIX, matrix4f);
+                shader.set(MODEL_MATRIX, modelMatrix);
+                Matrix4f normalMatrix = new Matrix4f(modelMatrix).normal();
+                shader.set(NORMAL_MATRIX, normalMatrix);
                 glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
             }
 
