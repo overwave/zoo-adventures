@@ -1,5 +1,6 @@
 package dev.overtow.core;
 
+import dev.overtow.graphics.draw.BoxType;
 import dev.overtow.graphics.hud.HudElement;
 import dev.overtow.util.Utils;
 import dev.overtow.util.misc.Tuple;
@@ -10,7 +11,9 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,8 +21,10 @@ public class Scene {
     //    private final List<Actor> actors;
     private final List<Actor> generalActors;
     private final List<BoxActor> boxesOnField;
-    private final List<BoxActor> boxesInDispensers;
+//    private final List<BoxActor> boxesInDispensers;
     private final WaterActor waterActors;
+    private final DispenserSystem dispenserSystem;
+
 //    private final WaterActor water;
 
     private final HudLayout hudLayout;
@@ -27,19 +32,29 @@ public class Scene {
     private final Matrix4f light = new Matrix4f();
     private Vector3f lightPosition;
 
-    public Scene() {
+    public Scene(Level level) {
         generalActors = new ArrayList<>();
-        boxesInDispensers = new ArrayList<>();
+//        boxesInDispensers = new ArrayList<>();
         boxesOnField = new ArrayList<>();
-        for (int i = 0; i < 30; i++) {
-            boxesInDispensers.add(new BoxActor(new Vector2i(-7 + i / 10, -4 + i % 10)));   // left
-            boxesInDispensers.add(new BoxActor(new Vector2i(-4 + i % 10, -7 + i / 10)));   // top
-            boxesInDispensers.add(new BoxActor(new Vector2i(6 + i / 10, -4 + i % 10)));    // right
-            boxesInDispensers.add(new BoxActor(new Vector2i(-4 + i % 10, 6 + i / 10)));   // bottom
+
+        Set<BoxType> distinctTypes = new HashSet<>();
+
+        for (Cell cell : level.getCells()) {
+            distinctTypes.add(cell.getType());
+            boxesOnField.add(new BoxActor(new Vector2i(cell.getX(), cell.getY())));
         }
 
-        boxesOnField.add(new BoxActor(new Vector2i(-2, 3)));
-        boxesOnField.add(new BoxActor(new Vector2i(1, -4)));
+        dispenserSystem = new DispenserSystem(distinctTypes);
+        dispenserSystem.update();
+//        for (int i = 0; i < 30; i++) {
+//            boxesInDispensers.add(new BoxActor(new Vector2i(-7 + i / 10, -4 + i % 10)));   // left
+//            boxesInDispensers.add(new BoxActor(new Vector2i(-4 + i % 10, -7 + i / 10)));   // top
+//            boxesInDispensers.add(new BoxActor(new Vector2i(6 + i / 10, -4 + i % 10)));    // right
+//            boxesInDispensers.add(new BoxActor(new Vector2i(-4 + i % 10, 6 + i / 10)));   // bottom
+//        }
+
+//        boxesOnField.add(new BoxActor(new Vector2i(-2, 3)));
+//        boxesOnField.add(new BoxActor(new Vector2i(1, -4)));
 //        lightBox = new BoxActor(new Vector2i(0, 0));
 //        actors.add(lightBox);
         generalActors.add(new PoolActor());
@@ -52,6 +67,9 @@ public class Scene {
 
         lightPosition = new Vector3f();
     }
+
+//    public void loadLevel(Level level) {
+//    }
 
     public Matrix4f getLight() {
         return light;
@@ -90,7 +108,7 @@ public class Scene {
 
     public List<Actor> getUsualActors() {
         // TODO maybe create smth like a view-list?
-        return Stream.of(generalActors, boxesInDispensers, boxesOnField)
+        return Stream.of(generalActors, dispenserSystem.getBoxes(), boxesOnField)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }

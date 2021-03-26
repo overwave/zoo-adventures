@@ -1,7 +1,10 @@
 package dev.overtow.core;
 
+import dev.overtow.service.reader.Reader;
 import dev.overtow.service.window.Window;
 import dev.overtow.util.injection.Injector;
+
+import java.io.IOException;
 
 public class Engine {
     private final Window window;
@@ -15,7 +18,7 @@ public class Engine {
     public Engine() {
         window = Injector.getInstance(Window.class);
         renderer = new Renderer();
-        scene = new Scene();
+        scene = new Scene(readLevel(17));
 
 
 //        soundMgr = new SoundManager();
@@ -35,6 +38,16 @@ public class Engine {
             renderer.render(scene);
 
             window.swapBuffers();
+        }
+    }
+
+    private Level readLevel(int number) {
+        Reader reader = Injector.getInstance(Reader.class);
+        try {
+            String levelContent = reader.read("data/level/level_" + number + ".dat");
+            return new Level(levelContent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
