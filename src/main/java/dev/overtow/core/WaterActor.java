@@ -22,8 +22,8 @@ public class WaterActor implements Actor {
 
                 new Wave(0.005f, 0.08f, 0.01f, 0.0f, new Vector2f(4, 10).normalize()),
 
-                new Wave(0.02f, 0.2f, 0.04f, 0.2f, new Vector2f(9, 5).normalize()),
-                new Wave(0.02f, 0.2f, 0.04f, 0.2f, new Vector2f(5, 9).normalize())
+                new Wave(0.01f, 0.2f, 0.04f, 0.2f, new Vector2f(9, 5).normalize()),
+                new Wave(0.01f, 0.2f, 0.04f, 0.2f, new Vector2f(5, 9).normalize())
 //                new Wave(0.19f, 0.4f, 0.04f, 0.3f, new Vector2f(1, 0).normalize())
         );
     }
@@ -82,6 +82,7 @@ public class WaterActor implements Actor {
         Quaternionf rotationQuaternion = new Quaternionf().rotationTo(resultNormal, defaultNormal);
 
         Vector4f temp = new Vector4f(resultOffset, 1).mul(modelMatrix);
+        temp.add(new Vector4f(getPosition(), 0));
         return Tuple.of(new Vector3f(temp.x(), temp.y(), temp.z()), rotationQuaternion);
     }
 
@@ -92,7 +93,7 @@ public class WaterActor implements Actor {
 
     @Override
     public Vector3f getPosition() {
-        return new Vector3f(0, -0.05f, 0);
+        return new Vector3f(0, -0.02f, 0);
     }
 
     @Override
@@ -115,6 +116,9 @@ public class WaterActor implements Actor {
     }
 
     public Vector2f getWavesDirection() {
-        return waves.stream().map(wave -> wave.getDirection().mul(wave.getSpeed())).reduce(Vector2f::add).orElse(new Vector2f());
+        return waves.stream()
+                .map(wave -> wave.getDirection().mul(wave.getSpeed()))
+                .reduce(Vector2f::add)
+                .orElse(new Vector2f());
     }
 }

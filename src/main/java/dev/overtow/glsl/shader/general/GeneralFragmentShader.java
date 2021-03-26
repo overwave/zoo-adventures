@@ -14,7 +14,7 @@ import static dev.overtow.glsl.GlslLibrary.*;
 
 public class GeneralFragmentShader implements FragmentShader {
     private static final float DEPTH_OFFSET = 0.00005f;
-    private static final float LIGHT_INTENSITY = 0.3f;
+    private static final float LIGHT_INTENSITY = 0.4f;
 
     private final GeneralVertexShader parentShader = new GeneralVertexShader();
 
@@ -53,7 +53,7 @@ public class GeneralFragmentShader implements FragmentShader {
         Vec4 background = texture(textureSampler, textureCoordinate);
 
         background.rgb = mix(backColor.rgb, background.rgb, background.a);
-        fragColor = vec4(background.rgb.multiply(0.7), backColor.a);
+        fragColor = vec4(background.rgb.multiply(0.6), backColor.a);
 
         /* "in shadow" test... */
         if (depth.z >= lightNDCPosition.z - DEPTH_OFFSET) {

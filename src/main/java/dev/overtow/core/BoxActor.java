@@ -25,7 +25,7 @@ public class BoxActor implements Actor {
     }
 
     public void setTemporaryTilt(Vector3f tempPositionOffset, Quaternionf tempRotation) {
-        temporaryPositionOffset = new Vector3f(tempPositionOffset)/*.min(new Vector3f(0,-0.05f,0))*/;
+        temporaryPositionOffset = new Vector3f(tempPositionOffset);
         temporaryRotation = tempRotation;
     }
 
