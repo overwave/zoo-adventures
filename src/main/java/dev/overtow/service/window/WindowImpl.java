@@ -47,7 +47,7 @@ public class WindowImpl implements Window, Destroyable {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        windowHandle = glfwCreateWindow(width, height, "Shadow Mapping Demo", NULL, NULL);
+        windowHandle = glfwCreateWindow(width, height, "The Zoo Adventures", NULL, NULL);
         if (windowHandle == NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
