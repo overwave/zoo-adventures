@@ -6,6 +6,7 @@ import dev.overtow.util.Utils;
 import dev.overtow.util.misc.Tuple;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
@@ -68,9 +69,6 @@ public class Scene {
         lightPosition = new Vector3f();
     }
 
-//    public void loadLevel(Level level) {
-//    }
-
     public Matrix4f getLight() {
         return light;
     }
@@ -96,7 +94,7 @@ public class Scene {
 
         float time = Utils.getTime();
         for (BoxActor actor : boxesOnField) {
-            Tuple<Vector3f, Quaternionf> wavesShift = waterActors.getWavesShift(actor.getPosition(), time);
+            Tuple<Vector3f, Quaternionf> wavesShift = waterActors.getWavesShift(actor.getPosition(), new Vector2f(1), time);
 
             actor.setTemporaryTilt(wavesShift.getT(), wavesShift.getV());
         }

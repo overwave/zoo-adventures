@@ -8,6 +8,8 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class WaterActor implements Actor {
     private final List<Wave> waves;
@@ -28,7 +30,35 @@ public class WaterActor implements Actor {
         );
     }
 
-    public Tuple<Vector3f, Quaternionf> getWavesShift(Vector3f position, float time) {
+    public Tuple<Vector3f, Quaternionf> getWavesShift(Vector3f position, Vector2f size, float time) {
+        Vector3f[] positions = new Vector3f[4];
+        Quaternionf[] rotations = new Quaternionf[4];
+
+        List<Tuple<Vector3f, Quaternionf>> tuples = Stream.of(
+                new Vector3f(-size.x() / 2, 0, -size.y() / 2),
+                new Vector3f(size.x() / 2, 0, -size.y() / 2),
+                new Vector3f(-size.x() / 2, 0, size.y() / 2),
+                new Vector3f(size.x() / 2, 0, size.y() / 2))
+                .map(vector -> vector.add(position))
+                .map(vector -> getWavesShiftExact(vector, time)).collect(Collectors.toList());
+        for (int i = 0; i < tuples.size(); i++) {
+            Tuple<Vector3f, Quaternionf> tuple = tuples.get(i);
+            positions[i] = tuple.getT();
+            rotations[i] = tuple.getV();
+        }
+
+        Vector3f averagePosition = new Vector3f();
+        for (Vector3f vec : positions) {
+            averagePosition.add(vec);
+        }
+        averagePosition.div(4);
+
+        Quaternionf averageQuaternion = new Quaternionf();
+        Quaternionf.nlerp(rotations, new float[]{0.25f, 0.25f, 0.25f, 0.25f}, averageQuaternion);
+        return Tuple.of(averagePosition, averageQuaternion);
+    }
+
+    private Tuple<Vector3f, Quaternionf> getWavesShiftExact(Vector3f position, float time) {
         Vector4f reducedPosition = new Vector4f(position, 1);
         Matrix4f modelMatrix = new Matrix4f().translationRotateScale(
                 getPosition(),
