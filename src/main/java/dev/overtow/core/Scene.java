@@ -19,50 +19,31 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Scene {
-    //    private final List<Actor> actors;
     private final List<Actor> generalActors;
     private final List<BoxActor> boxesOnField;
-//    private final List<BoxActor> boxesInDispensers;
     private final WaterActor waterActors;
     private final DispenserSystem dispenserSystem;
 
-//    private final WaterActor water;
-
     private final HudLayout hudLayout;
-    //    private final BoxActor lightBox;
     private final Matrix4f light = new Matrix4f();
     private Vector3f lightPosition;
 
     public Scene(Level level) {
         generalActors = new ArrayList<>();
-//        boxesInDispensers = new ArrayList<>();
         boxesOnField = new ArrayList<>();
 
         Set<BoxType> distinctTypes = new HashSet<>();
 
         for (Cell cell : level.getCells()) {
             distinctTypes.add(cell.getType());
-            boxesOnField.add(new BoxActor(new Vector2i(cell.getX(), cell.getY())));
+            boxesOnField.add(new BoxActor(cell.getType(), new Vector2i(cell.getX(), cell.getY())));
         }
 
-        dispenserSystem = new DispenserSystem(distinctTypes);
+        dispenserSystem = new DispenserSystem(new ArrayList<>(distinctTypes));
         dispenserSystem.update();
-//        for (int i = 0; i < 30; i++) {
-//            boxesInDispensers.add(new BoxActor(new Vector2i(-7 + i / 10, -4 + i % 10)));   // left
-//            boxesInDispensers.add(new BoxActor(new Vector2i(-4 + i % 10, -7 + i / 10)));   // top
-//            boxesInDispensers.add(new BoxActor(new Vector2i(6 + i / 10, -4 + i % 10)));    // right
-//            boxesInDispensers.add(new BoxActor(new Vector2i(-4 + i % 10, 6 + i / 10)));   // bottom
-//        }
 
-//        boxesOnField.add(new BoxActor(new Vector2i(-2, 3)));
-//        boxesOnField.add(new BoxActor(new Vector2i(1, -4)));
-//        lightBox = new BoxActor(new Vector2i(0, 0));
-//        actors.add(lightBox);
         generalActors.add(new PoolActor());
         waterActors = new WaterActor();
-
-//        actors.addAll(usualActors);
-//        actors.addAll(waterActors);
 
         hudLayout = new HudLayout();
 
@@ -83,7 +64,7 @@ public class Scene {
         lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
         Vector3f lightLookAt = new Vector3f(0.5f, 0.0f, 0.5f);
         Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
-        double alpha = Utils.getTime() / 3;
+        double alpha = Utils.getTime() / 8;
         float x = (float) Math.sin(alpha);
         float z = (float) Math.cos(alpha);
         lightPosition.set(lightDistance * x, lightHeight + (float) Math.sin(alpha), lightDistance * z);

@@ -20,6 +20,6 @@ public class MeshLibraryImpl implements MeshLibrary {
 
     @Override
     public Mesh get(Mesh.Id id) {
-        return meshes.computeIfAbsent(id, key -> meshLoader.load(id.getPath()));
+        return meshes.computeIfAbsent(id, key -> meshLoader.load(id.getPath(), id.getTexturePath()));
     }
 }

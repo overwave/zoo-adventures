@@ -5,6 +5,7 @@ import dev.overtow.core.shader.uniform.IntegerUniform;
 import dev.overtow.core.shader.uniform.Matrix4fUniform;
 import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.core.shader.uniform.Vector3fUniform;
+import dev.overtow.core.shader.uniform.Vector4fUniform;
 import dev.overtow.glsl.shader.general.GeneralFragmentShader;
 import dev.overtow.glsl.shader.general.GeneralVertexShader;
 
@@ -18,6 +19,7 @@ public class GeneralShaderProgram extends ShaderProgram {
         uniformMap.put(Uniform.Name.LIGHT_POSITION, new Vector3fUniform(Uniform.Name.LIGHT_POSITION));
         uniformMap.put(Uniform.Name.TEXTURE_SAMPLER, new IntegerUniform(Uniform.Name.TEXTURE_SAMPLER));
         uniformMap.put(Uniform.Name.DEPTH_TEXTURE, new IntegerUniform(Uniform.Name.DEPTH_TEXTURE));
+        uniformMap.put(Uniform.Name.BACKGROUND_COLOR, new Vector4fUniform(Uniform.Name.BACKGROUND_COLOR));
 
         programId = compile(GeneralVertexShader.class, GeneralFragmentShader.class);
     }

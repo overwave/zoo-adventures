@@ -17,9 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.lwjgl.assimp.Assimp.*;
-import static org.lwjgl.system.MemoryUtil.*;
+import static org.lwjgl.system.MemoryUtil.memAddress;
+import static org.lwjgl.system.MemoryUtil.memCopy;
+import static org.lwjgl.system.MemoryUtil.memUTF8;
 
 @Bind
 public class AssimpMeshLoader implements MeshLoader {
@@ -33,7 +36,7 @@ public class AssimpMeshLoader implements MeshLoader {
     }
 
     @Override
-    public Mesh load(String filename) {
+    public Mesh load(String filename, String texturePath) {
         AIFileIO fileIo = AIFileIO.create().OpenProc((pFileIO, fileName, openMode) -> {
             ByteBuffer data;
             String fileNameUtf8 = memUTF8(fileName);
@@ -81,7 +84,7 @@ public class AssimpMeshLoader implements MeshLoader {
         List<Material> materials = new ArrayList<>();
         for (int i = 0; i < numMaterials; i++) {
             AIMaterial aiMaterial = AIMaterial.create(aiMaterials.get(i));
-            processMaterial(aiMaterial, materials, file.getParent());
+            processMaterial(aiMaterial, materials, file.getParent(), texturePath);
         }
 
 
@@ -96,10 +99,10 @@ public class AssimpMeshLoader implements MeshLoader {
         return processMesh(aiMesh, materials);
     }
 
-    private void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir) {
+    private void processMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDir, String parentTexturePath) {
         AIString path = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, path, (IntBuffer) null, null, null, null, null, null);
-        String texturePath = path.dataString();
+        String texturePath = Optional.ofNullable(parentTexturePath).orElse(path.dataString());
 
         Texture texture = null;
         if (texturePath.length() > 0) {

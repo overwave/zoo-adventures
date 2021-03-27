@@ -17,6 +17,7 @@ public interface Uniform<T> {
         TIME("time"),
         WAVES("waves"),
         TEXTURE_MOVING_DIRECTION("textureMovingDirection"),
+        BACKGROUND_COLOR("backgroundColor"),
         ;
 
         private final String name;

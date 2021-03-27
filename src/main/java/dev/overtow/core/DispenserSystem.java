@@ -4,7 +4,6 @@ import dev.overtow.graphics.draw.BoxType;
 import org.joml.Vector2i;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +14,7 @@ public class DispenserSystem {
     private final Dispenser[] bottomDispensers;
     private List<BoxActor> cachedBoxes;
 
-    public DispenserSystem(Collection<BoxType> boxTypes) {
+    public DispenserSystem(List<BoxType> boxTypes) {
         leftDispensers = createDispensers(boxTypes, new Vector2i(-1, 9), new Vector2i(-1, 0));
         rightDispensers = createDispensers(boxTypes, new Vector2i(10, 0), new Vector2i(1, 0));
         topDispensers = createDispensers(boxTypes, new Vector2i(0, -1), new Vector2i(0, -1));
@@ -41,7 +40,7 @@ public class DispenserSystem {
         }
     }
 
-    private Dispenser[] createDispensers(Collection<BoxType> boxTypes, Vector2i from, Vector2i dispenserDirection) {
+    private Dispenser[] createDispensers(List<BoxType> boxTypes, Vector2i from, Vector2i dispenserDirection) {
         Dispenser[] dispenserRow = new Dispenser[10];
         Vector2i cursor = new Vector2i(from);
         Vector2i rowDirection = rotate90deg(dispenserDirection);

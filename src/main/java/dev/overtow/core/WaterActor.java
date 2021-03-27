@@ -1,5 +1,6 @@
 package dev.overtow.core;
 
+import dev.overtow.util.Utils;
 import dev.overtow.util.misc.Tuple;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -139,6 +140,11 @@ public class WaterActor implements Actor {
     @Override
     public Mesh.Id getMeshId() {
         return Mesh.Id.WATER;
+    }
+
+    @Override
+    public Vector4f getBackgroundColor() {
+        return Utils.NO_BACKGROUND_COLOR;
     }
 
     public List<Wave> getWaves() {

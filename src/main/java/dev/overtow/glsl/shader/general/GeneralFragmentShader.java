@@ -24,6 +24,8 @@ public class GeneralFragmentShader implements FragmentShader {
     private final Sampler2D depthTexture = new Sampler2D();
     @Uniform(LIGHT_POSITION)
     private final Vec3 lightPosition = vec3(0);
+    @Uniform(BACKGROUND_COLOR)
+    private final Vec4 backgroundColor = vec4(0);
 
     @Input
     private final Vec4 lightBiasedClipPosition = parentShader.lightBiasedClipPosition;
@@ -49,7 +51,7 @@ public class GeneralFragmentShader implements FragmentShader {
         /* standard lambertian/diffuse lighting */
         double dot = max(0.0, dot(normalize(lightPosition.minus(worldPosition)), worldNormal));
 
-        Vec4 backColor = vec4(249/255f, 161/255f, 149/255f, 1);
+        Vec4 backColor = backgroundColor;
         Vec4 background = texture(textureSampler, textureCoordinate);
 
         background.rgb = mix(backColor.rgb, background.rgb, background.a);

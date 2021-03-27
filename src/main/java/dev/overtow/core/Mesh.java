@@ -9,24 +9,42 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Mesh {
 
     public enum Id {
-        CUBE("data/model/cube/cube.obj"),
+        CUBE_TOWER("data/model/cube/cube.obj", "water_tower.png"),
+        CUBE_BARN("data/model/cube/cube.obj", "barn.png"),
+        CUBE_CORN("data/model/cube/cube.obj", "corn.png"),
+        CUBE_WINDMILL("data/model/cube/cube.obj", "windmill.png"),
         POOL("data/model/pool/pool_3.obj"),
         WATER("data/model/water/water_1x1_4098quads.obj");
 
         private final String path;
+        private final String texturePath;
 
         Id(String path) {
             this.path = path;
+            texturePath = null;
+        }
+
+        Id(String path, String texturePath) {
+            this.path = path;
+            this.texturePath = texturePath;
         }
 
         public String getPath() {
             return path;
+        }
+
+        public String getTexturePath() {
+            return texturePath;
         }
     }
 

@@ -1,24 +1,36 @@
 package dev.overtow.graphics.draw;
 
+import dev.overtow.core.Mesh;
+import dev.overtow.util.Utils;
+import org.joml.Vector4f;
+
 import java.awt.Color;
 
 public enum BoxType {
-    BANANA(new Color(230, 255, 45, 255)),
-    HAT(new Color(127, 127, 255, 255)),
-    PARROT(new Color(182, 158, 255, 255)),
-    CRAB(new Color(255, 208, 204, 255)),
-    STARFISH(new Color(137, 255, 190, 255)),
-    CACTUS(new Color(255, 197, 7, 255)),
-    FLAMINGO(new Color(165, 255, 91, 255)),
-    SUN(new Color(66, 229, 255, 255));
+    TOWER(new Color(45, 189, 255, 255), Mesh.Id.CUBE_TOWER),
+    BARN(new Color(160, 98, 84, 255), Mesh.Id.CUBE_BARN),
+    CORN(new Color(255, 200, 66, 255), Mesh.Id.CUBE_CORN),
+    WINDMILL(new Color(224, 239, 239, 255), Mesh.Id.CUBE_WINDMILL),
 
-    private final Color color;
 
-    BoxType(Color color) {
-        this.color = color;
+    STARFISH(new Color(137, 255, 190, 255), Mesh.Id.CUBE_TOWER),
+    CACTUS(new Color(255, 197, 7, 255), Mesh.Id.CUBE_TOWER),
+    FLAMINGO(new Color(165, 255, 91, 255), Mesh.Id.CUBE_TOWER),
+    SUN(new Color(66, 229, 255, 255), Mesh.Id.CUBE_TOWER);
+
+    private final Vector4f color;
+    private final Mesh.Id meshId;
+
+    BoxType(Color color, Mesh.Id meshId) {
+        this.color = Utils.convertColor(color);
+        this.meshId = meshId;
     }
 
-    public Color getColor() {
+    public Vector4f getColor() {
         return color;
+    }
+
+    public Mesh.Id getMeshId() {
+        return meshId;
     }
 }

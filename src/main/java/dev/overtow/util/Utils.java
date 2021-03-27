@@ -1,8 +1,10 @@
 package dev.overtow.util;
 
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Utils {
+
+    public static final Vector4f NO_BACKGROUND_COLOR = new Vector4f();
 
     private static final long START_TIME = System.currentTimeMillis();
 
@@ -54,8 +58,7 @@ public class Utils {
     }
 
     public static int[] listIntToArray(List<Integer> list) {
-        int[] result = list.stream().mapToInt((Integer v) -> v).toArray();
-        return result;
+        return list.stream().mapToInt((Integer v) -> v).toArray();
     }
 
     public static float[] listToArray(List<Float> list) {
@@ -87,9 +90,8 @@ public class Utils {
                 while (fc.read(buffer) != -1) ;
             }
         } else {
-            try (
-                InputStream source = Utils.class.getResourceAsStream(resource);
-                ReadableByteChannel rbc = Channels.newChannel(source)) {
+            try (InputStream source = Utils.class.getResourceAsStream(resource);
+                 ReadableByteChannel rbc = Channels.newChannel(source)) {
                 buffer = MemoryUtil.memAlloc(bufferSize);
 
                 while (true) {
@@ -115,4 +117,7 @@ public class Utils {
         return newBuffer;
     }
 
+    public static Vector4f convertColor(Color color) {
+        return new Vector4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
 }

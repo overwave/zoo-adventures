@@ -4,6 +4,7 @@ import dev.overtow.graphics.draw.BoxType;
 import org.joml.Quaternionf;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class BoxActor implements Actor {
     //    private final BoxMesh mesh;
@@ -14,11 +15,11 @@ public class BoxActor implements Actor {
     private Vector3f temporaryPositionOffset;
     private Quaternionf temporaryRotation;
 
-    public BoxActor(/*BoxMesh mesh,*/ Vector2i position) {
+    public BoxActor(BoxType boxType, Vector2i position) {
 //        this.mesh = mesh;
         this.position = new Vector3f(position.x() - 4.5f, 0, position.y() - 4.5f);
         this.temporaryPositionOffset = new Vector3f(0);
-        this.boxType = BoxType.BANANA;
+        this.boxType = boxType;
         this.scale = 1;
         this.rotation = new Quaternionf();
         this.temporaryRotation = new Quaternionf();
@@ -56,6 +57,11 @@ public class BoxActor implements Actor {
 
     @Override
     public Mesh.Id getMeshId() {
-        return Mesh.Id.CUBE;
+        return boxType.getMeshId();
+    }
+
+    @Override
+    public Vector4f getBackgroundColor() {
+        return boxType.getColor();
     }
 }

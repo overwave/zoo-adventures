@@ -1,7 +1,9 @@
 package dev.overtow.core;
 
+import dev.overtow.util.Utils;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class PoolActor implements Actor {
     private final Quaternionf rotation;
@@ -33,5 +35,10 @@ public class PoolActor implements Actor {
     @Override
     public Mesh.Id getMeshId() {
         return Mesh.Id.POOL;
+    }
+
+    @Override
+    public Vector4f getBackgroundColor() {
+        return Utils.NO_BACKGROUND_COLOR;
     }
 }
