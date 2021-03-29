@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public class Scene {
     private final List<Actor> generalActors;
     private final List<BoxActor> boxesOnField;
-    private final WaterActor waterActors;
+    private final WaterActor water;
     private final DispenserSystem dispenserSystem;
 
     private final HudLayout hudLayout;
@@ -43,7 +43,7 @@ public class Scene {
         dispenserSystem.update();
 
         generalActors.add(new PoolActor());
-        waterActors = new WaterActor();
+        water = new WaterActor();
 
         hudLayout = new HudLayout();
 
@@ -73,9 +73,11 @@ public class Scene {
 
         hudLayout.update();
 
+        water.update();
+
         float time = Utils.getTime();
         for (BoxActor actor : boxesOnField) {
-            Tuple<Vector3f, Quaternionf> wavesShift = waterActors.getWavesShift(actor.getPosition(), new Vector2f(1), time);
+            Tuple<Vector3f, Quaternionf> wavesShift = water.getWavesShift(actor.getPosition(), new Vector2f(1), time);
 
             actor.setTemporaryTilt(wavesShift.getT(), wavesShift.getV());
         }
@@ -92,7 +94,7 @@ public class Scene {
                 .collect(Collectors.toList());
     }
 
-    public List<WaterActor> getWaterActors() {
-        return List.of(waterActors);
+    public List<WaterActor> getWater() {
+        return List.of(water);
     }
 }

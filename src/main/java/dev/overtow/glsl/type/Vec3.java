@@ -24,4 +24,8 @@ public final class Vec3 {
     public Vec3 plus(Vec3 vec3) {
         return STUB;
     }
+
+    public Vec3 multiply(Vec3 vec3) {
+        return STUB;
+    }
 }

@@ -14,6 +14,10 @@ public final class Vec2 {
         return STUB;
     }
 
+    public Vec2 multiply(Vec2 vec) {
+        return STUB;
+    }
+
     public Vec2 divide(float scalar) {
         return STUB;
     }

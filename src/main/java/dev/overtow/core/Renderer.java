@@ -140,7 +140,7 @@ public class Renderer {
         drawDepthMap(usualActors, scene);
         drawScene(viewProjectionMatrix, usualActors, scene);
 
-        List<WaterActor> waterActors = scene.getWaterActors();
+        List<WaterActor> waterActors = scene.getWater();
         drawWater(viewProjectionMatrix, waterActors, scene);
 
         hudRenderer.render(scene.getHudElements());

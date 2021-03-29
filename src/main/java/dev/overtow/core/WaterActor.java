@@ -15,23 +15,27 @@ import java.util.stream.Stream;
 public class WaterActor implements Actor {
     private final List<Wave> waves;
     private final Quaternionf rotation;
+    private final List<Ripple> ripples;
 
     public WaterActor() {
         this.rotation = new Quaternionf();
 
-        // TODO fix time period tearing
         waves = List.of(
-                new Wave(0.003f, 0.04f, 0.004f, 0.0f, new Vector2f(10, 4).normalize()),
+                new Wave(0.01f, 0.008f, 3f, 0.0f, new Vector2f(9, 8).normalize()),
 
-                new Wave(0.005f, 0.08f, 0.01f, 0.0f, new Vector2f(4, 10).normalize()),
+                new Wave(0.01f, 0.02f, 0.5f, 0.0f, new Vector2f(2, 10).normalize()),
 
-                new Wave(0.01f, 0.2f, 0.04f, 0.2f, new Vector2f(9, 5).normalize()),
-                new Wave(0.01f, 0.2f, 0.04f, 0.2f, new Vector2f(5, 9).normalize())
-//                new Wave(0.19f, 0.4f, 0.04f, 0.3f, new Vector2f(1, 0).normalize())
+                new Wave(0.03f, 0.05f, 1.5f, 0.2f, new Vector2f(9, 5).normalize()),
+                new Wave(0.03f, 0.05f, 1.5f, 0.2f, new Vector2f(5, 9).normalize())
+//                new Wave(0.19f, 0.05f, 2f, 0.3f, new Vector2f(1, 1).normalize())
+        );
+        ripples = List.of(
+                new Ripple(new Vector2f(3, 3), new Vector2f(0, -1))
         );
     }
 
     public Tuple<Vector3f, Quaternionf> getWavesShift(Vector3f position, Vector2f size, float time) {
+//        return getWavesShiftExact(position, time);
         Vector3f[] positions = new Vector3f[4];
         Quaternionf[] rotations = new Quaternionf[4];
 
@@ -72,45 +76,53 @@ public class WaterActor implements Actor {
 
         Vector3f resultOffset = new Vector3f(0);
         Vector3f defaultNormal = new Vector3f(0, 1, 0);
-        Vector3f bitangent = new Vector3f(0);
-        Vector3f tangent = new Vector3f(0);
+        Vector3f tangent = new Vector3f(1, 0, 0);
+        Vector3f bitangent = new Vector3f(0, 0, 1);
 
         for (Wave wave : waves) {
-            float k = 2.0f * 3.1416f / wave.getLength();
-            float kA = k * wave.getAmplitude();
-            Vector2f D = wave.getDirection().normalize();
-            Vector2f K = new Vector2f(D).mul(k);
 
-            float S = wave.getSpeed();
-            float w = S * k;
-            float wT = w * time;
+            Vector2f offset = new Vector2f(positionOnWater.x(), positionOnWater.z()).mul(wave.getDirection());
 
-            float KPwT = K.dot(new Vector2f(positionOnWater.x(), positionOnWater.z())) - wT;
-            float S0 = (float) Math.sin(KPwT);
-            float C0 = (float) Math.cos(KPwT);
+            resultOffset.y += Math.sin(wave.getSpeed() * -time + (offset.x + offset.y) / wave.getLength()) * wave.getAmplitude();
+            tangent.y += Math.cos(wave.getSpeed() * -time + (offset.x + offset.y) / wave.getLength()) * wave.getAmplitude() * wave.getDirection().x() / wave.getLength();
+            bitangent.y += Math.cos(wave.getSpeed() * -time + (offset.x + offset.y) / wave.getLength()) * wave.getAmplitude() * wave.getDirection().y() / wave.getLength();
+//            float k = 2.0f * 3.1416f / wave.getLength();
+//            float kA = k * wave.getAmplitude();
+//            Vector2f D = wave.getDirection().normalize();
+//            Vector2f K = new Vector2f(D).mul(k);
+//
+//            float S = wave.getSpeed();
+//            float w = S * k;
+//            float wT = w * time;
+//
+//            float KPwT = K.dot(new Vector2f(positionOnWater.x(), positionOnWater.z())) - wT;
+//            float S0 = (float) Math.sin(KPwT);
+//            float C0 = (float) Math.cos(KPwT);
+//
+//            Vector2f dunno = new Vector2f(D).mul(wave.getSteepness() * wave.getAmplitude() * S0);
+//            resultOffset = new Vector3f(
+//                    resultOffset.x() - dunno.x(),
+//                    resultOffset.y() + wave.getAmplitude() * C0,
+//                    resultOffset.z() - dunno.y()
+//            );
 
-            Vector2f dunno = new Vector2f(D).mul(wave.getSteepness() * wave.getAmplitude() * S0);
-            resultOffset = new Vector3f(
-                    resultOffset.x() - dunno.x(),
-                    resultOffset.y() + wave.getAmplitude() * C0,
-                    resultOffset.z() - dunno.y()
-            );
-
-            bitangent = new Vector3f(bitangent).add(new Vector3f(
-                    1 - wave.getSteepness() * D.x * D.x * kA * C0,
-                    D.x * kA * S0,
-                    -(wave.getSteepness() * D.x * D.y * kA * C0)
-            ).normalize());
-            tangent = new Vector3f(tangent).add(new Vector3f(
-                    -(wave.getSteepness() * D.x * D.y * kA * C0),
-                    D.y * kA * S0,
-                    1 - wave.getSteepness() * D.y * D.y * kA * C0
-            ).normalize());
+//            bitangent = new Vector3f(bitangent).add(new Vector3f(
+//                    1 - wave.getSteepness() * D.x * D.x * kA * C0,
+//                    D.x * kA * S0,
+//                    -(wave.getSteepness() * D.x * D.y * kA * C0)
+//            ).normalize());
+//            tangent = new Vector3f(tangent).add(new Vector3f(
+//                    -(wave.getSteepness() * D.x * D.y * kA * C0),
+//                    D.y * kA * S0,
+//                    1 - wave.getSteepness() * D.y * D.y * kA * C0
+//            ).normalize());
         }
-        Vector3f resultNormal = (tangent.cross(bitangent).normalize());
+//        Vector3f resultNormal = new Vector3f(0,1,0);
+        Vector3f resultNormal = bitangent.cross(tangent).normalize();
+//        System.out.println(resultNormal);
         Vector4f mul = new Vector4f(resultNormal, 1).mul(normalMatrix);
-        resultNormal = new Vector3f(mul.x, mul.y, mul.z);
-        Quaternionf rotationQuaternion = new Quaternionf().rotationTo(resultNormal, defaultNormal);
+        resultNormal = new Vector3f(mul.x, mul.y, mul.z).normalize();
+        Quaternionf rotationQuaternion = new Quaternionf().rotationTo(defaultNormal, resultNormal);
 
         Vector4f temp = new Vector4f(resultOffset, 1).mul(modelMatrix);
         temp.add(new Vector4f(getPosition(), 0));
@@ -119,6 +131,7 @@ public class WaterActor implements Actor {
 
     @Override
     public void update() {
+//        waves.get(0).setDirection(new Vector2f((float) Math.cos(Utils.getTime()/3), (float) Math.sin(Utils.getTime()/3)));
         // NOP
     }
 
@@ -155,6 +168,7 @@ public class WaterActor implements Actor {
         return waves.stream()
                 .map(wave -> wave.getDirection().mul(wave.getSpeed()))
                 .reduce(Vector2f::add)
+                .map(vec -> new Vector2f(vec.y(), -vec.x()))
                 .orElse(new Vector2f());
     }
 }

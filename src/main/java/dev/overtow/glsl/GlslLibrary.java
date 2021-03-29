@@ -9,122 +9,122 @@ import dev.overtow.glsl.type.Vec4;
 public interface GlslLibrary {
 
     static double sin(double v) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static Vec2 sin(Vec2 v) {
-        return Vec2.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static double cos(double v) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static double clamp(double x, double a, double b) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static double dot(Vec2 a, Vec2 b) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static double dot(Vec3 a, Vec3 b) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static double fract(double v) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static Vec2 fract(Vec2 v) {
-        return Vec2.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static double length(Vec2 v) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static Vec2 floor(Vec2 v) {
-        return Vec2.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec2 round(Vec2 v) {
-        return Vec2.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec3 normalize(Vec3 vec) {
-        return Vec3.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec4 normalize(Vec4 vec) {
-        return Vec4.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec2 normalize(Vec2 vec) {
-        return Vec2.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec4 texture(Sampler2D sampler, Vec2 coordinate) {
-        return Vec4.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec2 vec2(double x, double y) {
-        return Vec2.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec2 vec2(double c) {
-        return Vec2.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Mat4 mat4(double c) {
-        return Mat4.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static float float_(double c) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static Vec3 vec3(double c) {
-        return Vec3.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec3 vec3(Vec3 v) {
-        return Vec3.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec3 vec3(double x, double y, double z) {
-        return Vec3.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec4 vec4(double c) {
-        return Vec4.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec4 vec4(double x, double y, double z, double w) {
-        return Vec4.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static Vec4 vec4(Vec3 xyz, double w) {
-        return Vec4.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static double max(double a, double... other) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static Vec3 mix(Vec3 a, Vec3 b, double x) {
-        return Vec3.STUB;
+        throw new UnsupportedOperationException();
     }
 
     static double sqrt(double x) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static double abs(double x) {
-        return 0;
+        throw new UnsupportedOperationException();
     }
 
     static Vec3 cross(Vec3 a, Vec3 b) {
-        return Vec3.STUB;
+        throw new UnsupportedOperationException();
     }
 }

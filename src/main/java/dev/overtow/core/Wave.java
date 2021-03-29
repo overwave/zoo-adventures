@@ -7,7 +7,7 @@ public class Wave {
     private final float length;
     private final float speed;
     private final float steepness;
-    private final Vector2f direction;
+    private Vector2f direction;
 
     public Wave(float amplitude, float length, float speed, float steepness, Vector2f direction) {
         this.amplitude = amplitude;
@@ -31,6 +31,10 @@ public class Wave {
 
     public float getSteepness() {
         return steepness;
+    }
+
+    public void setDirection(Vector2f direction) {
+        this.direction = direction;
     }
 
     public Vector2f getDirection() {

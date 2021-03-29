@@ -17,7 +17,7 @@ import static dev.overtow.glsl.GlslLibrary.texture;
 import static dev.overtow.glsl.GlslLibrary.vec2;
 
 public class WaterFragmentShader implements FragmentShader {
-    public static final double WATER_TRANSPARENCY = 0.6;
+    public static final double WATER_TRANSPARENCY = 0.55;
     private final WaterVertexShader parentShader = new WaterVertexShader();
 
     @Uniform(TEXTURE_SAMPLER)
@@ -34,7 +34,7 @@ public class WaterFragmentShader implements FragmentShader {
     private Vec4 fragColor;
 
     public void main() {
-        Vec2 textureDirection = textureMovingDirection.multiply(time).multiply(0.1);
+        Vec2 textureDirection = textureMovingDirection.multiply(time).multiply(0.001);
         Vec2 coordinate = fract(textureCoordinate.plus(textureDirection).multiply(0.7));
         Vec4 background = texture(textureSampler, coordinate);
         background.a = WATER_TRANSPARENCY;
