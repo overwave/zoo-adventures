@@ -1,5 +1,6 @@
 package dev.overtow.core.shader;
 
+import dev.overtow.core.Ripple;
 import dev.overtow.core.Wave;
 import dev.overtow.core.shader.uniform.*;
 import dev.overtow.glsl.Converter;
@@ -101,8 +102,14 @@ public abstract class ShaderProgram {
     }
 
     @SuppressWarnings("unchecked")
-    public void set(Uniform.Name name, List<Wave> values) {
+    public void setWaves(Uniform.Name name, List<Wave> values) {
         ArrayUniform<Wave> uniform = (ArrayUniform<Wave>) uniformMap.get(name);
+        uniform.setElements(values);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setRipples(Uniform.Name name, List<Ripple> values) {
+        ArrayUniform<Ripple> uniform = (ArrayUniform<Ripple>) uniformMap.get(name);
         uniform.setElements(values);
     }
 

@@ -6,6 +6,7 @@ public final class Vec2 {
     public double x;
     public double y;
     public Vec2 xy;
+    public Vec2 yx;
 
     private Vec2() {
     }
@@ -18,7 +19,7 @@ public final class Vec2 {
         return STUB;
     }
 
-    public Vec2 divide(float scalar) {
+    public Vec2 divide(double scalar) {
         return STUB;
     }
 

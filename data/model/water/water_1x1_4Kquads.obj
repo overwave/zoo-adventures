@@ -1,6 +1,6 @@
 # Blender v2.83.12 OBJ File: 'water.blend'
 # www.blender.org
-mtllib water_1x1_4098quads.mtl
+mtllib water_1x1_4Kquads.mtl
 o Cube
 v 0.500000 0.000000 -0.500000
 v 0.437500 0.000000 -0.500000

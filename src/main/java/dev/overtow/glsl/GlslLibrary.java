@@ -108,7 +108,11 @@ public interface GlslLibrary {
         throw new UnsupportedOperationException();
     }
 
-    static double max(double a, double... other) {
+    static double max(double a, double b) {
+        throw new UnsupportedOperationException();
+    }
+
+    static double min(double a, double b) {
         throw new UnsupportedOperationException();
     }
 
@@ -121,6 +125,14 @@ public interface GlslLibrary {
     }
 
     static double abs(double x) {
+        throw new UnsupportedOperationException();
+    }
+
+    static Vec2 abs(Vec2 x) {
+        throw new UnsupportedOperationException();
+    }
+
+    static double distance(Vec2 x, Vec2 y) {
         throw new UnsupportedOperationException();
     }
 

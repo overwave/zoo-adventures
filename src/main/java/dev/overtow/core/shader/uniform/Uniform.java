@@ -16,6 +16,7 @@ public interface Uniform<T> {
         MODEL_MATRIX("modelMatrix"),
         TIME("time"),
         WAVES("waves"),
+        RIPPLES("ripples"),
         TEXTURE_MOVING_DIRECTION("textureMovingDirection"),
         BACKGROUND_COLOR("backgroundColor"),
         ;

@@ -21,16 +21,16 @@ public class WaterActor implements Actor {
         this.rotation = new Quaternionf();
 
         waves = List.of(
-                new Wave(0.01f, 0.008f, 3f, 0.0f, new Vector2f(9, 8).normalize()),
+                new Wave(0, 0.008f, 3f, 0.0f, new Vector2f(9, 8).normalize()),
 
-                new Wave(0.01f, 0.02f, 0.5f, 0.0f, new Vector2f(2, 10).normalize()),
+                new Wave(0, 0.02f, 0.5f, 0.0f, new Vector2f(2, 10).normalize()),
 
-                new Wave(0.03f, 0.05f, 1.5f, 0.2f, new Vector2f(9, 5).normalize()),
-                new Wave(0.03f, 0.05f, 1.5f, 0.2f, new Vector2f(5, 9).normalize())
+                new Wave(0, 0.05f, 1.5f, 0.2f, new Vector2f(9, 5).normalize()),
+                new Wave(0, 0.05f, 1.5f, 0.2f, new Vector2f(5, 9).normalize())
 //                new Wave(0.19f, 0.05f, 2f, 0.3f, new Vector2f(1, 1).normalize())
         );
         ripples = List.of(
-                new Ripple(new Vector2f(3, 3), new Vector2f(0, -1))
+                new Ripple(new Vector2f(-0.05f, -0.05f), new Vector2f(0, -1))
         );
     }
 
@@ -162,6 +162,10 @@ public class WaterActor implements Actor {
 
     public List<Wave> getWaves() {
         return waves;
+    }
+
+    public List<Ripple> getRipples() {
+        return ripples;
     }
 
     public Vector2f getWavesDirection() {

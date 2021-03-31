@@ -17,7 +17,7 @@ import static dev.overtow.glsl.GlslLibrary.texture;
 import static dev.overtow.glsl.GlslLibrary.vec2;
 
 public class WaterFragmentShader implements FragmentShader {
-    public static final double WATER_TRANSPARENCY = 0.55;
+    public static final double WATER_TRANSPARENCY = 1;
     private final WaterVertexShader parentShader = new WaterVertexShader();
 
     @Uniform(TEXTURE_SAMPLER)

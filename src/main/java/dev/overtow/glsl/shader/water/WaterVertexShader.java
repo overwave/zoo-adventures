@@ -9,6 +9,7 @@ import dev.overtow.glsl.type.Mat4;
 import dev.overtow.glsl.type.Vec2;
 import dev.overtow.glsl.type.Vec3;
 import dev.overtow.glsl.type.Vec4;
+import dev.overtow.glsl.type.struct.Ripple;
 import dev.overtow.glsl.type.struct.Wave;
 
 import static dev.overtow.core.shader.uniform.Uniform.Name.*;
@@ -17,6 +18,12 @@ import static dev.overtow.glsl.GlslLibrary.*;
 public class WaterVertexShader implements VertexShader {
 
     public static final int WAVES_AMOUNT = 4;
+    public static final int RIPPLES_AMOUNT = 1;
+
+    private static final double RIPPLE_SPEED = 3;
+    private static final double RIPPLE_WAVELENGTH = 0.006f;
+    private static final double RIPPLE_AMPLITUDE = 0.08;
+    private static final double SQRT_2 = 1.41421356237;
 
     @Uniform(VIEW_PROJECTION_MATRIX)
     private final Mat4 viewProjectionMatrix = mat4(0);
@@ -29,6 +36,9 @@ public class WaterVertexShader implements VertexShader {
     @Array(WAVES_AMOUNT)
     @Uniform(WAVES)
     private final Wave[] waves = new Wave[]{};
+    @Array(RIPPLES_AMOUNT)
+    @Uniform(RIPPLES)
+    private final Ripple[] ripples = new Ripple[]{};
 
     @Input(location = 0)
     private final Vec3 inputPosition = vec3(0);
@@ -49,48 +59,48 @@ public class WaterVertexShader implements VertexShader {
     @Override
     public void main() {
         Vec3 resultPosition = inputPosition;
-//        Vec3 bitangent = vec3(0);
-//        Vec3 tangent = vec3(0);
 
         for (int i = 0; i < WAVES_AMOUNT; i++) {
             Wave wave = waves[i];
 
-//            double k = 2.0 * 3.1416 / wave.length; // wave length
-//            double kA = k * wave.amplitude;
-//            Vec2 D = normalize(wave.direction); // normalized direction
-//            Vec2 K = D.multiply(k); // wave vector and magnitude (direction)
-
-
-            // peak/crest steepness high means steeper, but too much
-            // can cause the wave to become inside out at the top
-            //  float Q = steepness; //max(steepness, 0.1);
-
-//            double S = wave.speed;
-//            double w = S * k; // Phase/frequency
-//            double wT = w * time;
-//
-//             Calculate once instead of 4 times
-//            double KPwT = dot(K, inputPosition.xz) - wT;
-//            double S0 = sin(KPwT);
-//            double C0 = cos(KPwT);
-            Vec2 offset = wave.direction.multiply(inputPosition.xz);
-
-            resultPosition.y += sin(wave.speed * -time + (offset.x + offset.y) / wave.length) * wave.amplitude;
-//            resultPosition.xz = resultPosition.xz.minus(D.multiply(wave.steepness * wave.amplitude * S0));
-//            resultPosition.y += wave.amplitude * C0;
-
-//            bitangent = bitangent.plus(normalize(vec3(
-//                    1 - (wave.steepness * D.x * D.x * kA * C0),
-//                    D.x * kA * S0,
-//                    -(wave.steepness * D.x * D.y * kA * C0)
-//            )));
-//            tangent = tangent.plus(normalize(vec3(
-//                    -(wave.steepness * D.x * D.y * kA * C0),
-//                    D.y * kA * S0,
-//                    1 - (wave.steepness * D.y * D.y * kA * C0)
-//            )));
+            Vec2 reducedPosition = wave.direction.multiply(inputPosition.xz);
+            resultPosition.y += sin(wave.speed * -time + (reducedPosition.x + reducedPosition.y) / wave.length) * wave.amplitude;
         }
-//        Vec3 resultNormal = normalize(cross(tangent, bitangent));
+        for (int i = 0; i < RIPPLES_AMOUNT; i++) {
+            Ripple ripple = ripples[i];
+            Vec2 relativePosition = inputPosition.xz.minus(ripple.center);
+            double distanceFromRippleCenter = length(relativePosition);
+            Vec2 vectorToRippleDirection = ripple.direction.minus(normalize(relativePosition));
+            double vectorLength = length(vectorToRippleDirection);
+
+            if (distanceFromRippleCenter > 0.07 && distanceFromRippleCenter < 0.1 && vectorLength < SQRT_2) {
+                resultPosition.y += sin(RIPPLE_SPEED * time + distanceFromRippleCenter / RIPPLE_WAVELENGTH) * RIPPLE_AMPLITUDE;
+            }
+
+
+            Vec2 pointOnDirection = ripple.center.plus(ripple.direction);
+            Vec2 perpendicular = vec2(pointOnDirection.y - ripple.center.y, ripple.center.x - pointOnDirection.x);
+            double L = (ripple.center.x * pointOnDirection.y - pointOnDirection.x * ripple.center.y +
+                        ripple.center.y * relativePosition.x - pointOnDirection.y * relativePosition.x +
+                        pointOnDirection.x * relativePosition.y - ripple.center.x * relativePosition.y) /
+                       (perpendicular.x * (pointOnDirection.y - ripple.center.y) + perpendicular.y * (ripple.center.x - pointOnDirection.x));
+            Vec2 H = vec2(relativePosition.x + perpendicular.x * L, relativePosition.y + perpendicular.y * L);  // высота
+
+            double lengthH = length(H);
+            double finsDistance = distance(ripple.direction.multiply(-lengthH), relativePosition);
+
+            if (lengthH < 0.3 && finsDistance > 0.07 && finsDistance < 0.1) {
+                resultPosition.y += sin(RIPPLE_SPEED * time + (relativePosition.x + relativePosition.y) / RIPPLE_WAVELENGTH) * RIPPLE_AMPLITUDE;
+            }
+//            double directionToRippleCenterDistance = length(ripple.direction.yx.multiply(relativePosition).plus(ripple.center)) / length(ripple.direction);
+
+//            if (directionToRippleCenterDistance > 0.07 && directionToRippleCenterDistance < 0.1) {
+//                Vec2 reducedPosition = ripple.direction.multiply(relativePosition);
+//
+//                resultPosition.y += sin(RIPPLE_SPEED * time + (reducedPosition.x + reducedPosition.y) / RIPPLE_WAVELENGTH) * RIPPLE_AMPLITUDE;
+//            }
+        }
+
         Vec3 resultNormal = normalize(inputPosition.minus(resultPosition).multiply(vec3(1, -1, 1)));
 
         Vec4 modelPosition = modelMatrix.multiply(vec4(resultPosition, 1));
@@ -98,7 +108,6 @@ public class WaterVertexShader implements VertexShader {
         worldNormal = normalize(normalMatrix.multiply(vec4(resultNormal, 1)).xyz);
         textureCoordinate = texture;
 
-        /* Normally transform the vertex */
         gl_Position = viewProjectionMatrix.multiply(modelPosition);
     }
 }

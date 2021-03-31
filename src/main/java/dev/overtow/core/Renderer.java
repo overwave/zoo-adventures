@@ -90,10 +90,10 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-//        cameraPosition = new Vector3f(0f, 5, 10);
-//        cameraRotation = new Vector3f(15, 0, 0);
-        cameraPosition = new Vector3f(0, 21, 0);
-        cameraRotation = new Vector3f(90, 0, 0);
+        cameraPosition = new Vector3f(0f, 5, 10);
+        cameraRotation = new Vector3f(15, 0, 0);
+//        cameraPosition = new Vector3f(0, 21, 0);
+//        cameraRotation = new Vector3f(90, 0, 0);
         biasMatrix = new Matrix4f(
                 0.5f, 0.0f, 0.0f, 0.0f,
                 0.0f, 0.5f, 0.0f, 0.0f,
@@ -252,7 +252,8 @@ public class Renderer {
             glViewport(0, 0, 1600, 900);
 
             for (WaterActor actor : actors) {
-                shader.set(WAVES, actor.getWaves());
+                shader.setWaves(WAVES, actor.getWaves());
+                shader.setRipples(RIPPLES, actor.getRipples());
 
                 Mesh mesh = meshLibrary.get(actor.getMeshId());
 
