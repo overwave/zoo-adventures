@@ -6,12 +6,12 @@ import dev.overtow.core.shader.uniform.*;
 import dev.overtow.glsl.Converter;
 import dev.overtow.glsl.shader.FragmentShader;
 import dev.overtow.glsl.shader.VertexShader;
+import dev.overtow.math.Matrix;
+import dev.overtow.math.Vector2;
+import dev.overtow.math.Vector3;
+import dev.overtow.math.Vector4;
 import dev.overtow.service.reader.Reader;
 import dev.overtow.util.injection.Injector;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -85,20 +85,20 @@ public abstract class ShaderProgram {
         checkedGet(name, FloatUniform.class).setValue(value);
     }
 
-    public void set(Uniform.Name name, Vector2f value) {
-        checkedGet(name, Vector2fUniform.class).setValue(value);
+    public void set(Uniform.Name name, Vector2 value) {
+        checkedGet(name, Vector2Uniform.class).setValue(value);
     }
 
-    public void set(Uniform.Name name, Vector3f value) {
-        checkedGet(name, Vector3fUniform.class).setValue(value);
+    public void set(Uniform.Name name, Vector3 value) {
+        checkedGet(name, Vector3Uniform.class).setValue(value);
     }
 
-    public void set(Uniform.Name name, Vector4f value) {
-        checkedGet(name, Vector4fUniform.class).setValue(value);
+    public void set(Uniform.Name name, Vector4 value) {
+        checkedGet(name, Vector4Uniform.class).setValue(value);
     }
 
-    public void set(Uniform.Name name, Matrix4f value) {
-        checkedGet(name, Matrix4fUniform.class).setValue(value);
+    public void set(Uniform.Name name, Matrix value) {
+        checkedGet(name, MatrixUniform.class).setValue(value);
     }
 
     @SuppressWarnings("unchecked")

@@ -1,8 +1,8 @@
 package dev.overtow.graphics.draw;
 
 import dev.overtow.core.Mesh;
+import dev.overtow.math.Vector4;
 import dev.overtow.util.Utils;
-import org.joml.Vector4f;
 
 import java.awt.Color;
 
@@ -18,7 +18,7 @@ public enum BoxType {
     FLAMINGO(new Color(165, 255, 91, 255), Mesh.Id.CUBE_TOWER),
     SUN(new Color(66, 229, 255, 255), Mesh.Id.CUBE_TOWER);
 
-    private final Vector4f color;
+    private final Vector4 color;
     private final Mesh.Id meshId;
 
     BoxType(Color color, Mesh.Id meshId) {
@@ -26,7 +26,7 @@ public enum BoxType {
         this.meshId = meshId;
     }
 
-    public Vector4f getColor() {
+    public Vector4 getColor() {
         return color;
     }
 

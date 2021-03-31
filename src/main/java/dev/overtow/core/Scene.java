@@ -2,13 +2,13 @@ package dev.overtow.core;
 
 import dev.overtow.graphics.draw.BoxType;
 import dev.overtow.graphics.hud.HudElement;
+import dev.overtow.math.Matrix;
+import dev.overtow.math.Quaternion;
+import dev.overtow.math.Vector2;
+import dev.overtow.math.Vector3;
 import dev.overtow.util.Utils;
 import dev.overtow.util.misc.Tuple;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,8 +25,8 @@ public class Scene {
     private final DispenserSystem dispenserSystem;
 
     private final HudLayout hudLayout;
-    private final Matrix4f light = new Matrix4f();
-    private Vector3f lightPosition;
+    private Matrix viewProjection = Matrix.ofIdentity();
+    private Vector3 lightPosition;
 
     public Scene(Level level) {
         generalActors = new ArrayList<>();
@@ -47,37 +47,33 @@ public class Scene {
 
         hudLayout = new HudLayout();
 
-        lightPosition = new Vector3f();
+        lightPosition = Vector3.of();
     }
 
-    public Matrix4f getLight() {
-        return light;
+    public Matrix getViewProjection() {
+        return viewProjection;
     }
 
-    public Vector3f getLightPosition() {
+    public Vector3 getLightPosition() {
         return lightPosition;
     }
 
     public void update() {
         float lightHeight = 15;
         float lightDistance = 17;
-        lightPosition = new Vector3f(6.0f, lightHeight, 6.0f);
-        Vector3f lightLookAt = new Vector3f(0.5f, 0.0f, 0.5f);
-        Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
-        double alpha = Utils.getTime() / 8;
-        float x = (float) Math.sin(alpha);
-        float z = (float) Math.cos(alpha);
-        lightPosition.set(lightDistance * x, lightHeight + (float) Math.sin(alpha), lightDistance * z);
-        light.setPerspective((float) Math.toRadians(90), 1.0f, 0.1f, 40.0f)
-                .lookAt(lightPosition, lightLookAt, UP);
+        float time = Utils.getTime();
+        float x = (float) Math.sin(time / 8);
+        float z = (float) Math.cos(time / 8);
+        lightPosition = Vector3.of(lightDistance * x, lightHeight + (float) Math.sin(time), lightDistance * z);
+        Vector3 viewTarget = Vector3.of(0.5f, 0.0f, 0.5f);
+
+        viewProjection = Matrix.ofProjectionLookAt(90, 1.0f, 0.1f, 40.0f, lightPosition, viewTarget);
 
         hudLayout.update();
-
         water.update();
 
-        float time = Utils.getTime();
         for (BoxActor actor : boxesOnField) {
-            Tuple<Vector3f, Quaternionf> wavesShift = water.getWavesShift(actor.getPosition(), new Vector2f(1), time);
+            Tuple<Vector3, Quaternion> wavesShift = water.getWavesShift(actor.getPosition(), Vector2.of(1), time);
 
             actor.setTemporaryTilt(wavesShift.getT(), wavesShift.getV());
         }

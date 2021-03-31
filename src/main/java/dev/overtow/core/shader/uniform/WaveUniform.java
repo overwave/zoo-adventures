@@ -1,7 +1,7 @@
 package dev.overtow.core.shader.uniform;
 
 import dev.overtow.core.Wave;
-import org.joml.Vector2f;
+import dev.overtow.math.Vector2;
 
 import java.util.function.Function;
 
@@ -28,8 +28,8 @@ public class WaveUniform implements ValueUniform<Wave> {
         glUniform1f(length, wave.getLength());
         glUniform1f(speed, wave.getSpeed());
         glUniform1f(steepness, wave.getSteepness());
-        Vector2f waveDirection = wave.getDirection();
-        glUniform2f(this.direction, waveDirection.x(), waveDirection.y());
+        Vector2 waveDirection = wave.getDirection();
+        glUniform2f(direction, waveDirection.getX(), waveDirection.getY());
     }
 
     @Override

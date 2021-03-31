@@ -1,6 +1,6 @@
 package dev.overtow.util;
 
-import org.joml.Vector4f;
+import dev.overtow.math.Vector4;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
@@ -23,7 +23,7 @@ import java.util.Scanner;
 
 public class Utils {
 
-    public static final Vector4f NO_BACKGROUND_COLOR = new Vector4f();
+    public static final Vector4 NO_BACKGROUND_COLOR = Vector4.of();
 
     private static final long START_TIME = System.currentTimeMillis();
 
@@ -117,7 +117,7 @@ public class Utils {
         return newBuffer;
     }
 
-    public static Vector4f convertColor(Color color) {
-        return new Vector4f(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    public static Vector4 convertColor(Color color) {
+        return Vector4.of(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
     }
 }

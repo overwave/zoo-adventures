@@ -1,15 +1,15 @@
 package dev.overtow.core;
 
+import dev.overtow.math.Quaternion;
+import dev.overtow.math.Vector3;
+import dev.overtow.math.Vector4;
 import dev.overtow.util.Utils;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class PoolActor implements Actor {
-    private final Quaternionf rotation;
+    private final Quaternion rotation;
 
     public PoolActor() {
-        this.rotation = new Quaternionf();
+        this.rotation =  Quaternion.of();
     }
 
     @Override
@@ -18,17 +18,17 @@ public class PoolActor implements Actor {
     }
 
     @Override
-    public Vector3f getPosition() {
-        return new Vector3f(0);
+    public Vector3 getPosition() {
+        return Vector3.ZERO;
     }
 
     @Override
-    public Vector3f getScale() {
-        return new Vector3f(1);
+    public Vector3 getScale() {
+        return Vector3.ONE;
     }
 
     @Override
-    public Quaternionf getRotation() {
+    public Quaternion getRotation() {
         return rotation;
     }
 
@@ -38,7 +38,7 @@ public class PoolActor implements Actor {
     }
 
     @Override
-    public Vector4f getBackgroundColor() {
+    public Vector4 getBackgroundColor() {
         return Utils.NO_BACKGROUND_COLOR;
     }
 }

@@ -1,7 +1,7 @@
 package dev.overtow.core.shader.uniform;
 
 import dev.overtow.core.Ripple;
-import org.joml.Vector2f;
+import dev.overtow.math.Vector2;
 
 import java.util.function.Function;
 
@@ -20,11 +20,11 @@ public class RippleUniform implements ValueUniform<Ripple> {
 
     @Override
     public void setValue(Ripple ripple) {
-        Vector2f center = ripple.getCenter();
-        Vector2f direction = ripple.getDirection();
+        Vector2 center = ripple.getCenter();
+        Vector2 direction = ripple.getDirection();
 
-        glUniform2f(this.center, center.x(), center.y());
-        glUniform2f(this.direction, direction.x(), direction.y());
+        glUniform2f(this.center, center.getX(), center.getY());
+        glUniform2f(this.direction, direction.getX(), direction.getY());
     }
 
     @Override

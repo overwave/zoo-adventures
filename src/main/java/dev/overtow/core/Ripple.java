@@ -1,21 +1,21 @@
 package dev.overtow.core;
 
-import org.joml.Vector2f;
+import dev.overtow.math.Vector2;
 
 public class Ripple {
-    private final Vector2f center;
-    private final Vector2f direction;
+    private final Vector2 center;
+    private final Vector2 direction;
 
-    public Ripple(Vector2f center, Vector2f direction) {
+    public Ripple(Vector2 center, Vector2 direction) {
         this.center = center;
         this.direction = direction;
     }
 
-    public Vector2f getCenter() {
-        return new Vector2f(center);
+    public Vector2 getCenter() {
+        return center;
     }
 
-    public Vector2f getDirection() {
-        return new Vector2f(direction);
+    public Vector2 getDirection() {
+        return direction;
     }
 }

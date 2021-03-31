@@ -1,20 +1,20 @@
 package dev.overtow.core;
 
-import org.joml.Vector2f;
+import dev.overtow.math.Vector2;
 
 public class Wave {
     private final float amplitude;
     private final float length;
     private final float speed;
     private final float steepness;
-    private Vector2f direction;
+    private Vector2 direction;
 
-    public Wave(float amplitude, float length, float speed, float steepness, Vector2f direction) {
+    public Wave(float amplitude, float length, float speed, float steepness, Vector2 direction) {
         this.amplitude = amplitude;
         this.length = length;
         this.speed = speed;
         this.steepness = steepness;
-        this.direction = direction;
+        this.direction = direction.normalize();
     }
 
     public float getAmplitude() {
@@ -33,11 +33,11 @@ public class Wave {
         return steepness;
     }
 
-    public void setDirection(Vector2f direction) {
+    public void setDirection(Vector2 direction) {
         this.direction = direction;
     }
 
-    public Vector2f getDirection() {
-        return new Vector2f(direction);
+    public Vector2 getDirection() {
+        return direction;
     }
 }

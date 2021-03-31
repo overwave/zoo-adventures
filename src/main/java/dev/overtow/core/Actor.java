@@ -1,19 +1,19 @@
 package dev.overtow.core;
 
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import dev.overtow.math.Quaternion;
+import dev.overtow.math.Vector3;
+import dev.overtow.math.Vector4;
 
 public interface Actor {
     void update();
 
-    Vector3f getPosition();
+    Vector3 getPosition();
 
-    Vector3f getScale();
+    Vector3 getScale();
 
-    Quaternionf getRotation();
+    Quaternion getRotation();
 
     Mesh.Id getMeshId();
 
-    Vector4f getBackgroundColor();
+    Vector4 getBackgroundColor();
 }
