@@ -65,13 +65,16 @@ public class Vector4 {
         return of(x / c, y / c, z / c, w / c);
     }
 
-    public Vector4 normalize() {
-        float invLength = Math.invsqrt(x * x + y * y + z * z + w * w);
-        return of(x * invLength, y * invLength, z * invLength, w * invLength);
-    }
-
     public Vector4 multiply(Matrix matrix) {
         return matrix.getMultiplied(this);
+    }
+
+    public Vector4 normalize() {
+        return divide(length());
+    }
+
+    public float length() {
+        return Math.sqrt(Math.fma(x, x, Math.fma(y, y, Math.fma(z, z, w * w))));
     }
 
     @Override

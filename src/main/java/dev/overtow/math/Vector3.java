@@ -59,8 +59,12 @@ public class Vector3 {
     }
 
     public Vector3 normalize() {
-        float invLength = Math.invsqrt(x * x + y * y + z * z);
-        return of(x * invLength, y * invLength, z * invLength);
+        float scalar = Math.invsqrt(Math.fma(x, x, Math.fma(y, y, z * z)));
+        return of(x * scalar, y * scalar, z * scalar);
+    }
+
+    public float length() {
+        return Math.sqrt(Math.fma(x, x, Math.fma(y, y, z * z)));
     }
 
     public Vector3 cross(Vector3 vec) {

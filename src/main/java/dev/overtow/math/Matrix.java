@@ -119,7 +119,7 @@ public class Matrix {
     }
 
     public Matrix normal() {
-        Matrix4f matrix = asMatrix4f().invert().transpose();
+        Matrix4f matrix = asMatrix4f().normal();
         return new Matrix(matrix);
     }
 
