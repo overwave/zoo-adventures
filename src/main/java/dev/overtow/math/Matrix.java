@@ -6,6 +6,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.nio.FloatBuffer;
+import java.util.Objects;
 
 public class Matrix {
 
@@ -134,5 +135,33 @@ public class Matrix {
 
     public FloatBuffer allocate(FloatBuffer floatBuffer) {
         return asMatrix4f().get(floatBuffer);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + m00 + ", " + m01 + ", " + m02 + ", " + m03 + "\n" +
+               " " + m10 + ", " + m11 + ", " + m12 + ", " + m13 + "\n" +
+               " " + m20 + ", " + m21 + ", " + m22 + ", " + m23 + "\n" +
+               " " + m30 + ", " + m31 + ", " + m32 + ", " + m33 + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Matrix matrix = (Matrix) o;
+        return Float.compare(matrix.m00, m00) == 0 && Float.compare(matrix.m01, m01) == 0 &&
+               Float.compare(matrix.m02, m02) == 0 && Float.compare(matrix.m03, m03) == 0 &&
+               Float.compare(matrix.m10, m10) == 0 && Float.compare(matrix.m11, m11) == 0 &&
+               Float.compare(matrix.m12, m12) == 0 && Float.compare(matrix.m13, m13) == 0 &&
+               Float.compare(matrix.m20, m20) == 0 && Float.compare(matrix.m21, m21) == 0 &&
+               Float.compare(matrix.m22, m22) == 0 && Float.compare(matrix.m23, m23) == 0 &&
+               Float.compare(matrix.m30, m30) == 0 && Float.compare(matrix.m31, m31) == 0 &&
+               Float.compare(matrix.m32, m32) == 0 && Float.compare(matrix.m33, m33) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
     }
 }
