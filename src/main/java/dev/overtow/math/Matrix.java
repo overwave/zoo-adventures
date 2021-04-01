@@ -1,8 +1,6 @@
 package dev.overtow.math;
 
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.nio.FloatBuffer;
@@ -75,15 +73,6 @@ public class Matrix {
         return new Matrix(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
     }
 
-    public static Matrix ofTranslationRotationScale(Vector3 position, Quaternion rotation, Vector3 scale) {
-        Matrix4f matrix = new Matrix4f().translationRotateScale(
-                new Vector3f(position.getX(), position.getY(), position.getZ()),
-                new Quaternionf(rotation.getX(), rotation.getY(), rotation.getZ(), rotation.getW()),
-                new Vector3f(scale.getX(), scale.getY(), scale.getZ())
-        );
-        return new Matrix(matrix);
-    }
-
     public static Matrix ofIdentity() {
         return of(1, 0, 0, 0,
                 0, 1, 0, 0,
@@ -101,7 +90,7 @@ public class Matrix {
     public static Matrix ofProjectionRotateTranslate(float angle, float aspect, float zNear, float zFar, Vector3 rotation, Vector3 translation) {
         Matrix4f matrix = new Matrix4f()
                 .setPerspective((float) Math.toRadians(angle), aspect, zNear, zFar)
-                .rotateXYZ((float) Math.toRadians(rotation.getX()), (float) Math.toRadians(rotation.getY()), (float) Math.toRadians(rotation.getY()))
+                .rotateXYZ((float) Math.toRadians(rotation.getX()), (float) Math.toRadians(rotation.getY()), (float) Math.toRadians(rotation.getZ()))
                 .translate(translation.getX(), translation.getY(), translation.getZ());
         return new Matrix(matrix);
     }
@@ -120,7 +109,7 @@ public class Matrix {
     }
 
     public Matrix normal() {
-        Matrix4f matrix = asMatrix4f().normal();
+        Matrix4f matrix = asMatrix4f().invert().transpose(); // Matrix4f.normal() gives different result (?)
         return new Matrix(matrix);
     }
 

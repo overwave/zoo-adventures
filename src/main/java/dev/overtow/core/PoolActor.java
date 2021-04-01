@@ -9,7 +9,7 @@ public class PoolActor implements Actor {
     private final Quaternion rotation;
 
     public PoolActor() {
-        this.rotation =  Quaternion.of();
+        this.rotation = Quaternion.of();
     }
 
     @Override

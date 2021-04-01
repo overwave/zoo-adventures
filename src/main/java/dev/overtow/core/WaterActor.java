@@ -51,7 +51,7 @@ public class WaterActor implements Actor {
             rotations[i] = tuple.getV();
         }
 
-        Vector3 averagePosition = Vector3.of();
+        Vector3 averagePosition = Vector3.ZERO;
         for (Vector3 vec : positions) {
             averagePosition = averagePosition.plus(vec);
         }
@@ -63,10 +63,7 @@ public class WaterActor implements Actor {
 
     private Tuple<Vector3, Quaternion> getWavesShiftExact(Vector3 position, float time) {
         Vector4 reducedPosition = Vector4.of(position, 1);
-        Matrix modelMatrix = Matrix.ofTranslationRotationScale(
-                getPosition(),
-                getRotation(),
-                getScale());
+        Matrix modelMatrix = Matrix.ofModel(getPosition(), getRotation(), getScale());
         Matrix normalMatrix = modelMatrix.normal();
         Matrix invertedModelMatrix = modelMatrix.invert();
 

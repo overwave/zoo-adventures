@@ -1,7 +1,7 @@
 package dev.overtow.core;
 
 import dev.overtow.graphics.draw.BoxType;
-import org.joml.Vector2i;
+import dev.overtow.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,10 +15,10 @@ public class DispenserSystem {
     private List<BoxActor> cachedBoxes;
 
     public DispenserSystem(List<BoxType> boxTypes) {
-        leftDispensers = createDispensers(boxTypes, new Vector2i(-1, 9), new Vector2i(-1, 0));
-        rightDispensers = createDispensers(boxTypes, new Vector2i(10, 0), new Vector2i(1, 0));
-        topDispensers = createDispensers(boxTypes, new Vector2i(0, -1), new Vector2i(0, -1));
-        bottomDispensers = createDispensers(boxTypes, new Vector2i(9, 10), new Vector2i(0, 1));
+        leftDispensers = createDispensers(boxTypes, Vector2.of(-1, 9), Vector2.of(-1, 0));
+        rightDispensers = createDispensers(boxTypes, Vector2.of(10, 0), Vector2.of(1, 0));
+        topDispensers = createDispensers(boxTypes, Vector2.of(0, -1), Vector2.of(0, -1));
+        bottomDispensers = createDispensers(boxTypes, Vector2.of(9, 10), Vector2.of(0, 1));
     }
 
     public void update() {
@@ -40,19 +40,19 @@ public class DispenserSystem {
         }
     }
 
-    private Dispenser[] createDispensers(List<BoxType> boxTypes, Vector2i from, Vector2i dispenserDirection) {
+    private Dispenser[] createDispensers(List<BoxType> boxTypes, Vector2 from, Vector2 dispenserDirection) {
         Dispenser[] dispenserRow = new Dispenser[10];
-        Vector2i cursor = new Vector2i(from);
-        Vector2i rowDirection = rotate90deg(dispenserDirection);
+        Vector2 cursor = from;
+        Vector2 rowDirection = rotate90deg(dispenserDirection);
 
         for (int i = 0; i < dispenserRow.length; i++) {
             dispenserRow[i] = new Dispenser(boxTypes, cursor, dispenserDirection);
-            cursor.add(rowDirection);
+            cursor = cursor.plus(rowDirection);
         }
         return dispenserRow;
     }
 
-    private Vector2i rotate90deg(Vector2i vec) {
-        return new Vector2i(-vec.y(), vec.x());
+    private Vector2 rotate90deg(Vector2 vec) {
+        return Vector2.of(-vec.getY(), vec.getX());
     }
 }

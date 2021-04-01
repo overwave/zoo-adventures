@@ -12,6 +12,6 @@ public class Vector3Uniform extends SingleValueUniform<Vector3> {
 
     @Override
     public void setValue(Vector3 value) {
-        glUniform3f(id, value.getX(), value.getY(), value.getY());
+        glUniform3f(id, value.getX(), value.getY(), value.getZ());
     }
 }

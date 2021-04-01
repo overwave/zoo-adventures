@@ -8,7 +8,6 @@ import dev.overtow.math.Vector2;
 import dev.overtow.math.Vector3;
 import dev.overtow.util.Utils;
 import dev.overtow.util.misc.Tuple;
-import org.joml.Vector2i;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class Scene {
 
         for (Cell cell : level.getCells()) {
             distinctTypes.add(cell.getType());
-            boxesOnField.add(new BoxActor(cell.getType(), new Vector2i(cell.getX(), cell.getY())));
+            boxesOnField.add(new BoxActor(cell.getType(), Vector2.of(cell.getX(), cell.getY())));
         }
 
         dispenserSystem = new DispenserSystem(new ArrayList<>(distinctTypes));
@@ -47,7 +46,7 @@ public class Scene {
 
         hudLayout = new HudLayout();
 
-        lightPosition = Vector3.of();
+        lightPosition = Vector3.ZERO;
     }
 
     public Matrix getViewProjection() {

@@ -178,10 +178,7 @@ public class Renderer {
                 Mesh mesh = meshLibrary.get(actor.getMeshId());
                 glBindVertexArray(mesh.getVaoId());
 
-                Matrix modelMatrix = Matrix.ofTranslationRotationScale(
-                        actor.getPosition(),
-                        actor.getRotation(),
-                        actor.getScale());
+                Matrix modelMatrix = Matrix.ofModel(actor.getPosition(), actor.getRotation(), actor.getScale());
                 shader.set(MODEL_MATRIX, modelMatrix);
                 glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
             }
@@ -216,10 +213,7 @@ public class Renderer {
 
                 shader.set(BACKGROUND_COLOR, actor.getBackgroundColor());
 
-                Matrix modelMatrix =  Matrix.ofModel(
-                        actor.getPosition(),
-                        actor.getRotation(),
-                        actor.getScale());
+                Matrix modelMatrix = Matrix.ofModel(actor.getPosition(), actor.getRotation(), actor.getScale());
                 shader.set(MODEL_MATRIX, modelMatrix);
                 Matrix normalMatrix = modelMatrix.normal();
                 shader.set(NORMAL_MATRIX, normalMatrix);
@@ -258,10 +252,7 @@ public class Renderer {
 
                 shader.set(TEXTURE_MOVING_DIRECTION, actor.getWavesDirection());
 
-                Matrix modelMatrix =  Matrix.ofModel(
-                        actor.getPosition(),
-                        actor.getRotation(),
-                        actor.getScale());
+                Matrix modelMatrix = Matrix.ofModel(actor.getPosition(), actor.getRotation(), actor.getScale());
                 shader.set(MODEL_MATRIX, modelMatrix);
                 Matrix normalMatrix = modelMatrix.normal();
                 shader.set(NORMAL_MATRIX, normalMatrix);

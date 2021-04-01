@@ -1,7 +1,7 @@
 package dev.overtow.core;
 
 import dev.overtow.graphics.draw.BoxType;
-import org.joml.Vector2i;
+import dev.overtow.math.Vector2;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,15 +13,15 @@ public class Dispenser {
 
     private final List<BoxActor> actors;
 
-    public Dispenser(List<BoxType> boxTypes, Vector2i from, Vector2i direction) {
+    public Dispenser(List<BoxType> boxTypes, Vector2 from, Vector2 direction) {
         actors = new ArrayList<>(BOXES_AMOUNT);
-        Vector2i cursor = new Vector2i(from);
-        ThreadLocalRandom random =  ThreadLocalRandom.current();
+        Vector2 cursor = from;
+        ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (int i = 0; i < BOXES_AMOUNT; i++) {
             BoxType randomType = boxTypes.get(random.nextInt(boxTypes.size()));
             actors.add(new BoxActor(randomType, cursor));
-            cursor.add(direction);
+            cursor = cursor.plus(direction);
         }
     }
 

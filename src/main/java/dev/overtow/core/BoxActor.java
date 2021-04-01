@@ -2,9 +2,9 @@ package dev.overtow.core;
 
 import dev.overtow.graphics.draw.BoxType;
 import dev.overtow.math.Quaternion;
+import dev.overtow.math.Vector2;
 import dev.overtow.math.Vector3;
 import dev.overtow.math.Vector4;
-import org.joml.Vector2i;
 
 public class BoxActor implements Actor {
     private final BoxType boxType;
@@ -14,11 +14,11 @@ public class BoxActor implements Actor {
     private Vector3 temporaryPositionOffset;
     private Quaternion temporaryRotation;
 
-    public BoxActor(BoxType boxType, Vector2i position) {
-        this.position = Vector3.of(position.x() - 4.5f, 0, position.y() - 4.5f);
-        this.temporaryPositionOffset = Vector3.of();
+    public BoxActor(BoxType boxType, Vector2 position) {
+        this.position = Vector3.of(position.getX() - 4.5f, 0, position.getY() - 4.5f);
+        this.temporaryPositionOffset = Vector3.ZERO;
         this.boxType = boxType;
-        this.scale = Vector3.of(1);
+        this.scale = Vector3.ONE;
         this.rotation = Quaternion.of();
         this.temporaryRotation = Quaternion.of();
     }
