@@ -46,6 +46,7 @@ public class WindowImpl implements Window, Destroyable {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 2);
 
         windowHandle = glfwCreateWindow(width, height, "The Zoo Adventures", NULL, NULL);
         if (windowHandle == NULL) {

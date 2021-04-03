@@ -9,7 +9,10 @@ import dev.overtow.glsl.type.Vec2;
 import dev.overtow.glsl.type.Vec3;
 import dev.overtow.glsl.type.Vec4;
 
-import static dev.overtow.core.shader.uniform.Uniform.Name.*;
+import static dev.overtow.core.shader.uniform.Uniform.Name.BACKGROUND_COLOR;
+import static dev.overtow.core.shader.uniform.Uniform.Name.DEPTH_TEXTURE;
+import static dev.overtow.core.shader.uniform.Uniform.Name.LIGHT_POSITION;
+import static dev.overtow.core.shader.uniform.Uniform.Name.TEXTURE_SAMPLER;
 import static dev.overtow.glsl.GlslLibrary.*;
 
 public class GeneralFragmentShader implements FragmentShader {
@@ -39,15 +42,7 @@ public class GeneralFragmentShader implements FragmentShader {
     @Output
     private Vec4 fragColor;
 
-    double rand(Vec2 co) {
-        return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    }
-
     public void main() {
-        Vec4 lightNDCPosition = lightBiasedClipPosition.divide(lightBiasedClipPosition.w);
-
-        Vec4 depth = texture(depthTexture, lightNDCPosition.xy);
-
         /* standard lambertian/diffuse lighting */
         double dot = max(0.0, dot(normalize(lightPosition.minus(worldPosition)), worldNormal));
 
@@ -57,10 +52,20 @@ public class GeneralFragmentShader implements FragmentShader {
         background.rgb = mix(backColor.rgb, background.rgb, background.a);
         fragColor = vec4(background.rgb.multiply(0.6), backColor.a);
 
-        /* "in shadow" test... */
-        if (depth.z >= lightNDCPosition.z - DEPTH_OFFSET) {
-            /* lit */
-            fragColor = fragColor.plus(vec4(LIGHT_INTENSITY, LIGHT_INTENSITY, LIGHT_INTENSITY, 1.0).multiply(dot));
+        Vec4 lightNDCPosition = lightBiasedClipPosition.divide(lightBiasedClipPosition.w);
+        double shadowFactor = 0.0;
+        Vec2 increment = vec2(1.0).divide(textureSize(depthTexture, 0));
+
+        for (int row = -1; row < 2; row++) {
+            for (int col = -1; col < 2; col++) {
+                Vec2 depthTextureOffset = vec2(row, col).multiply(increment);
+                double depth = texture(depthTexture, lightNDCPosition.xy.plus(depthTextureOffset)).z;
+
+                shadowFactor += lightNDCPosition.z - DEPTH_OFFSET > depth ? 0.0 : 1.0;
+            }
         }
+
+        Vec3 light = vec3(LIGHT_INTENSITY);
+        fragColor = fragColor.plus(vec4(light.multiply(shadowFactor / 9), 0).multiply(dot));
     }
 }

@@ -68,6 +68,10 @@ public interface GlslLibrary {
         throw new UnsupportedOperationException();
     }
 
+    static Vec2 textureSize(Sampler2D sampler, int lod) {
+        throw new UnsupportedOperationException();
+    }
+
     static Vec2 vec2(double x, double y) {
         throw new UnsupportedOperationException();
     }

@@ -14,7 +14,6 @@ import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import dev.overtow.core.shader.uniform.Uniform.Name;
 import dev.overtow.glsl.shader.Shader;
@@ -35,8 +34,14 @@ import java.util.stream.Collectors;
 
 public class Converter {
     private static final Set<Class<?>> GLSL_TYPE_TOKENS = Set.of(float.class, Vec2.class, Vec3.class, Vec4.class, Mat4.class, Sampler2D.class);
-    private static final Set<String> FLOAT_TYPE = Set.of("double", "float");
-    private static final Set<String> GLSL_COMPLEX_TYPES = Set.of("Vec2", "Vec3", "Vec4", "Mat4", "Sampler2D");
+    private static final Map<String, String> GLSL_TYPES_MAP = Map.of(
+            "double", "float",
+            "boolean", "bool",
+            "Vec2", "vec2",
+            "Vec3", "vec3",
+            "Vec4", "vec4",
+            "Mat4", "mat4",
+            "Sampler2D", "sampler2D");
 
     private final PrintStream os;
     private final Map<String, String> shaderInOutMap;
@@ -96,8 +101,8 @@ public class Converter {
             }
 
             if (Shader.class.isAssignableFrom(fieldType) ||     // link to parent shader
-                    Modifier.isStatic(field.getModifiers()) ||  // static definitions
-                    GLSL_TYPE_TOKENS.contains(fieldType)) {     // glsl types
+                Modifier.isStatic(field.getModifiers()) ||  // static definitions
+                GLSL_TYPE_TOKENS.contains(fieldType)) {     // glsl types
                 continue;
             }
 
@@ -275,17 +280,7 @@ public class Converter {
     }
 
     private void printMethodSignature(MethodDeclaration md) {
-        String returnType;
-        Type type = md.getType();
-        if (type.isPrimitiveType()) {
-            returnType = type.asString().replace("double", "float");
-        } else if (type.isVoidType()) {
-            returnType = "void";
-        } else if (type.isClassOrInterfaceType()) {
-            returnType = javaTypeToGlslType(type.asString());
-        } else {
-            throw new IllegalArgumentException();
-        }
+        String returnType = javaTypeToGlslType(md.getType().asString());
 
         String name = md.getNameAsString();
         String args = md.getParameters()
@@ -390,7 +385,7 @@ public class Converter {
         } else if (expression.isVariableDeclarationExpr()) {
             return expression.asVariableDeclarationExpr().getVariables().stream()
                     .map(variable -> javaTypeToGlslType(variable.getTypeAsString()) + " " + variable.getNameAsString() +
-                            variable.getInitializer().map(ex -> " = " + convertExpression(ex)).orElse(""))
+                                     variable.getInitializer().map(ex -> " = " + convertExpression(ex)).orElse(""))
                     .collect(Collectors.joining("; "));
         } else if (expression.isBinaryExpr()) {
             BinaryExpr binaryExpr = expression.asBinaryExpr();
@@ -410,6 +405,13 @@ public class Converter {
         } else if (expression.isArrayAccessExpr()) {
             ArrayAccessExpr arrAccExpr = expression.asArrayAccessExpr();
             return "%s[%s]".formatted(convertExpression(arrAccExpr.getName()), convertExpression(arrAccExpr.getIndex()));
+        } else if (expression.isConditionalExpr()) {
+            ConditionalExpr conditionalExpr = expression.asConditionalExpr();
+            return "%s ? %s : %s".formatted(
+                    convertExpression(conditionalExpr.getCondition()),
+                    convertExpression(conditionalExpr.getThenExpr()),
+                    convertExpression(conditionalExpr.getElseExpr())
+            );
         } else {
             throw new IllegalStateException();
         }
@@ -418,16 +420,12 @@ public class Converter {
     private String javaTypeToGlslType(String type) {
         type = type.replace("[]", "");
 
-        if (FLOAT_TYPE.contains(type)) {
-            return "float";
-        } else if ("int".equals(type)) {
-            return "int";
-        } else if (GLSL_COMPLEX_TYPES.contains(type)) {
-            return type.substring(0, 1).toLowerCase() + type.substring(1);
+        if (GLSL_TYPES_MAP.containsKey(type)) {
+            return GLSL_TYPES_MAP.get(type);
         } else if (usedStructs.containsKey(type)) {
             return type;
         } else {
-            throw new IllegalArgumentException("Passed illegal type: " + type);
+            return type;
         }
     }
 }
