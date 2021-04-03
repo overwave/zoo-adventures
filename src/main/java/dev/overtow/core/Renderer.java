@@ -5,6 +5,7 @@ import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.math.Matrix;
 import dev.overtow.math.Vector3;
 import dev.overtow.service.meshlibrary.MeshLibrary;
+import dev.overtow.service.settings.Settings;
 import dev.overtow.util.injection.Injector;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
@@ -33,9 +34,11 @@ public class Renderer {
 //    GLDebugMessageCallback debugProc;
 
 
-    int fbo;
-    int depthTexture;
-    int shadowMapSize = 2048;
+    private int fbo;
+    private int depthTexture;
+    private int shadowMapSize = 2048;
+    private final Vector3 shadowsAntialiasingLevel;
+
     private final Vector3 cameraPosition;
     private final Vector3 cameraRotation;
     private final Matrix biasMatrix;
@@ -84,6 +87,8 @@ public class Renderer {
         meshLibrary.get(Mesh.Id.CUBE_TOWER);
         meshLibrary.get(Mesh.Id.POOL);
 
+        shadowsAntialiasingLevel = calculateShadowsAntialiasingLevel();
+
         hudRenderer = new HudRenderer();
 
 //        cameraPosition = Vector3.of(0f, 5, 10);
@@ -95,6 +100,16 @@ public class Renderer {
                 0.0f, 0.5f, 0.0f, 0.0f,
                 0.0f, 0.0f, 0.5f, 0.0f,
                 0.5f, 0.5f, 0.5f, 1.0f
+        );
+    }
+
+    private Vector3 calculateShadowsAntialiasingLevel() {
+        Settings settings = Injector.getInstance(Settings.class);
+        int level = settings.getShadowsAntialiasingLevel();
+        return Vector3.of(
+                Math.floorDiv(level, -2) + 1,   // sampling offset, from
+                Math.floorDiv(level, 2) + 1,    // sampling offset, to, exclusive
+                level * level                   // number of samples
         );
     }
 
@@ -187,6 +202,7 @@ public class Renderer {
             shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getViewProjection());
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
+            shader.set(SHADOWS_ANTIALIASING_LEVEL, shadowsAntialiasingLevel);
 
             glViewport(0, 0, 1600, 900);
             // TODO maybe i can skip color buffer clearance

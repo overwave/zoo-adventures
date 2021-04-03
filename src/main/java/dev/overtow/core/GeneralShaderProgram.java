@@ -20,6 +20,7 @@ public class GeneralShaderProgram extends ShaderProgram {
         uniformMap.put(Uniform.Name.TEXTURE_SAMPLER, new IntegerUniform(Uniform.Name.TEXTURE_SAMPLER));
         uniformMap.put(Uniform.Name.DEPTH_TEXTURE, new IntegerUniform(Uniform.Name.DEPTH_TEXTURE));
         uniformMap.put(Uniform.Name.BACKGROUND_COLOR, new Vector4Uniform(Uniform.Name.BACKGROUND_COLOR));
+        uniformMap.put(Uniform.Name.SHADOWS_ANTIALIASING_LEVEL, new Vector3Uniform(Uniform.Name.SHADOWS_ANTIALIASING_LEVEL));
 
         programId = compile(GeneralVertexShader.class, GeneralFragmentShader.class);
     }

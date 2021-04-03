@@ -1,6 +1,7 @@
 package dev.overtow.service.window;
 
 import dev.overtow.service.config.Config;
+import dev.overtow.service.settings.Settings;
 import dev.overtow.util.ErrorCallback;
 import dev.overtow.util.injection.Bind;
 import dev.overtow.util.injection.Destroyable;
@@ -29,7 +30,7 @@ public class WindowImpl implements Window, Destroyable {
     GLFWKeyCallback keyCallback;
     GLFWFramebufferSizeCallback fbCallback;
 
-    public WindowImpl(Config config) {
+    public WindowImpl(Config config, Settings settings) {
         title = config.getString("window.title");
         width = config.getInteger("window.width");
         height = config.getInteger("window.height");
@@ -46,7 +47,7 @@ public class WindowImpl implements Window, Destroyable {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_SAMPLES, 2);
+        glfwWindowHint(GLFW_SAMPLES, settings.getMsaaLevel());
 
         windowHandle = glfwCreateWindow(width, height, "The Zoo Adventures", NULL, NULL);
         if (windowHandle == NULL) {

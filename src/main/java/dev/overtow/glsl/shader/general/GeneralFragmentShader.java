@@ -9,10 +9,7 @@ import dev.overtow.glsl.type.Vec2;
 import dev.overtow.glsl.type.Vec3;
 import dev.overtow.glsl.type.Vec4;
 
-import static dev.overtow.core.shader.uniform.Uniform.Name.BACKGROUND_COLOR;
-import static dev.overtow.core.shader.uniform.Uniform.Name.DEPTH_TEXTURE;
-import static dev.overtow.core.shader.uniform.Uniform.Name.LIGHT_POSITION;
-import static dev.overtow.core.shader.uniform.Uniform.Name.TEXTURE_SAMPLER;
+import static dev.overtow.core.shader.uniform.Uniform.Name.*;
 import static dev.overtow.glsl.GlslLibrary.*;
 
 public class GeneralFragmentShader implements FragmentShader {
@@ -29,6 +26,8 @@ public class GeneralFragmentShader implements FragmentShader {
     private final Vec3 lightPosition = vec3(0);
     @Uniform(BACKGROUND_COLOR)
     private final Vec4 backgroundColor = vec4(0);
+    @Uniform(SHADOWS_ANTIALIASING_LEVEL)
+    private final Vec3 shadowsAntialiasingLevel = vec3(0);
 
     @Input
     private final Vec4 lightBiasedClipPosition = parentShader.lightBiasedClipPosition;
@@ -56,8 +55,8 @@ public class GeneralFragmentShader implements FragmentShader {
         double shadowFactor = 0.0;
         Vec2 increment = vec2(1.0).divide(textureSize(depthTexture, 0));
 
-        for (int row = -1; row < 2; row++) {
-            for (int col = -1; col < 2; col++) {
+        for (double row = shadowsAntialiasingLevel.x; row < shadowsAntialiasingLevel.y; row++) {
+            for (double col = shadowsAntialiasingLevel.x; col < shadowsAntialiasingLevel.y; col++) {
                 Vec2 depthTextureOffset = vec2(row, col).multiply(increment);
                 double depth = texture(depthTexture, lightNDCPosition.xy.plus(depthTextureOffset)).z;
 
@@ -66,6 +65,6 @@ public class GeneralFragmentShader implements FragmentShader {
         }
 
         Vec3 light = vec3(LIGHT_INTENSITY);
-        fragColor = fragColor.plus(vec4(light.multiply(shadowFactor / 9), 0).multiply(dot));
+        fragColor = fragColor.plus(vec4(light.multiply(shadowFactor / shadowsAntialiasingLevel.z), 0).multiply(dot));
     }
 }
