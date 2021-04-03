@@ -28,6 +28,8 @@ public class GeneralFragmentShader implements FragmentShader {
     private final Vec4 backgroundColor = vec4(0);
     @Uniform(SHADOWS_ANTIALIASING_LEVEL)
     private final Vec3 shadowsAntialiasingLevel = vec3(0);
+    @Uniform(ITEM_SELECTED)
+    private final float itemSelected = float_(0);
 
     @Input
     private final Vec4 lightBiasedClipPosition = parentShader.lightBiasedClipPosition;
@@ -66,5 +68,6 @@ public class GeneralFragmentShader implements FragmentShader {
 
         Vec3 light = vec3(LIGHT_INTENSITY);
         fragColor = fragColor.plus(vec4(light.multiply(shadowFactor / shadowsAntialiasingLevel.z), 0).multiply(dot));
+        fragColor.r += 0.2 * itemSelected;
     }
 }

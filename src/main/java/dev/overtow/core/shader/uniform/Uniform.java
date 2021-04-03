@@ -17,6 +17,7 @@ public interface Uniform<T> {
         TIME("time"),
         BACKGROUND_COLOR("backgroundColor"),
         SHADOWS_ANTIALIASING_LEVEL("shadowsAntialiasingLevel"),
+        ITEM_SELECTED("itemSelected"),
         ;
 
         private final String name;

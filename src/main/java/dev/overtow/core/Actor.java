@@ -16,4 +16,8 @@ public interface Actor {
     Mesh.Id getMeshId();
 
     Vector4 getBackgroundColor();
+
+    default boolean isSelected() {
+        return false;
+    }
 }

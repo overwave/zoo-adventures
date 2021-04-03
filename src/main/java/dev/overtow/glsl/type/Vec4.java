@@ -11,6 +11,7 @@ public final class Vec4 {
     public Vec3 rgb;
     public double a;
     public Vec3 xyz;
+    public double r;
 
     private Vec4() {
     }

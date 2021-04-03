@@ -206,6 +206,7 @@ public class Renderer {
                 mesh.getMaterial().getTexture().bind();
 
                 shader.set(BACKGROUND_COLOR, actor.getBackgroundColor());
+                shader.set(ITEM_SELECTED, actor.isSelected() ? 1f : 0f);
 
                 Matrix modelMatrix = Matrix.ofModel(actor.getPosition(), actor.getRotation(), actor.getScale());
                 shader.set(MODEL_MATRIX, modelMatrix);

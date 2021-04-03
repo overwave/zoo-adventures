@@ -64,6 +64,10 @@ public class Vector2 {
         return of(x * invLength, y * invLength);
     }
 
+    public Vector2 rotate90deg() {
+        return Vector2.of(-y, x);
+    }
+
     @Override
     public String toString() {
         return "[" + x + ", \t" + y + ']';

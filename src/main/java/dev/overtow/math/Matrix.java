@@ -80,6 +80,11 @@ public class Matrix {
                 0, 0, 0, 1);
     }
 
+    public Matrix multiply(Matrix matrix) {
+        Matrix4f result = asMatrix4f().mul(matrix.asMatrix4f());
+        return new Matrix(result);
+    }
+
     public static Matrix ofProjectionLookAt(float angle, float aspect, float zNear, float zFar, Vector3 from, Vector3 to) {
         Matrix4f matrix = new Matrix4f()
                 .setPerspective((float) Math.toRadians(angle), aspect, zNear, zFar)
@@ -87,10 +92,14 @@ public class Matrix {
         return new Matrix(matrix);
     }
 
-    public static Matrix ofProjectionRotateTranslate(float angle, float aspect, float zNear, float zFar, Vector3 rotation, Vector3 translation) {
+    public static Matrix ofProjection(float angle, float aspect, float zNear, float zFar) {
+        Matrix4f matrix = new Matrix4f().setPerspective((float) Math.toRadians(angle), aspect, zNear, zFar);
+        return new Matrix(matrix);
+    }
+
+    public static Matrix ofRotateTranslate(Vector3 rotation, Vector3 translation) {
         Matrix4f matrix = new Matrix4f()
-                .setPerspective((float) Math.toRadians(angle), aspect, zNear, zFar)
-                .rotateXYZ((float) Math.toRadians(rotation.getX()), (float) Math.toRadians(rotation.getY()), (float) Math.toRadians(rotation.getZ()))
+                .setRotationXYZ((float) Math.toRadians(rotation.getX()), (float) Math.toRadians(rotation.getY()), (float) Math.toRadians(rotation.getZ()))
                 .translate(translation.getX(), translation.getY(), translation.getZ());
         return new Matrix(matrix);
     }

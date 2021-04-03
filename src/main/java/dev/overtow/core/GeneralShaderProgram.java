@@ -1,6 +1,7 @@
 package dev.overtow.core;
 
 import dev.overtow.core.shader.ShaderProgram;
+import dev.overtow.core.shader.uniform.FloatUniform;
 import dev.overtow.core.shader.uniform.IntegerUniform;
 import dev.overtow.core.shader.uniform.MatrixUniform;
 import dev.overtow.core.shader.uniform.Uniform;
@@ -21,6 +22,7 @@ public class GeneralShaderProgram extends ShaderProgram {
         uniformMap.put(Uniform.Name.DEPTH_TEXTURE, new IntegerUniform(Uniform.Name.DEPTH_TEXTURE));
         uniformMap.put(Uniform.Name.BACKGROUND_COLOR, new Vector4Uniform(Uniform.Name.BACKGROUND_COLOR));
         uniformMap.put(Uniform.Name.SHADOWS_ANTIALIASING_LEVEL, new Vector3Uniform(Uniform.Name.SHADOWS_ANTIALIASING_LEVEL));
+        uniformMap.put(Uniform.Name.ITEM_SELECTED, new FloatUniform(Uniform.Name.ITEM_SELECTED));
 
         programId = compile(GeneralVertexShader.class, GeneralFragmentShader.class);
     }
