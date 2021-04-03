@@ -38,9 +38,6 @@ public class Renderer {
     private int depthTexture;
     private int shadowMapSize = 2048;
     private final Vector3 shadowsAntialiasingLevel;
-
-    private final Vector3 cameraPosition;
-    private final Vector3 cameraRotation;
     private final Matrix biasMatrix;
 
     public Renderer() {
@@ -91,10 +88,6 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-//        cameraPosition = Vector3.of(0f, 5, 10);
-//        cameraRotation = Vector3.of(15, 0, 0);
-        cameraPosition = Vector3.of(0, 21, 0);
-        cameraRotation = Vector3.of(90, 0, 0);
         biasMatrix = Matrix.of(
                 0.5f, 0.0f, 0.0f, 0.0f,
                 0.0f, 0.5f, 0.0f, 0.0f,
@@ -145,21 +138,13 @@ public class Renderer {
     public void render(Scene scene) {
         restoreState();
 
-        Matrix viewProjectionMatrix = createViewProjectionMatrix(scene);
+        Matrix viewProjectionMatrix = scene.getViewProjectionMatrix();
 
         List<Actor> usualActors = scene.getUsualActors();
         drawDepthMap(usualActors, scene);
         drawScene(viewProjectionMatrix, usualActors, scene);
 
         hudRenderer.render(scene.getHudElements());
-    }
-
-    private Matrix createViewProjectionMatrix(Scene scene) {
-        return Matrix.ofProjectionRotateTranslate(45, 1600.f / 900, 0.1f, 50, cameraRotation, cameraPosition.negate());
-
-//        Vector3f UP = new Vector3f(0.0f, 1.0f, 0.0f);
-//        viewProjectionMatrix.setPerspective((float) Math.toRadians(45), 1.0f, 0.1f, 40.0f)
-//                .lookAt(scene.getLightPosition(), new Vector3f(0), UP);
     }
 
     private void restoreState() {
@@ -173,7 +158,7 @@ public class Renderer {
 
     private void drawDepthMap(List<Actor> actors, Scene scene) {
         depthShader.executeWithProgram(shader -> {
-            shader.set(VIEW_PROJECTION_MATRIX, scene.getViewProjection());
+            shader.set(VIEW_PROJECTION_MATRIX, scene.getLightViewProjectionMatrix());
 
             glActiveTexture(GL_TEXTURE0);
             glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -199,7 +184,7 @@ public class Renderer {
     private void drawScene(Matrix viewProjectionMatrix, List<Actor> actors, Scene scene) {
         generalShader.executeWithProgram(shader -> {
             shader.set(VIEW_PROJECTION_MATRIX, viewProjectionMatrix);
-            shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getViewProjection());
+            shader.set(LIGHT_VIEW_PROJECTION_MATRIX, scene.getLightViewProjectionMatrix());
             shader.set(BIAS_MATRIX, biasMatrix);
             shader.set(LIGHT_POSITION, scene.getLightPosition());
             shader.set(SHADOWS_ANTIALIASING_LEVEL, shadowsAntialiasingLevel);

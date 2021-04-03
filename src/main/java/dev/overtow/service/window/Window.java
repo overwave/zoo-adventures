@@ -1,6 +1,6 @@
 package dev.overtow.service.window;
 
-import org.joml.Vector2f;
+import dev.overtow.math.Vector2;
 
 public interface Window {
     int getWidth();
@@ -11,7 +11,7 @@ public interface Window {
 
     long getWindowHandle();
 
-    Vector2f getMousePosition();
+    Vector2 getMousePosition();
 
     boolean windowShouldClose();
 
@@ -20,4 +20,8 @@ public interface Window {
     void pollEvents();
 
     void swapBuffers();
+
+    Vector2 getSize();
+
+    void setTitle(String title);
 }

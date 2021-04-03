@@ -1,5 +1,6 @@
 package dev.overtow.core;
 
+import dev.overtow.math.Vector2;
 import dev.overtow.service.reader.Reader;
 import dev.overtow.service.window.Window;
 import dev.overtow.util.injection.Injector;
@@ -33,7 +34,8 @@ public class Engine {
         while (!window.windowShouldClose()) {
             window.pollEvents();
 
-            scene.update();
+            Vector2 scaledMousePosition = window.getMousePosition().divide(window.getSize());
+            scene.update(scaledMousePosition);
 
             renderer.render(scene);
 

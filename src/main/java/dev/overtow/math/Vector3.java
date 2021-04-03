@@ -18,10 +18,6 @@ public class Vector3 {
         this.z = z;
     }
 
-    public static Vector3 of() {
-        return new Vector3(0, 0, 0);
-    }
-
     public static Vector3 of(float c) {
         return new Vector3(c, c, c);
     }

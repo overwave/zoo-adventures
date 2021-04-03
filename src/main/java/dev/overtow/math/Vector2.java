@@ -5,6 +5,8 @@ import org.joml.Math;
 import java.util.Objects;
 
 public class Vector2 {
+    public static final Vector2 ZERO = of(0, 0);
+
     private final float x;
     private final float y;
 
@@ -33,12 +35,28 @@ public class Vector2 {
         return of(x + vec.x, y + vec.y);
     }
 
+    public Vector2 minus(float scalar) {
+        return of(x - scalar, y + scalar);
+    }
+
+    public Vector2 minus(Vector2 vec) {
+        return of(x - vec.x, y + vec.y);
+    }
+
     public Vector2 multiply(Vector2 vec) {
         return of(x * vec.x, y * vec.y);
     }
 
-    public Vector2 multiply(float c) {
-        return of(x * c, y * c);
+    public Vector2 multiply(float scalar) {
+        return of(x * scalar, y * scalar);
+    }
+
+    public Vector2 divide(Vector2 vec) {
+        return of(x / vec.x, y / vec.y);
+    }
+
+    public Vector2 divide(float scalar) {
+        return of(x / scalar, y / scalar);
     }
 
     public Vector2 normalize() {
