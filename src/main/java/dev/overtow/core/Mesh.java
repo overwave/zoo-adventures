@@ -23,8 +23,7 @@ public class Mesh {
         CUBE_BARN("data/model/cube/cube.obj", "barn.png"),
         CUBE_CORN("data/model/cube/cube.obj", "corn.png"),
         CUBE_WINDMILL("data/model/cube/cube.obj", "windmill.png"),
-        POOL("data/model/pool/pool_3.obj"),
-        WATER("data/model/water/water_1x1_16Kquads.obj");
+        POOL("data/model/pool/pool_without_water.obj");
 
         private final String path;
         private final String texturePath;

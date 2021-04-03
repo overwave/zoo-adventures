@@ -50,6 +50,10 @@ public class Vector3 {
         return of(x + vec.x, y + vec.y, z + vec.z);
     }
 
+    public Vector3 minus(Vector3 vec) {
+        return of(x - vec.x, y - vec.y, z - vec.z);
+    }
+
     public Vector3 divide(float c) {
         return of(x / c, y / c, z / c);
     }

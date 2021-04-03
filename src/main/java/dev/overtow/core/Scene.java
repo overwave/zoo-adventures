@@ -3,11 +3,9 @@ package dev.overtow.core;
 import dev.overtow.graphics.draw.BoxType;
 import dev.overtow.graphics.hud.HudElement;
 import dev.overtow.math.Matrix;
-import dev.overtow.math.Quaternion;
 import dev.overtow.math.Vector2;
 import dev.overtow.math.Vector3;
 import dev.overtow.util.Utils;
-import dev.overtow.util.misc.Tuple;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +18,6 @@ import java.util.stream.Stream;
 public class Scene {
     private final List<Actor> generalActors;
     private final List<BoxActor> boxesOnField;
-    private final WaterActor water;
     private final DispenserSystem dispenserSystem;
 
     private final HudLayout hudLayout;
@@ -42,7 +39,6 @@ public class Scene {
         dispenserSystem.update();
 
         generalActors.add(new PoolActor());
-        water = new WaterActor();
 
         hudLayout = new HudLayout();
 
@@ -69,13 +65,6 @@ public class Scene {
         viewProjection = Matrix.ofProjectionLookAt(90, 1.0f, 0.1f, 40.0f, lightPosition, viewTarget);
 
         hudLayout.update();
-        water.update();
-
-        for (BoxActor actor : boxesOnField) {
-            Tuple<Vector3, Quaternion> wavesShift = water.getWavesShift(actor.getPosition(), Vector2.of(1), time);
-
-            actor.setTemporaryTilt(wavesShift.getT(), wavesShift.getV());
-        }
     }
 
     public List<HudElement> getHudElements() {
@@ -87,9 +76,5 @@ public class Scene {
         return Stream.of(generalActors, dispenserSystem.getBoxes(), boxesOnField)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
-    }
-
-    public List<WaterActor> getWater() {
-        return List.of(water);
     }
 }

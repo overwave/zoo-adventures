@@ -11,21 +11,12 @@ public class BoxActor implements Actor {
     private Vector3 position;
     private final Vector3 scale;
     private final Quaternion rotation;
-    private Vector3 temporaryPositionOffset;
-    private Quaternion temporaryRotation;
 
     public BoxActor(BoxType boxType, Vector2 position) {
         this.position = Vector3.of(position.getX() - 4.5f, 0, position.getY() - 4.5f);
-        this.temporaryPositionOffset = Vector3.ZERO;
         this.boxType = boxType;
         this.scale = Vector3.ONE;
         this.rotation = Quaternion.of();
-        this.temporaryRotation = Quaternion.of();
-    }
-
-    public void setTemporaryTilt(Vector3 tempPositionOffset, Quaternion tempRotation) {
-        temporaryPositionOffset = tempPositionOffset;
-        temporaryRotation = tempRotation;
     }
 
     @Override
@@ -35,7 +26,7 @@ public class BoxActor implements Actor {
 
     @Override
     public Vector3 getPosition() {
-        return position.plus(temporaryPositionOffset);
+        return position;
     }
 
     public void setPosition(Vector3 position) {
@@ -49,7 +40,7 @@ public class BoxActor implements Actor {
 
     @Override
     public Quaternion getRotation() {
-        return rotation.multiply(temporaryRotation);
+        return rotation;
     }
 
     @Override

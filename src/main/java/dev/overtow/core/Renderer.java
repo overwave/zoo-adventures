@@ -5,7 +5,6 @@ import dev.overtow.core.shader.uniform.Uniform;
 import dev.overtow.math.Matrix;
 import dev.overtow.math.Vector3;
 import dev.overtow.service.meshlibrary.MeshLibrary;
-import dev.overtow.util.Utils;
 import dev.overtow.util.injection.Injector;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
@@ -28,7 +27,6 @@ import static org.lwjgl.opengl.GL43C.*;
 public class Renderer {
     private final GLCapabilities capabilities;
     private final ShaderProgram generalShader;
-    private final ShaderProgram waterShader;
     private final ShaderProgram depthShader;
     private final MeshLibrary meshLibrary;
     private final HudRenderer hudRenderer;
@@ -79,8 +77,6 @@ public class Renderer {
             shader.set(Uniform.Name.DEPTH_TEXTURE, 0);
             shader.set(Uniform.Name.TEXTURE_SAMPLER, 1);
         });
-        waterShader = new WaterShaderProgram();
-        waterShader.executeWithProgram(shader -> shader.set(Uniform.Name.TEXTURE_SAMPLER, 1));
 
         createDepthTexture();
         createFbo();
@@ -90,10 +86,10 @@ public class Renderer {
 
         hudRenderer = new HudRenderer();
 
-        cameraPosition = Vector3.of(0f, 5, 10);
-        cameraRotation = Vector3.of(15, 0, 0);
-//        cameraPosition = Vector3.of(0, 21, 0);
-//        cameraRotation = Vector3.of(90, 0, 0);
+//        cameraPosition = Vector3.of(0f, 5, 10);
+//        cameraRotation = Vector3.of(15, 0, 0);
+        cameraPosition = Vector3.of(0, 21, 0);
+        cameraRotation = Vector3.of(90, 0, 0);
         biasMatrix = Matrix.of(
                 0.5f, 0.0f, 0.0f, 0.0f,
                 0.0f, 0.5f, 0.0f, 0.0f,
@@ -139,9 +135,6 @@ public class Renderer {
         List<Actor> usualActors = scene.getUsualActors();
         drawDepthMap(usualActors, scene);
         drawScene(viewProjectionMatrix, usualActors, scene);
-
-        List<WaterActor> waterActors = scene.getWater();
-        drawWater(viewProjectionMatrix, waterActors, scene);
 
         hudRenderer.render(scene.getHudElements());
     }
@@ -225,42 +218,6 @@ public class Renderer {
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, 0);
-
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, 0);
-        });
-    }
-
-    private void drawWater(Matrix viewProjectionMatrix, List<WaterActor> actors, Scene scene) {
-        waterShader.executeWithProgram(shader -> {
-            shader.set(VIEW_PROJECTION_MATRIX, viewProjectionMatrix);
-            shader.set(LIGHT_POSITION, scene.getLightPosition());
-            shader.set(TIME, Utils.getTime());
-
-            glViewport(0, 0, 1600, 900);
-
-            for (WaterActor actor : actors) {
-                shader.setWaves(WAVES, actor.getWaves());
-                shader.setRipples(RIPPLES, actor.getRipples());
-
-                Mesh mesh = meshLibrary.get(actor.getMeshId());
-
-                glBindVertexArray(mesh.getVaoId());
-
-                glActiveTexture(GL_TEXTURE1);
-                mesh.getMaterial().getTexture().bind();
-
-                shader.set(TEXTURE_MOVING_DIRECTION, actor.getWavesDirection());
-
-                Matrix modelMatrix = Matrix.ofModel(actor.getPosition(), actor.getRotation(), actor.getScale());
-                shader.set(MODEL_MATRIX, modelMatrix);
-                Matrix normalMatrix = modelMatrix.normal();
-                shader.set(NORMAL_MATRIX, normalMatrix);
-                glDrawElements(GL_TRIANGLES, mesh.getVertexCount(), GL_UNSIGNED_INT, 0);
-            }
-
-
-            glBindVertexArray(0);
 
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, 0);
